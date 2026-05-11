@@ -1,0 +1,23 @@
+{
+  "name": "watch-llama",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@types/node": "^25.7.0",
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.11.0",
+    "chokidar": "^5.0.0",
+    "dotenv": "^17.4.2",
+    "node-os-utils": "^2.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
