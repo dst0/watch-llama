@@ -1,23 +1,34 @@
 import { promises as fs } from 'node:fs';
 import { ConfigManager, toUiSettings } from './config.js';
 import { LogWatcher, renderReport, renderStats } from './providers/logs.js';
+import { LlamaServerProvider } from './providers/server.js';
 import { SystemProvider } from './providers/system.js';
 import { AppStore } from './store.js';
 import { ThermalManager } from './utils/thermal.js';
 import { Tui } from './ui.js';
 
-async function runTelemetryLoop(store: AppStore, provider: SystemProvider): Promise<void> {
-    const snapshot = await provider.getSnapshot(store.state.settings.gpuTool);
+async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider, serverProvider: LlamaServerProvider): Promise<void> {
+    const [snapshot, serverSnapshot] = await Promise.all([
+        systemProvider.getSnapshot(store.state.settings.gpuTool),
+        serverProvider.getSnapshot()
+    ]);
+
     const { emoji, blocks } = ThermalManager.updateTitle(
         {
             ...store.state,
-            system: snapshot
+            system: snapshot,
+            inference: {
+                ...store.state.inference,
+                ...serverSnapshot.inference
+            }
         },
         Object.keys(store.state.errorMessages).length > 0,
         Date.now() - store.state.lastLogAt < 2000
     );
     store.updateSystem(snapshot, emoji, blocks);
+    store.updateInference(serverSnapshot.inference);
     store.setError('gpu', snapshot.gpu.error);
+    store.setError('server', serverSnapshot.error);
 }
 
 export async function runWatchLlama(): Promise<void> {
@@ -25,6 +36,7 @@ export async function runWatchLlama(): Promise<void> {
     const config = await configManager.load();
     const store = new AppStore(config);
     const systemProvider = new SystemProvider();
+    const serverProvider = new LlamaServerProvider(config.apiBaseUrl);
     const logWatcher = new LogWatcher(config);
 
     const ui = new Tui(store, {
@@ -52,10 +64,10 @@ export async function runWatchLlama(): Promise<void> {
     logWatcher.on('errorState', ({ key, message }: { key: string; message?: string }) => store.setError(key, message));
 
     await logWatcher.start();
-    await runTelemetryLoop(store, systemProvider);
+    await runTelemetryLoop(store, systemProvider, serverProvider);
 
     const telemetryTimer = setInterval(() => {
-        void runTelemetryLoop(store, systemProvider);
+        void runTelemetryLoop(store, systemProvider, serverProvider);
     }, store.state.settings.pollIntervalMs);
 
     ui.render(store.state);
@@ -96,17 +108,21 @@ export async function runReadableLogCommand(): Promise<void> {
 export async function runReportCommand(): Promise<void> {
     const configManager = new ConfigManager();
     const config = await configManager.load();
+    const serverProvider = new LlamaServerProvider(config.apiBaseUrl);
     const [rawLog, readableLog] = await Promise.all([
         fs.readFile(config.rawLogPath, 'utf8').catch(() => ''),
         fs.readFile(config.readableLogPath, 'utf8').catch(() => '')
     ]);
+    const serverSnapshot = await serverProvider.getSnapshot();
 
-    process.stdout.write(`${renderReport(rawLog, readableLog)}\n`);
+    process.stdout.write(`${renderReport(rawLog, readableLog, serverSnapshot.inference)}\n`);
 }
 
 export async function runStatsCommand(): Promise<void> {
     const configManager = new ConfigManager();
     const config = await configManager.load();
+    const serverProvider = new LlamaServerProvider(config.apiBaseUrl);
     const rawLog = await fs.readFile(config.rawLogPath, 'utf8').catch(() => '');
-    process.stdout.write(`${renderStats(rawLog)}\n`);
+    const serverSnapshot = await serverProvider.getSnapshot();
+    process.stdout.write(`${renderStats(rawLog, serverSnapshot.inference)}\n`);
 }

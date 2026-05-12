@@ -9,6 +9,7 @@ TypeScript/Node monitoring tools for `llama-server`, ported from the relevant `w
 - Report and stats commands for recent requests and timing summaries.
 - Local JSON config persistence for UI toggles, log paths, and GPU tool selection.
 - GPU telemetry auto-detection for `nvidia-smi`, `amd-smi`, `rocm-smi`, plus CPU/RAM/sensor telemetry.
+- Live llama.cpp integration via `/v1/models` plus real stderr parsing for `slot print_timing` request blocks.
 
 ## What is not ported
 
@@ -58,6 +59,7 @@ After `npm run build`, the compiled CLI entry points are also available as:
 ```bash
 LLAMA_LOG_PATH=/custom/stderr.log
 LLAMA_READABLE_LOG_PATH=/custom/llama_readable.log
+LLAMA_API_BASE_URL=http://127.0.0.1:11435
 WATCH_LLAMA_HOME=/custom/watch-llama
 WATCH_LLAMA_GPU_TOOL=auto
 WATCH_LLAMA_SHOW_GPU=true

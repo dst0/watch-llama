@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import type { InferenceMetrics, InferenceStatus, WatchLlamaConfig } from '../types/state.js';
+import type { InferenceMetrics, WatchLlamaConfig } from '../types/state.js';
 import { formatDurationMilliseconds, parseDurationToMilliseconds } from '../utils/duration.js';
 import { decodeEscapedText, formatPromptText, promptEndsWithAssistantMarker, sanitizeRenderableText } from '../utils/log-text.js';
 
@@ -13,8 +13,15 @@ const META_CTX_RE = /llm_load_print_meta:\s*n_ctx(?:_train)?\s*=\s*(\d+)/i;
 const META_FTYPE_RE = /llm_load_print_meta:\s*model ftype\s*=\s*(.+)$/i;
 const META_FORMAT_RE = /llm_load_print_meta:\s*format\s*=\s*(.+)$/i;
 const HTTP_REQUEST_RE = /(POST|GET)\s+\/v1\/(?:chat\/completions|completions|responses)/i;
-const HTTP_LATENCY_RE = /\|\s*([0-9.]+(?:ns|us|µs|ms|s|m|h))\s*\|/;
 const STATUS_MESSAGE_RE = /msg="([^"]+)"/;
+const PROCESSING_TASK_RE = /slot launch_slot_: id\s+\d+\s+\|\s+task\s+(\d+)\s+\|\s+processing task/i;
+const NEW_PROMPT_RE = /slot update_slots: id\s+\d+\s+\|\s+task\s+(\d+)\s+\|\s+new prompt.*task\.n_tokens = (\d+)/i;
+const INIT_SAMPLER_RE = /slot init_sampler: id\s+\d+\s+\|\s+task\s+(\d+)\s+\|.*tokens:\s+text = (\d+), total = (\d+)/i;
+const PRINT_TIMING_RE = /slot print_timing: id\s+\d+\s+\|\s+task\s+(\d+)\s+\|/i;
+const PROMPT_EVAL_LINE_RE = /prompt eval time =\s*([\d.]+)\s*ms \/ *(\d+) tokens .*?([\d.]+) tokens per second/i;
+const EVAL_LINE_RE = /eval time =\s*([\d.]+)\s*ms \/ *(\d+) tokens .*?([\d.]+) tokens per second/i;
+const TOTAL_LINE_RE = /total time =\s*([\d.]+)\s*ms \/ *(\d+) tokens/i;
+const DONE_REQUEST_RE = /srv\s+log_server_r: done request:\s+(POST|GET|HEAD)\s+(\S+)\s+\S+\s+(\d{3})/i;
 
 export interface RequestSummary {
     model: string;
@@ -28,6 +35,9 @@ export interface RequestSummary {
     tokensPerSecond: number;
     promptEvalPerSecond: number;
     latencyMs: number;
+    taskId?: number;
+    endpoint?: string;
+    statusCode?: number;
 }
 
 interface BuilderUpdate {
@@ -41,6 +51,17 @@ interface SessionMetrics {
     promptEvalPerSecond: number;
     tokensPerSecond: number;
     latencyMs: number;
+}
+
+interface PendingRequest extends SessionMetrics {
+    taskId: number;
+    endpoint?: string;
+    statusCode?: number;
+}
+
+interface ParsedLog {
+    metadata: Partial<InferenceMetrics>;
+    summaries: RequestSummary[];
 }
 
 function trimModelName(modelPath: string): string {
@@ -71,15 +92,6 @@ function extractTokenText(line: string): string | null {
 
     const tokenField = extractQuotedField(line, 'token');
     return tokenField ? sanitizeRenderableText(decodeEscapedText(tokenField)) : null;
-}
-
-function extractLatencyMs(line: string): number | null {
-    const latencyText = line.match(HTTP_LATENCY_RE)?.[1];
-    if (!latencyText) {
-        return null;
-    }
-
-    return parseDurationToMilliseconds(latencyText);
 }
 
 function extractMetadata(line: string): Partial<InferenceMetrics> | null {
@@ -119,18 +131,12 @@ export function parseTimingSummary(line: string): SessionMetrics | null {
     if (timingJson) {
         try {
             const parsed = JSON.parse(timingJson) as Record<string, number>;
-            const promptTokens = parsed['prompt_n'] ?? 0;
-            const completionTokens = parsed['predicted_n'] ?? 0;
-            const promptEvalPerSecond = parsed['prompt_per_second'] ?? 0;
-            const tokensPerSecond = parsed['predicted_per_second'] ?? 0;
-            const latencyMs = parsed['predicted_ms'] ?? parsed['total_ms'] ?? 0;
-
             return {
-                promptTokens,
-                completionTokens,
-                promptEvalPerSecond,
-                tokensPerSecond,
-                latencyMs
+                promptTokens: parsed['prompt_n'] ?? 0,
+                completionTokens: parsed['predicted_n'] ?? 0,
+                promptEvalPerSecond: parsed['prompt_per_second'] ?? 0,
+                tokensPerSecond: parsed['predicted_per_second'] ?? 0,
+                latencyMs: parsed['predicted_ms'] ?? parsed['total_ms'] ?? 0
             };
         } catch {
             return null;
@@ -138,23 +144,58 @@ export function parseTimingSummary(line: string): SessionMetrics | null {
     }
 
     const requestComplete = line.match(REQUEST_COMPLETE_RE);
-    if (requestComplete) {
-        const promptTokens = Number.parseInt(requestComplete[1] ?? '0', 10);
-        const promptDurationMs = parseDurationToMilliseconds(requestComplete[2]) ?? 0;
-        const completionTokens = Number.parseInt(requestComplete[3] ?? '0', 10);
-        const completionDurationMs = parseDurationToMilliseconds(requestComplete[4]) ?? 0;
-        const totalDurationMs = parseDurationToMilliseconds(requestComplete[5]) ?? promptDurationMs + completionDurationMs;
-
-        return {
-            promptTokens,
-            completionTokens,
-            promptEvalPerSecond: promptDurationMs > 0 ? (promptTokens * 1000) / promptDurationMs : 0,
-            tokensPerSecond: completionDurationMs > 0 ? (completionTokens * 1000) / completionDurationMs : 0,
-            latencyMs: totalDurationMs
-        };
+    if (!requestComplete) {
+        return null;
     }
 
-    return null;
+    const promptTokens = Number.parseInt(requestComplete[1] ?? '0', 10);
+    const promptDurationMs = parseDurationToMilliseconds(requestComplete[2]) ?? 0;
+    const completionTokens = Number.parseInt(requestComplete[3] ?? '0', 10);
+    const completionDurationMs = parseDurationToMilliseconds(requestComplete[4]) ?? 0;
+    const totalDurationMs = parseDurationToMilliseconds(requestComplete[5]) ?? promptDurationMs + completionDurationMs;
+
+    return {
+        promptTokens,
+        completionTokens,
+        promptEvalPerSecond: promptDurationMs > 0 ? (promptTokens * 1000) / promptDurationMs : 0,
+        tokensPerSecond: completionDurationMs > 0 ? (completionTokens * 1000) / completionDurationMs : 0,
+        latencyMs: totalDurationMs
+    };
+}
+
+function parsePromptEvalLine(line: string): Pick<SessionMetrics, 'promptTokens' | 'promptEvalPerSecond'> | null {
+    const match = line.match(PROMPT_EVAL_LINE_RE);
+    if (!match) {
+        return null;
+    }
+
+    return {
+        promptTokens: Number.parseInt(match[2] ?? '0', 10),
+        promptEvalPerSecond: Number.parseFloat(match[3] ?? '0')
+    };
+}
+
+function parseEvalLine(line: string): Pick<SessionMetrics, 'completionTokens' | 'tokensPerSecond'> | null {
+    const match = line.match(EVAL_LINE_RE);
+    if (!match) {
+        return null;
+    }
+
+    return {
+        completionTokens: Number.parseInt(match[2] ?? '0', 10),
+        tokensPerSecond: Number.parseFloat(match[3] ?? '0')
+    };
+}
+
+function parseTotalLine(line: string): Pick<SessionMetrics, 'latencyMs'> | null {
+    const match = line.match(TOTAL_LINE_RE);
+    if (!match) {
+        return null;
+    }
+
+    return {
+        latencyMs: Number.parseFloat(match[1] ?? '0')
+    };
 }
 
 function formatStatsLine(metrics: SessionMetrics): string {
@@ -175,13 +216,186 @@ function formatEventTimestamp(): string {
     return new Date().toTimeString().slice(0, 8);
 }
 
+function parseRawLog(rawLog: string): ParsedLog {
+    const metadata: Partial<InferenceMetrics> = {};
+    const summaries: RequestSummary[] = [];
+    const pending = new Map<number, PendingRequest>();
+    let timingTaskId: number | null = null;
+
+    for (const rawLine of rawLog.split(/\r?\n/)) {
+        const line = rawLine.trimEnd();
+        if (!line) {
+            continue;
+        }
+
+        const updates = extractMetadata(line);
+        if (updates) {
+            Object.assign(metadata, updates);
+        }
+
+        const directTiming = parseTimingSummary(line);
+        if (directTiming) {
+            const summary: RequestSummary = {
+                model: metadata.model ?? 'unknown',
+                promptTokens: directTiming.promptTokens,
+                completionTokens: directTiming.completionTokens,
+                promptEvalPerSecond: directTiming.promptEvalPerSecond,
+                tokensPerSecond: directTiming.tokensPerSecond,
+                latencyMs: directTiming.latencyMs
+            };
+            if (metadata.modelPath) {
+                summary.modelPath = metadata.modelPath;
+            }
+            if (metadata.architecture) {
+                summary.architecture = metadata.architecture;
+            }
+            if (metadata.contextSize) {
+                summary.contextSize = metadata.contextSize;
+            }
+            if (metadata.quantization) {
+                summary.quantization = metadata.quantization;
+            }
+            if (metadata.format) {
+                summary.format = metadata.format;
+            }
+            summaries.push(summary);
+            continue;
+        }
+
+        const processingMatch = line.match(PROCESSING_TASK_RE);
+        if (processingMatch) {
+            const taskId = Number.parseInt(processingMatch[1] ?? '0', 10);
+            pending.set(taskId, {
+                taskId,
+                promptTokens: 0,
+                completionTokens: 0,
+                promptEvalPerSecond: 0,
+                tokensPerSecond: 0,
+                latencyMs: 0
+            });
+            continue;
+        }
+
+        const promptMatch = line.match(NEW_PROMPT_RE);
+        if (promptMatch) {
+            const taskId = Number.parseInt(promptMatch[1] ?? '0', 10);
+            const promptTokens = Number.parseInt(promptMatch[2] ?? '0', 10);
+            const current = pending.get(taskId);
+            if (current) {
+                current.promptTokens = Math.max(current.promptTokens, promptTokens);
+            }
+            continue;
+        }
+
+        const initSamplerMatch = line.match(INIT_SAMPLER_RE);
+        if (initSamplerMatch) {
+            const taskId = Number.parseInt(initSamplerMatch[1] ?? '0', 10);
+            const promptTokens = Number.parseInt(initSamplerMatch[2] ?? '0', 10);
+            const current = pending.get(taskId);
+            if (current) {
+                current.promptTokens = Math.max(current.promptTokens, promptTokens);
+            }
+            continue;
+        }
+
+        const printTimingMatch = line.match(PRINT_TIMING_RE);
+        if (printTimingMatch) {
+            timingTaskId = Number.parseInt(printTimingMatch[1] ?? '0', 10);
+            continue;
+        }
+
+        if (timingTaskId !== null) {
+            const promptEval = parsePromptEvalLine(line);
+            if (promptEval) {
+                const current = pending.get(timingTaskId);
+                if (current) {
+                    current.promptTokens = Math.max(current.promptTokens, promptEval.promptTokens);
+                    current.promptEvalPerSecond = promptEval.promptEvalPerSecond;
+                }
+                continue;
+            }
+
+            const evalLine = parseEvalLine(line);
+            if (evalLine) {
+                const current = pending.get(timingTaskId);
+                if (current) {
+                    current.completionTokens = evalLine.completionTokens;
+                    current.tokensPerSecond = evalLine.tokensPerSecond;
+                }
+                continue;
+            }
+
+            const totalLine = parseTotalLine(line);
+            if (totalLine) {
+                const current = pending.get(timingTaskId);
+                if (current) {
+                    current.latencyMs = totalLine.latencyMs;
+                }
+                continue;
+            }
+        }
+
+        const doneMatch = line.match(DONE_REQUEST_RE);
+        if (doneMatch) {
+            const method = (doneMatch[1] ?? '').toUpperCase();
+            const endpoint = doneMatch[2] ?? '';
+            const statusCode = Number.parseInt(doneMatch[3] ?? '0', 10);
+
+            if (method === 'POST' && endpoint.startsWith('/v1/')) {
+                const completed = [...pending.values()]
+                    .filter((entry) => entry.latencyMs > 0)
+                    .sort((left, right) => left.taskId - right.taskId)
+                    .at(-1);
+
+                if (completed) {
+                    completed.endpoint = `${method} ${endpoint}`;
+                    completed.statusCode = statusCode;
+
+                    const summary: RequestSummary = {
+                        model: metadata.model ?? 'unknown',
+                        promptTokens: completed.promptTokens,
+                        completionTokens: completed.completionTokens,
+                        promptEvalPerSecond: completed.promptEvalPerSecond,
+                        tokensPerSecond: completed.tokensPerSecond,
+                        latencyMs: completed.latencyMs,
+                        taskId: completed.taskId,
+                        endpoint: completed.endpoint,
+                        statusCode
+                    };
+
+                    if (metadata.modelPath) {
+                        summary.modelPath = metadata.modelPath;
+                    }
+                    if (metadata.architecture) {
+                        summary.architecture = metadata.architecture;
+                    }
+                    if (metadata.contextSize) {
+                        summary.contextSize = metadata.contextSize;
+                    }
+                    if (metadata.quantization) {
+                        summary.quantization = metadata.quantization;
+                    }
+                    if (metadata.format) {
+                        summary.format = metadata.format;
+                    }
+
+                    summaries.push(summary);
+                    pending.delete(completed.taskId);
+                }
+            }
+
+            timingTaskId = null;
+        }
+    }
+
+    return { metadata, summaries };
+}
+
 class ReadableLogBuilder {
-    private inGeneration = false;
-    private promptStartedAt = 0;
-    private generationStartedAt = 0;
-    private promptTokens = 0;
-    private completionTokens = 0;
+    private activeTaskId: number | null = null;
     private lastPrompt = '';
+    private current: PendingRequest | null = null;
+    private timingTaskId: number | null = null;
 
     processLine(line: string): BuilderUpdate {
         const inference: Partial<InferenceMetrics> = {};
@@ -192,19 +406,10 @@ class ReadableLogBuilder {
             Object.assign(inference, metadata);
         }
 
-        if (/model loaded/i.test(line)) {
-            inference.status = 'READY';
-        }
-
         const prompt = extractPromptText(line);
         if (prompt) {
             const formattedPrompt = formatPromptText(prompt);
             if (formattedPrompt && formattedPrompt !== this.lastPrompt) {
-                if (this.inGeneration) {
-                    appendText += '\n[INTERRUPTED]\n';
-                }
-
-                this.resetGeneration('GENERATING');
                 this.lastPrompt = formattedPrompt;
                 appendText += `\n${'='.repeat(40)} ${formatEventTimestamp()} [PROMPT] ${'='.repeat(40)}\n`;
                 appendText += `${formattedPrompt}\n`;
@@ -213,62 +418,113 @@ class ReadableLogBuilder {
                 }
                 inference.status = 'GENERATING';
             }
-        } else if (!this.inGeneration && HTTP_REQUEST_RE.test(line) && !line.includes('|')) {
-            this.resetGeneration('GENERATING');
-            inference.status = 'GENERATING';
         }
 
         const tokenText = extractTokenText(line);
         if (tokenText !== null) {
-            if (!this.inGeneration) {
-                this.resetGeneration('GENERATING');
-            }
-
-            if (this.completionTokens === 0) {
-                this.generationStartedAt = Date.now();
-            }
-
-            this.completionTokens += tokenText.trim().length > 0 ? 1 : 0;
             appendText += tokenText;
             inference.status = 'GENERATING';
-            inference.completionTokens = this.completionTokens;
         }
 
-        const timingSummary = parseTimingSummary(line);
-        if (timingSummary) {
-            this.promptTokens = timingSummary.promptTokens;
-            this.completionTokens = timingSummary.completionTokens || this.completionTokens;
-            appendText += `\n[DONE] ${formatStatsLine(timingSummary)}\n${'-'.repeat(20)}\n`;
-            Object.assign(inference, {
-                promptTokens: timingSummary.promptTokens,
-                completionTokens: timingSummary.completionTokens,
-                promptEvalPerSecond: timingSummary.promptEvalPerSecond,
-                tokensPerSecond: timingSummary.tokensPerSecond,
-                latencyMs: timingSummary.latencyMs,
-                status: 'IDLE' as InferenceStatus
-            });
-            this.inGeneration = false;
-        } else {
-            const latencyMs = extractLatencyMs(line);
-            if (this.inGeneration && latencyMs !== null) {
-                const derived = this.deriveSessionMetrics(latencyMs);
-                appendText += `\n[DONE] ${formatStatsLine(derived)}\n${'-'.repeat(20)}\n`;
-                Object.assign(inference, {
-                    promptTokens: derived.promptTokens,
-                    completionTokens: derived.completionTokens,
-                    promptEvalPerSecond: derived.promptEvalPerSecond,
-                    tokensPerSecond: derived.tokensPerSecond,
-                    latencyMs: derived.latencyMs,
-                    status: 'IDLE' as InferenceStatus
-                });
-                this.inGeneration = false;
+        const directTiming = parseTimingSummary(line);
+        if (directTiming) {
+            appendText += `\n[DONE] ${formatStatsLine(directTiming)}\n${'-'.repeat(20)}\n`;
+            return {
+                appendText,
+                inference: {
+                    ...inference,
+                    promptTokens: directTiming.promptTokens,
+                    completionTokens: directTiming.completionTokens,
+                    promptEvalPerSecond: directTiming.promptEvalPerSecond,
+                    tokensPerSecond: directTiming.tokensPerSecond,
+                    latencyMs: directTiming.latencyMs,
+                    status: 'IDLE'
+                }
+            };
+        }
+
+        const processingMatch = line.match(PROCESSING_TASK_RE);
+        if (processingMatch) {
+            const taskId = Number.parseInt(processingMatch[1] ?? '0', 10);
+            this.activeTaskId = taskId;
+            this.current = {
+                taskId,
+                promptTokens: 0,
+                completionTokens: 0,
+                promptEvalPerSecond: 0,
+                tokensPerSecond: 0,
+                latencyMs: 0
+            };
+            appendText += `\n${'='.repeat(40)} ${formatEventTimestamp()} [REQUEST] ${'='.repeat(40)}\n`;
+            appendText += `task ${taskId} started\n`;
+            inference.status = 'GENERATING';
+        }
+
+        const promptMatch = line.match(NEW_PROMPT_RE);
+        if (promptMatch && this.current && this.activeTaskId === Number.parseInt(promptMatch[1] ?? '0', 10)) {
+            this.current.promptTokens = Number.parseInt(promptMatch[2] ?? '0', 10);
+        }
+
+        const initSamplerMatch = line.match(INIT_SAMPLER_RE);
+        if (initSamplerMatch && this.current && this.activeTaskId === Number.parseInt(initSamplerMatch[1] ?? '0', 10)) {
+            this.current.promptTokens = Math.max(this.current.promptTokens, Number.parseInt(initSamplerMatch[2] ?? '0', 10));
+        }
+
+        const printTimingMatch = line.match(PRINT_TIMING_RE);
+        if (printTimingMatch) {
+            this.timingTaskId = Number.parseInt(printTimingMatch[1] ?? '0', 10);
+        }
+
+        if (this.current && this.timingTaskId === this.current.taskId) {
+            const promptEval = parsePromptEvalLine(line);
+            if (promptEval) {
+                this.current.promptTokens = Math.max(this.current.promptTokens, promptEval.promptTokens);
+                this.current.promptEvalPerSecond = promptEval.promptEvalPerSecond;
+            }
+
+            const evalLine = parseEvalLine(line);
+            if (evalLine) {
+                this.current.completionTokens = evalLine.completionTokens;
+                this.current.tokensPerSecond = evalLine.tokensPerSecond;
+            }
+
+            const totalLine = parseTotalLine(line);
+            if (totalLine) {
+                this.current.latencyMs = totalLine.latencyMs;
             }
         }
 
-        if (this.inGeneration && /(terminated|context cancelled|request finished|stopped)/i.test(line)) {
-            appendText += `\n[STOPPED] ${formatEventTimestamp()} - ${sanitizeRenderableText(line)}\n${'-'.repeat(20)}\n`;
-            inference.status = 'IDLE';
-            this.inGeneration = false;
+        const doneMatch = line.match(DONE_REQUEST_RE);
+        if (doneMatch && this.current) {
+            const method = (doneMatch[1] ?? '').toUpperCase();
+            const endpoint = doneMatch[2] ?? '';
+            const statusCode = Number.parseInt(doneMatch[3] ?? '0', 10);
+
+            if (method === 'POST' && endpoint.startsWith('/v1/')) {
+                this.current.endpoint = `${method} ${endpoint}`;
+                this.current.statusCode = statusCode;
+                appendText += `endpoint ${this.current.endpoint} -> ${statusCode}\n`;
+                appendText += `prompt ${this.current.promptTokens} tokens | completion ${this.current.completionTokens} tokens\n`;
+                appendText += `[DONE] ${formatStatsLine(this.current)}\n${'-'.repeat(20)}\n`;
+
+                const result: BuilderUpdate = {
+                    appendText,
+                    inference: {
+                        ...inference,
+                        promptTokens: this.current.promptTokens,
+                        completionTokens: this.current.completionTokens,
+                        promptEvalPerSecond: this.current.promptEvalPerSecond,
+                        tokensPerSecond: this.current.tokensPerSecond,
+                        latencyMs: this.current.latencyMs,
+                        status: 'IDLE'
+                    }
+                };
+
+                this.current = null;
+                this.activeTaskId = null;
+                this.timingTaskId = null;
+                return result;
+            }
         }
 
         if (/level=(WARN|ERROR)/.test(line)) {
@@ -281,27 +537,6 @@ class ReadableLogBuilder {
         }
 
         return { appendText };
-    }
-
-    private resetGeneration(status: InferenceStatus): void {
-        this.inGeneration = status === 'GENERATING';
-        this.promptStartedAt = Date.now();
-        this.generationStartedAt = 0;
-        this.promptTokens = 0;
-        this.completionTokens = 0;
-    }
-
-    private deriveSessionMetrics(latencyMs: number): SessionMetrics {
-        const promptDurationMs = this.generationStartedAt > 0 ? this.generationStartedAt - this.promptStartedAt : latencyMs;
-        const generationDurationMs = this.generationStartedAt > 0 ? Date.now() - this.generationStartedAt : latencyMs;
-
-        return {
-            promptTokens: this.promptTokens,
-            completionTokens: this.completionTokens,
-            promptEvalPerSecond: promptDurationMs > 0 ? (this.promptTokens * 1000) / promptDurationMs : 0,
-            tokensPerSecond: generationDurationMs > 0 ? (this.completionTokens * 1000) / generationDurationMs : 0,
-            latencyMs
-        };
     }
 }
 
@@ -412,7 +647,6 @@ export class LogWatcher extends EventEmitter {
             if (update.inference) {
                 this.emit('inference', update.inference);
             }
-
             appendBatch += update.appendText;
         }
 
@@ -433,72 +667,49 @@ export class LogWatcher extends EventEmitter {
     }
 }
 
-function collectLatestMetadata(rawLog: string): Partial<InferenceMetrics> {
-    const result: Partial<InferenceMetrics> = {};
+export function collectRequestSummaries(rawLog: string, runtimeMetadata: Partial<InferenceMetrics> = {}): RequestSummary[] {
+    const parsed = parseRawLog(rawLog);
+    const metadata = { ...parsed.metadata, ...runtimeMetadata };
 
-    for (const line of rawLog.split(/\r?\n/)) {
-        const updates = extractMetadata(line);
-        if (updates) {
-            Object.assign(result, updates);
-        }
-    }
-
-    return result;
-}
-
-export function collectRequestSummaries(rawLog: string): RequestSummary[] {
-    const metadata = collectLatestMetadata(rawLog);
-    const summaries: RequestSummary[] = [];
-
-    for (const line of rawLog.split(/\r?\n/)) {
-        const timing = parseTimingSummary(line);
-        if (!timing) {
-            continue;
-        }
-
-        const summary: RequestSummary = {
-            model: metadata.model ?? 'unknown',
-            promptTokens: timing.promptTokens,
-            completionTokens: timing.completionTokens,
-            promptEvalPerSecond: timing.promptEvalPerSecond,
-            tokensPerSecond: timing.tokensPerSecond,
-            latencyMs: timing.latencyMs
+    return parsed.summaries.map((summary) => {
+        const merged: RequestSummary = {
+            ...summary,
+            model: summary.model === 'unknown' && metadata.model ? metadata.model : summary.model
         };
 
-        if (metadata.modelPath) {
-            summary.modelPath = metadata.modelPath;
+        if (!merged.modelPath && metadata.modelPath) {
+            merged.modelPath = metadata.modelPath;
         }
-        if (metadata.architecture) {
-            summary.architecture = metadata.architecture;
+        if (!merged.architecture && metadata.architecture) {
+            merged.architecture = metadata.architecture;
         }
-        if (metadata.contextSize) {
-            summary.contextSize = metadata.contextSize;
+        if (!merged.contextSize && metadata.contextSize) {
+            merged.contextSize = metadata.contextSize;
         }
-        if (metadata.quantization) {
-            summary.quantization = metadata.quantization;
+        if (!merged.quantization && metadata.quantization) {
+            merged.quantization = metadata.quantization;
         }
-        if (metadata.format) {
-            summary.format = metadata.format;
+        if (!merged.format && metadata.format) {
+            merged.format = metadata.format;
         }
 
-        summaries.push(summary);
-    }
-
-    return summaries;
+        return merged;
+    });
 }
 
 function renderReadableSections(readableLog: string, count: number): string[] {
     const sections = readableLog
-        .split(/\n(?=={40} \d{2}:\d{2}:\d{2} \[(?:PROMPT|FOLLOW-UP)\])/)
+        .split(/\n(?=={40} \d{2}:\d{2}:\d{2} \[(?:PROMPT|REQUEST)\])/)
         .map((entry) => entry.trim())
         .filter(Boolean);
 
     return sections.slice(-count);
 }
 
-export function renderReport(rawLog: string, readableLog: string): string {
-    const metadata = collectLatestMetadata(rawLog);
-    const summaries = collectRequestSummaries(rawLog);
+export function renderReport(rawLog: string, readableLog: string, runtimeMetadata: Partial<InferenceMetrics> = {}): string {
+    const parsed = parseRawLog(rawLog);
+    const metadata = { ...parsed.metadata, ...runtimeMetadata };
+    const summaries = collectRequestSummaries(rawLog, runtimeMetadata);
     const recentSections = renderReadableSections(readableLog, 3);
     const lines: string[] = ['=== LLAMA-SERVER STATUS ==='];
 
@@ -526,8 +737,9 @@ export function renderReport(rawLog: string, readableLog: string): string {
         lines.push('No completed request timings found.');
     } else {
         for (const summary of summaries.slice(-10).reverse()) {
+            const endpoint = summary.endpoint ? `${summary.endpoint}${summary.statusCode ? ` ${summary.statusCode}` : ''}` : 'request';
             lines.push(
-                `Latency ${formatDurationMilliseconds(summary.latencyMs)} | GEN ${summary.completionTokens} @ ${summary.tokensPerSecond.toFixed(2)} t/s | PP ${summary.promptTokens} @ ${summary.promptEvalPerSecond.toFixed(2)} pp/s`
+                `${endpoint} | Latency ${formatDurationMilliseconds(summary.latencyMs)} | GEN ${summary.completionTokens} @ ${summary.tokensPerSecond.toFixed(2)} t/s | PP ${summary.promptTokens} @ ${summary.promptEvalPerSecond.toFixed(2)} pp/s`
             );
         }
     }
@@ -541,8 +753,8 @@ export function renderReport(rawLog: string, readableLog: string): string {
     return lines.join('\n').trimEnd();
 }
 
-export function renderStats(rawLog: string): string {
-    const summaries = collectRequestSummaries(rawLog);
+export function renderStats(rawLog: string, runtimeMetadata: Partial<InferenceMetrics> = {}): string {
+    const summaries = collectRequestSummaries(rawLog, runtimeMetadata);
     if (summaries.length === 0) {
         return 'No completed request timings found.';
     }

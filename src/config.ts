@@ -41,6 +41,7 @@ function buildDefaults(homeDir: string): WatchLlamaConfig {
         homeDir,
         rawLogPath: process.env['LLAMA_LOG_PATH'] ?? '/opt/llama/logs/stderr.log',
         readableLogPath: process.env['LLAMA_READABLE_LOG_PATH'] ?? path.join(homeDir, 'llama_readable.log'),
+        apiBaseUrl: process.env['LLAMA_API_BASE_URL'] ?? 'http://127.0.0.1:11435',
         showGpu: DEFAULT_SETTINGS.showGpu,
         showCpu: DEFAULT_SETTINGS.showCpu,
         showLog: DEFAULT_SETTINGS.showLog,
@@ -56,6 +57,7 @@ function sanitizeConfig(candidate: WatchLlamaConfig): WatchLlamaConfig {
         homeDir: candidate.homeDir,
         rawLogPath: candidate.rawLogPath,
         readableLogPath: candidate.readableLogPath,
+        apiBaseUrl: candidate.apiBaseUrl,
         showGpu: Boolean(candidate.showGpu),
         showCpu: Boolean(candidate.showCpu),
         showLog: Boolean(candidate.showLog),
@@ -70,6 +72,7 @@ function readEnvironmentOverrides(homeDir: string): Partial<WatchLlamaConfig> {
     const overrides: Partial<WatchLlamaConfig> = { homeDir };
     const rawLogPath = process.env['LLAMA_LOG_PATH'];
     const readableLogPath = process.env['LLAMA_READABLE_LOG_PATH'];
+    const apiBaseUrl = process.env['LLAMA_API_BASE_URL'];
     const showGpu = process.env['WATCH_LLAMA_SHOW_GPU'];
     const showCpu = process.env['WATCH_LLAMA_SHOW_CPU'];
     const showLog = process.env['WATCH_LLAMA_SHOW_LOG'];
@@ -83,6 +86,9 @@ function readEnvironmentOverrides(homeDir: string): Partial<WatchLlamaConfig> {
     }
     if (readableLogPath !== undefined) {
         overrides.readableLogPath = readableLogPath;
+    }
+    if (apiBaseUrl !== undefined) {
+        overrides.apiBaseUrl = apiBaseUrl;
     }
     if (showGpu !== undefined) {
         overrides.showGpu = parseBoolean(showGpu, DEFAULT_SETTINGS.showGpu);

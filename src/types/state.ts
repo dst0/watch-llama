@@ -17,6 +17,7 @@ export interface WatchLlamaConfig extends UiSettings {
     homeDir: string;
     rawLogPath: string;
     readableLogPath: string;
+    apiBaseUrl: string;
 }
 
 export interface TemperatureReading {

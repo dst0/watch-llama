@@ -373,9 +373,30 @@ export class SystemProvider {
     }
 
     private async getGpu(preferredTool: GpuTool): Promise<GpuMetrics> {
-        const tool = await this.detectGpuTool(preferredTool);
+        const fallbackEmpty = (tool: GpuTool): GpuMetrics => ({
+            available: false,
+            utilization: 0,
+            memoryUsed: 0,
+            memoryTotal: 0,
+            temperature: 0,
+            power: 0,
+            fan: 0,
+            tool
+        });
 
-        if (tool === 'none') {
+        if (preferredTool === 'none') {
+            return fallbackEmpty('none');
+        }
+
+        const autoCandidates = ['nvidia-smi', 'amd-smi', 'rocm-smi'] as const;
+        const manualTool = await this.detectGpuTool(preferredTool);
+        const candidates = preferredTool === 'auto'
+            ? autoCandidates
+            : manualTool === 'none'
+                ? []
+                : [manualTool];
+
+        if (candidates.length === 0) {
             return {
                 available: false,
                 utilization: 0,
@@ -384,34 +405,42 @@ export class SystemProvider {
                 temperature: 0,
                 power: 0,
                 fan: 0,
-                tool
+                tool: 'none'
             };
         }
 
-        try {
-            if (tool === 'nvidia-smi') {
-                return await this.queryNvidiaSmi();
-            }
+        let lastError: string | undefined;
 
-            if (tool === 'rocm-smi') {
-                return await this.queryRocmSmi();
-            }
+        for (const tool of candidates) {
+            try {
+                if (tool === 'nvidia-smi') {
+                    return await this.queryNvidiaSmi();
+                }
 
-            return await this.queryAmdSmi();
-        } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            return {
-                available: false,
-                utilization: 0,
-                memoryUsed: 0,
-                memoryTotal: 0,
-                temperature: 0,
-                power: 0,
-                fan: 0,
-                tool,
-                error: `${tool} unavailable: ${message}`
-            };
+                if (tool === 'rocm-smi') {
+                    return await this.queryRocmSmi();
+                }
+
+                return await this.queryAmdSmi();
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                lastError = `${tool} unavailable: ${message}`;
+            }
         }
+
+        if (preferredTool === 'auto') {
+            const gpu = fallbackEmpty('none');
+            if (lastError) {
+                gpu.error = lastError;
+            }
+            return gpu;
+        }
+
+        const gpu = fallbackEmpty(manualTool === 'none' ? 'none' : manualTool);
+        if (lastError) {
+            gpu.error = lastError;
+        }
+        return gpu;
     }
 
     private async queryNvidiaSmi(): Promise<GpuMetrics> {
