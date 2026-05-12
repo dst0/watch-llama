@@ -34,6 +34,7 @@ export interface GpuMetrics {
     power: number;
     fan: number;
     tool: GpuTool;
+    displayLines: string[];
     error?: string;
 }
 
@@ -56,6 +57,7 @@ export interface InferenceMetrics {
     model: string;
     modelPath?: string;
     status: InferenceStatus;
+    parallel?: number;
     promptTokens: number;
     completionTokens: number;
     tokensPerSecond: number;

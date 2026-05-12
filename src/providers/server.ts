@@ -33,6 +33,7 @@ export interface LlamaServerProcessInfo {
     modelPath?: string;
     alias?: string;
     contextSize?: number;
+    parallel?: number;
 }
 
 function parsePortFromBaseUrl(apiBaseUrl: string): number | null {
@@ -68,6 +69,7 @@ export function parseLlamaServerProcessLine(line: string): LlamaServerProcessInf
     const modelPath = extractArg(command, /(?:^|\s)-m\s+(\S+)/);
     const alias = extractArg(command, /(?:^|\s)--alias\s+(\S+)/);
     const contextSize = extractArg(command, /(?:^|\s)-c\s+(\d+)/);
+    const parallel = extractArg(command, /(?:^|\s)--parallel\s+(\d+)/);
 
     const result: LlamaServerProcessInfo = { pid };
     if (port) {
@@ -81,6 +83,9 @@ export function parseLlamaServerProcessLine(line: string): LlamaServerProcessInf
     }
     if (contextSize) {
         result.contextSize = Number.parseInt(contextSize, 10);
+    }
+    if (parallel) {
+        result.parallel = Number.parseInt(parallel, 10);
     }
 
     return result;
@@ -152,6 +157,9 @@ export class LlamaServerProvider {
         }
         if (matchingProcess?.contextSize) {
             fallbackInference.contextSize = matchingProcess.contextSize;
+        }
+        if (matchingProcess?.parallel) {
+            fallbackInference.parallel = matchingProcess.parallel;
         }
         const fallbackModel = normalizeModelName(matchingProcess?.modelPath, matchingProcess?.alias);
         if (fallbackModel) {

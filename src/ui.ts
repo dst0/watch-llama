@@ -28,6 +28,43 @@ function frequencyText(frequencyMHz: number): string {
     return `${frequencyMHz.toFixed(0)}MHz`;
 }
 
+export function buildTelemetryLines(state: AppState): string[] {
+    const { system, inference } = state;
+    const header = inference.parallel !== undefined
+        ? `{bold}=== LLAMA-SERVER  parallel:${inference.parallel}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`
+        : `{bold}=== LLAMA-SERVER  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
+    const lines = [
+        header,
+        `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}]`,
+        `    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`
+    ];
+
+    if (state.settings.showCpu) {
+        const extraTemps = system.extraTemps.map((reading) => `${escapeTags(reading.label)}:${temperatureMarkup(reading.tempC)}`).join(' ');
+        lines.push(
+            `CPU:${system.cpu.utilization.toFixed(0)}% ${frequencyText(system.cpu.frequencyMHz)} ${temperatureMarkup(system.cpu.temperature)} | RAM:${system.ramUsed.toFixed(1)}/${system.ramTotal.toFixed(1)}GiB${extraTemps ? ` | ${extraTemps}` : ''}`
+        );
+    }
+
+    if (inference.tokensPerSecond > 0 || inference.promptEvalPerSecond > 0) {
+        lines.push(
+            `Speed: ${inference.tokensPerSecond.toFixed(2)} t/s | ${inference.promptEvalPerSecond.toFixed(2)} pp/s | Latency: ${inference.latencyMs.toFixed(0)}ms`
+        );
+    }
+
+    if (state.settings.showGpu) {
+        lines.push('');
+        const gpuLines = system.gpu.displayLines.length > 0
+            ? system.gpu.displayLines
+            : system.gpu.available
+                ? [`GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`]
+                : [`GPU: unavailable (${escapeTags(system.gpu.tool)})`];
+        lines.push(...gpuLines.map((line) => escapeTags(line)));
+    }
+
+    return lines;
+}
+
 export class Tui {
     private readonly screen: blessed.Widgets.Screen;
     private readonly telemetryBox: blessed.Widgets.BoxElement;
@@ -166,47 +203,17 @@ export class Tui {
         this.screen.render();
     }
 
-    private telemetryContent(state: AppState): string {
-        const { system, inference } = state;
-        const lines = [
-            `{bold}=== LLAMA-SERVER  tool:${escapeTags(system.gpu.tool)} ==={/bold}`,
-            `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}]`,
-            `    ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`
-        ];
-
-        if (state.settings.showCpu) {
-            const extraTemps = system.extraTemps.map((reading) => `${escapeTags(reading.label)}:${temperatureMarkup(reading.tempC)}`).join(' ');
-            lines.push(
-                `CPU:${system.cpu.utilization.toFixed(0)}% ${frequencyText(system.cpu.frequencyMHz)} ${temperatureMarkup(system.cpu.temperature)} | RAM:${system.ramUsed.toFixed(1)}/${system.ramTotal.toFixed(1)}GiB${extraTemps ? ` | ${extraTemps}` : ''}`
-            );
-        }
-
-        if (state.settings.showGpu) {
-            if (system.gpu.available) {
-                lines.push(
-                    `GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`
-                );
-            } else {
-                lines.push(`GPU: unavailable (${escapeTags(system.gpu.tool)})`);
-            }
-        }
-
-        if (inference.tokensPerSecond > 0 || inference.promptEvalPerSecond > 0) {
-            lines.push(
-                `Speed: ${inference.tokensPerSecond.toFixed(2)} t/s | ${inference.promptEvalPerSecond.toFixed(2)} pp/s | Latency: ${inference.latencyMs.toFixed(0)}ms`
-            );
-        }
-
-        return lines.join('\n');
-    }
-
     private layout(state: AppState): void {
         const errorKeys = Object.keys(state.errorMessages);
         const hasErrors = errorKeys.length > 0;
         const errorHeight = hasErrors ? 1 : 0;
         const statusHeight = 1;
         const screenHeight = Number(this.screen.height);
-        const telemetryHeight = state.settings.showLog ? 8 : Math.max(6, screenHeight - errorHeight - statusHeight);
+        const maxTelemetryHeight = state.settings.showLog
+            ? Math.max(8, Math.floor((screenHeight - errorHeight - statusHeight) * 2 / 3))
+            : screenHeight - errorHeight - statusHeight;
+        const desiredTelemetryHeight = buildTelemetryLines(state).length + 2;
+        const telemetryHeight = Math.max(6, Math.min(maxTelemetryHeight, desiredTelemetryHeight));
         const logHeight = Math.max(0, screenHeight - telemetryHeight - errorHeight - statusHeight);
 
         this.telemetryBox.top = 0;
@@ -230,7 +237,7 @@ export class Tui {
         state.thermalEmoji = emoji;
         state.titleBlocks = blocks;
 
-        this.telemetryBox.setContent(this.telemetryContent(state));
+        this.telemetryBox.setContent(buildTelemetryLines(state).join('\n'));
 
         if (state.settings.showLog) {
             this.logBox.setContent(state.logs.join('\n'));

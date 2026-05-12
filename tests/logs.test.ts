@@ -81,12 +81,13 @@ test('collectRequestSummaries parses llama.cpp multiline timing block', () => {
 });
 
 test('parseLlamaServerProcessLine extracts runtime metadata', () => {
-    const info = parseLlamaServerProcessLine('1908710 /opt/llama/bin/llama-server -m /home/dst/models/qwen.gguf --host 0.0.0.0 --port 11435 -c 131072 --alias qwen36-35b-iq1m --metrics');
+    const info = parseLlamaServerProcessLine('1908710 /opt/llama/bin/llama-server -m /home/dst/models/qwen.gguf --host 0.0.0.0 --port 11435 -c 131072 --parallel 2 --alias qwen36-35b-iq1m --metrics');
     assert.deepEqual(info, {
         pid: 1908710,
         port: 11435,
         modelPath: '/home/dst/models/qwen.gguf',
         alias: 'qwen36-35b-iq1m',
-        contextSize: 131072
+        contextSize: 131072,
+        parallel: 2
     });
 });

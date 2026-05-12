@@ -3,7 +3,7 @@ import type { AppState, InferenceMetrics, SystemMetrics, UiSettings, WatchLlamaC
 
 const EMPTY_SYSTEM: SystemMetrics = {
     cpu: { utilization: 0, temperature: 0, frequencyMHz: 0 },
-    gpu: { available: false, utilization: 0, memoryUsed: 0, memoryTotal: 0, temperature: 0, power: 0, fan: 0, tool: 'none' },
+    gpu: { available: false, utilization: 0, memoryUsed: 0, memoryTotal: 0, temperature: 0, power: 0, fan: 0, tool: 'none', displayLines: [] },
     ramUsed: 0,
     ramTotal: 0,
     extraTemps: [],

@@ -12,6 +12,7 @@ interface CpuSample {
 }
 
 type FlatMetric = [path: string, value: unknown];
+type GpuQueryResult = Omit<GpuMetrics, 'displayLines' | 'error'>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -67,6 +68,14 @@ async function runCommand(command: string, args: string[]): Promise<string> {
         maxBuffer: 10 * 1024 * 1024
     });
     return stdout;
+}
+
+async function runCommandWithStderr(command: string, args: string[]): Promise<string> {
+    const { stdout, stderr } = await execFileAsync(command, args, {
+        timeout: 2500,
+        maxBuffer: 10 * 1024 * 1024
+    });
+    return `${stdout}${stderr}`;
 }
 
 async function commandExists(command: string): Promise<boolean> {
@@ -381,7 +390,8 @@ export class SystemProvider {
             temperature: 0,
             power: 0,
             fan: 0,
-            tool
+            tool,
+            displayLines: tool === 'none' ? ['(no GPU tool detected)'] : [`(${tool} unavailable)`]
         });
 
         if (preferredTool === 'none') {
@@ -405,7 +415,8 @@ export class SystemProvider {
                 temperature: 0,
                 power: 0,
                 fan: 0,
-                tool: 'none'
+                tool: 'none',
+                displayLines: ['(no GPU tool detected)']
             };
         }
 
@@ -414,14 +425,14 @@ export class SystemProvider {
         for (const tool of candidates) {
             try {
                 if (tool === 'nvidia-smi') {
-                    return await this.queryNvidiaSmi();
+                    return await this.withDisplayLines(tool, await this.queryNvidiaSmi());
                 }
 
                 if (tool === 'rocm-smi') {
-                    return await this.queryRocmSmi();
+                    return await this.withDisplayLines(tool, await this.queryRocmSmi());
                 }
 
-                return await this.queryAmdSmi();
+                return await this.withDisplayLines(tool, await this.queryAmdSmi());
             } catch (error) {
                 const message = error instanceof Error ? error.message : String(error);
                 lastError = `${tool} unavailable: ${message}`;
@@ -432,6 +443,7 @@ export class SystemProvider {
             const gpu = fallbackEmpty('none');
             if (lastError) {
                 gpu.error = lastError;
+                gpu.displayLines = [lastError];
             }
             return gpu;
         }
@@ -439,11 +451,45 @@ export class SystemProvider {
         const gpu = fallbackEmpty(manualTool === 'none' ? 'none' : manualTool);
         if (lastError) {
             gpu.error = lastError;
+            gpu.displayLines = [lastError];
         }
         return gpu;
     }
 
-    private async queryNvidiaSmi(): Promise<GpuMetrics> {
+    private async withDisplayLines(tool: GpuTool, metrics: GpuQueryResult): Promise<GpuMetrics> {
+        const displayLines = await this.getGpuDisplayLines(tool);
+        return {
+            ...metrics,
+            displayLines
+        };
+    }
+
+    private async getGpuDisplayLines(tool: GpuTool): Promise<string[]> {
+        if (tool === 'none') {
+            return ['(no GPU tool detected)'];
+        }
+
+        try {
+            let output = await runCommandWithStderr(tool, []);
+            if (output.includes('Elevated permissions') || output.includes('Permission denied')) {
+                try {
+                    output = await runCommandWithStderr('sudo', ['-n', tool]);
+                } catch {
+                    if (output.includes('Elevated permissions')) {
+                        output += "\nTip: Run 'sudo usermod -a -G render,video $USER' and restart session to see process names.";
+                    }
+                }
+            }
+
+            const lines = output.trim().split(/\r?\n/).map((line) => line.trimEnd()).filter(Boolean);
+            return lines.length > 0 ? lines : [`(${tool} returned no output)`];
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            return [`(${tool} unavailable: ${message})`];
+        }
+    }
+
+    private async queryNvidiaSmi(): Promise<GpuQueryResult> {
         const output = await runCommand('nvidia-smi', [
             '--query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu,power.draw,fan.speed',
             '--format=csv,noheader,nounits'
@@ -474,7 +520,7 @@ export class SystemProvider {
         };
     }
 
-    private async queryRocmSmi(): Promise<GpuMetrics> {
+    private async queryRocmSmi(): Promise<GpuQueryResult> {
         const output = await runCommand('rocm-smi', ['--showuse', '--showmeminfo', 'vram', '--showtemp', '--showpower', '--showfan', '--json']);
         const data = JSON.parse(output);
         const gpu = pickPrimaryCard(data);
@@ -495,7 +541,7 @@ export class SystemProvider {
         };
     }
 
-    private async queryAmdSmi(): Promise<GpuMetrics> {
+    private async queryAmdSmi(): Promise<GpuQueryResult> {
         const commandVariants = [
             ['metric', '--gpu', '--usage', '--memory-usage', '--temperature', '--power', '--fan', '--json'],
             ['metric', '--usage', '--memory-usage', '--temperature', '--power', '--fan', '--json']
@@ -514,18 +560,63 @@ export class SystemProvider {
         }
 
         if (!output) {
-            throw lastError instanceof Error ? lastError : new Error('amd-smi command failed');
+            try {
+                output = await runCommand('amd-smi', []);
+            } catch {
+                throw lastError instanceof Error ? lastError : new Error('amd-smi command failed');
+            }
         }
 
-        const metrics = flattenMetrics(JSON.parse(output));
+        if (output.trim().startsWith('{')) {
+            const metrics = flattenMetrics(JSON.parse(output));
+            return {
+                available: true,
+                utilization: findFirstMetric(metrics, [/usage/i, /gfx.*activity/i]),
+                memoryUsed: findFirstMetric(metrics, [/used.*memory/i, /memory.*used/i, /vram.*used/i]) / (1024 ** 3),
+                memoryTotal: findFirstMetric(metrics, [/total.*memory/i, /memory.*total/i, /vram.*total/i]) / (1024 ** 3),
+                temperature: findFirstMetric(metrics, [/temperature/i, /edge/i]),
+                power: findFirstMetric(metrics, [/power/i]),
+                fan: findFirstMetric(metrics, [/fan/i]),
+                tool: 'amd-smi'
+            };
+        }
+
+        return this.parseAmdSmiTable(output);
+    }
+
+    private parseAmdSmiTable(output: string): GpuQueryResult {
+        const lines = output.split(/\r?\n/).map((line) => line.trimEnd());
+        const rowIndex = lines.findIndex((line) => /^\|\s*[0-9a-fA-F:.]+\s+.+\|\s+.+\|$/.test(line));
+        if (rowIndex < 0 || rowIndex + 1 >= lines.length) {
+            throw new Error('unable to parse amd-smi table');
+        }
+
+        const primaryLine = lines[rowIndex] ?? '';
+        const secondaryLine = lines[rowIndex + 1] ?? '';
+
+        const primaryParts = primaryLine.split('|').map((part) => part.trim());
+        const secondaryParts = secondaryLine.split('|').map((part) => part.trim());
+
+        const primaryMetrics = primaryParts[2] ?? '';
+        const secondaryMetrics = secondaryParts[2] ?? '';
+
+        const memUtilization = parseNumber(primaryMetrics.match(/([0-9.]+)\s*%/)?.[1] ?? null) ?? 0;
+        const temperature = parseNumber(primaryMetrics.match(/([0-9.]+)\s*°C/i)?.[1] ?? null) ?? 0;
+        const power = parseNumber(primaryMetrics.match(/([0-9.]+)\s*\/\s*[0-9.]+\s*W/i)?.[1] ?? null) ?? 0;
+        const utilization = parseNumber(secondaryMetrics.match(/([0-9.]+)\s*%/)?.[1] ?? null) ?? memUtilization;
+        const fan = parseNumber(secondaryMetrics.match(/([0-9.]+)\s+(?:[0-9.]+\s*\/\s*[0-9.]+\s*MB|N\/A)/i)?.[1] ?? null) ?? 0;
+        const memoryMatch = secondaryMetrics.match(/([0-9.]+)\s*\/\s*([0-9.]+)\s*MB/i);
+        const memoryUsedMb = memoryMatch ? Number.parseFloat(memoryMatch[1] ?? '0') : 0;
+        const memoryTotalMb = memoryMatch ? Number.parseFloat(memoryMatch[2] ?? '0') : 0;
+
         return {
             available: true,
-            utilization: findFirstMetric(metrics, [/usage/i, /gfx.*activity/i]),
-            memoryUsed: findFirstMetric(metrics, [/used.*memory/i, /memory.*used/i, /vram.*used/i]) / (1024 ** 3),
-            memoryTotal: findFirstMetric(metrics, [/total.*memory/i, /memory.*total/i, /vram.*total/i]) / (1024 ** 3),
-            temperature: findFirstMetric(metrics, [/temperature/i, /edge/i]),
-            power: findFirstMetric(metrics, [/power/i]),
-            fan: findFirstMetric(metrics, [/fan/i]),
+            utilization,
+            memoryUsed: memoryUsedMb / 1024,
+            memoryTotal: memoryTotalMb / 1024,
+            temperature,
+            power,
+            fan,
             tool: 'amd-smi'
         };
     }
