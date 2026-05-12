@@ -1,23 +1,37 @@
 {
   "name": "watch-llama",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Monitoring TUI and log tooling for llama-server",
+  "type": "module",
+  "main": "dist/src/main.js",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "watch-llama": "dist/src/bin/watch-llama.js",
+    "llama-watch-readlog": "dist/src/bin/llama-watch-readlog.js",
+    "llama-report": "dist/src/bin/llama-report.js",
+    "llama-stats": "dist/src/bin/llama-stats.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "start": "npm run build && node dist/src/bin/watch-llama.js",
+    "readlog": "npm run build && node dist/src/bin/llama-watch-readlog.js",
+    "report": "npm run build && node dist/src/bin/llama-report.js",
+    "stats": "npm run build && node dist/src/bin/llama-stats.js",
+    "test": "npm run build && node --test dist/tests/*.test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@types/node": "^25.7.0",
     "blessed": "^0.1.81",
-    "blessed-contrib": "^4.11.0",
-    "chokidar": "^5.0.0",
     "dotenv": "^17.4.2",
-    "node-os-utils": "^2.0.3",
-    "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@types/blessed": "^0.1.27"
   }
 }
