@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectRequestSummaries, parseTimingSummary } from '../src/providers/logs.js';
+import { collectRequestSummaries } from '../src/providers/logs/tracker.js';
+import { parseTimingSummary } from '../src/providers/logs/parsing.js';
 import { parseLlamaServerProcessLine } from '../src/providers/server.js';
 
 test('parseTimingSummary handles llama timing json', () => {

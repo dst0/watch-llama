@@ -79,6 +79,7 @@ WATCH_LLAMA_POLL_INTERVAL_MS=2000
 - `L`: toggle log panel
 - `H`: toggle hint text
 - `T`: cycle GPU tool (`auto -> nvidia-smi -> amd-smi -> rocm-smi -> none`)
+- `R`: restart llama services (`systemctl restart llama-server llama-proxy`)
 - `Up` / `Down` / `Page Up` / `Page Down` / `Home` / `End`: scroll log view
 
 ## Development

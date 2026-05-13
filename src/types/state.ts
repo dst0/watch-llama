@@ -1,7 +1,7 @@
 export const GPU_TOOLS = ['auto', 'nvidia-smi', 'amd-smi', 'rocm-smi', 'none'] as const;
 
 export type GpuTool = (typeof GPU_TOOLS)[number];
-export type InferenceStatus = 'IDLE' | 'PREFILLING' | 'GENERATING' | 'READY' | 'LOADING' | 'ERROR';
+export type InferenceStatus = 'IDLE' | 'PREFILLING' | 'GENERATING' | 'READY' | 'LOADING' | 'ERROR' | 'RUNNING' | 'STOPPED';
 
 export interface UiSettings {
     showGpu: boolean;

@@ -1,71 +1,16 @@
 import blessed from 'blessed';
-import type { AppStore } from './store.js';
-import type { AppState, UiSettings } from './types/state.js';
-import { ThermalManager } from './utils/thermal.js';
+import type { AppStore } from '../store.js';
+import type { AppState, UiSettings } from '../types/state.js';
+import { ThermalManager } from '../utils/thermal.js';
+import { escapeTags, temperatureMarkup, frequencyText } from './helpers.js';
+import { buildTelemetryLines } from './telemetry.js';
 
 interface TuiActions {
     onQuit: () => void;
     onToggleSetting: (key: keyof Pick<UiSettings, 'showGpu' | 'showCpu' | 'showLog' | 'showHints'>) => void | Promise<void>;
     onCycleGpuTool: () => void | Promise<void>;
     onToggleFollow: () => void;
-}
-
-function escapeTags(text: string): string {
-    return text.replaceAll('{', '\\{').replaceAll('}', '\\}');
-}
-
-function temperatureMarkup(temp: number): string {
-    const color = ThermalManager.getColor(temp);
-    const blessedColor = color === 'orange' ? 'yellow' : color;
-    return `{${blessedColor}-fg}${temp.toFixed(0)}°C{/${blessedColor}-fg}`;
-}
-
-function frequencyText(frequencyMHz: number): string {
-    if (frequencyMHz >= 1000) {
-        return `${(frequencyMHz / 1000).toFixed(1)}GHz`;
-    }
-
-    return `${frequencyMHz.toFixed(0)}MHz`;
-}
-
-export function buildTelemetryLines(state: AppState): string[] {
-    const { system, inference } = state;
-    const header = inference.parallel !== undefined
-        ? `{bold}=== LLAMA-SERVER  parallel:${inference.parallel}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`
-        : `{bold}=== LLAMA-SERVER  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
-    const lines = [
-        header,
-        `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? ` ${(inference.progress * 100).toFixed(1)}%` : ''}]`,
-        `    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`
-    ];
-
-    if (state.settings.showCpu) {
-        const extraTemps = system.extraTemps.map((reading) => `${escapeTags(reading.label)}:${temperatureMarkup(reading.tempC)}`).join(' ');
-        lines.push(
-            `CPU:${system.cpu.utilization.toFixed(0)}% ${frequencyText(system.cpu.frequencyMHz)} ${temperatureMarkup(system.cpu.temperature)} | RAM:${system.ramUsed.toFixed(1)}/${system.ramTotal.toFixed(1)}GiB${extraTemps ? ` | ${extraTemps}` : ''}`
-        );
-    }
-
-    if (inference.tokensPerSecond > 0 || inference.promptEvalPerSecond > 0) {
-        const genRate = inference.tokensPerSecond > 0 ? `{yellow-fg}${inference.tokensPerSecond.toFixed(2)} t/s{/yellow-fg}` : '';
-        const ppRate = inference.promptEvalPerSecond > 0 ? `{yellow-fg}${inference.promptEvalPerSecond.toFixed(2)} pp/s{/yellow-fg}` : '';
-        const perfParts = [genRate, ppRate].filter(Boolean).join(' | ');
-        lines.push(
-            `  {yellow-fg}perf: ${perfParts}{/yellow-fg}`
-        );
-    }
-
-    if (state.settings.showGpu) {
-        lines.push('');
-        const gpuLines = system.gpu.displayLines.length > 0
-            ? system.gpu.displayLines
-            : system.gpu.available
-                ? [`GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`]
-                : [`GPU: unavailable (${escapeTags(system.gpu.tool)})`];
-        lines.push(...gpuLines.map((line) => escapeTags(line)));
-    }
-
-    return lines;
+    onRestartServer: () => void | Promise<void>;
 }
 
 export class Tui {
@@ -160,6 +105,7 @@ export class Tui {
         this.screen.key(['l'], () => void this.actions.onToggleSetting('showLog'));
         this.screen.key(['h'], () => void this.actions.onToggleSetting('showHints'));
         this.screen.key(['t'], () => void this.actions.onCycleGpuTool());
+        this.screen.key(['r'], () => void this.actions.onRestartServer());
 
         this.screen.key(['up'], () => this.scrollLog(-1));
         this.screen.key(['down'], () => this.scrollLog(1));
@@ -232,6 +178,8 @@ export class Tui {
     render(state: AppState): void {
         const isPrefilling = state.inference.status === 'PREFILLING';
         const isGenerating = state.inference.status === 'GENERATING';
+        const isReady = state.inference.status === 'READY';
+        const isLoading = state.inference.status === 'LOADING';
         const hasRecentActivity = Date.now() - state.lastLogAt < 2000;
         const isActive = isPrefilling || isGenerating || hasRecentActivity;
         const hasErrors = Object.keys(state.errorMessages).length > 0;
@@ -267,16 +215,20 @@ export class Tui {
         const coloredEmoji = `{${blessedThermalColor}-fg}${state.thermalEmoji}{/}`;
 
         const hints = state.settings.showHints
-            ? ' (G:GPU C:CPU L:Log H:Hint T:Tool | F:Follow | Q:Quit)'
+            ? ' (G:GPU C:CPU L:Log H:Hint T:Tool R:Restart | F:Follow | Q:Quit)'
             : '';
         
-        let activityLabel = '{yellow-fg}idle{/yellow-fg}';
+        let activityLabel = 'idle';
         if (isPrefilling) {
-            activityLabel = '{green-fg}prefilling{/green-fg}';
+            activityLabel = 'prefilling';
         } else if (isGenerating) {
-            activityLabel = '{green-fg}generating{/green-fg}';
+            activityLabel = 'generating';
+        } else if (isReady) {
+            activityLabel = 'ready';
+        } else if (isLoading) {
+            activityLabel = 'loading';
         } else if (hasRecentActivity) {
-            activityLabel = '{green-fg}output{/green-fg}';
+            activityLabel = 'output';
         }
 
         const currentLine = this.follow ? state.logs.length : Math.min(state.logs.length, this.logBox.getScroll() + 1);

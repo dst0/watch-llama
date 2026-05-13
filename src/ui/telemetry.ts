@@ -1,0 +1,43 @@
+import type { AppState } from '../types/state.js';
+import { escapeTags, temperatureMarkup, frequencyText } from './helpers.js';
+import { formatSensorLabel } from '../providers/system/thermal.js';
+
+export function buildTelemetryLines(state: AppState): string[] {
+    const { system, inference } = state;
+    const header = inference.parallel !== undefined
+        ? `{bold}=== LLAMA-SERVER  parallel:${inference.parallel}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`
+        : `{bold}=== LLAMA-SERVER  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
+    const lines = [
+        header,
+        `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? ` ${(inference.progress * 100).toFixed(1)}%` : ''}]`,
+        `    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`
+    ];
+
+    if (state.settings.showCpu) {
+        const extraTemps = system.extraTemps.map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(' | ');
+        lines.push(
+            `CPU: ${system.cpu.utilization.toFixed(0)}% ${frequencyText(system.cpu.frequencyMHz)} ${temperatureMarkup(system.cpu.temperature)} | RAM: ${system.ramUsed.toFixed(1)}/${system.ramTotal.toFixed(1)}GiB${extraTemps ? ` | ${extraTemps}` : ''}`
+        );
+    }
+
+    if (inference.tokensPerSecond > 0 || inference.promptEvalPerSecond > 0) {
+        const genRate = inference.tokensPerSecond > 0 ? `{yellow-fg}${inference.tokensPerSecond.toFixed(2)} t/s{/yellow-fg}` : '';
+        const ppRate = inference.promptEvalPerSecond > 0 ? `{yellow-fg}${inference.promptEvalPerSecond.toFixed(2)} pp/s{/yellow-fg}` : '';
+        const perfParts = [genRate, ppRate].filter(Boolean).join(' | ');
+        lines.push(
+            `  {yellow-fg}perf: ${perfParts}{/yellow-fg}`
+        );
+    }
+
+    if (state.settings.showGpu) {
+        lines.push('');
+        const gpuLines = system.gpu.displayLines.length > 0
+            ? system.gpu.displayLines
+            : system.gpu.available
+                ? [`GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`]
+                : [`GPU: unavailable (${escapeTags(system.gpu.tool)})`];
+        lines.push(...gpuLines.map((line) => escapeTags(line)));
+    }
+
+    return lines;
+}

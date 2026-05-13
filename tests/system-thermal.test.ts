@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { parseSensorsJson } from '../src/providers/system.js';
 import { ThermalManager } from '../src/utils/thermal.js';
 
-test('parseSensorsJson picks hottest temperature and retains SSD', () => {
+test('parseSensorsJson picks hottest temperature and retains NVMe', () => {
     const sensorsJson = JSON.stringify({
         'k10temp-pci-00c3': {
             Adapter: 'PCI adapter',
@@ -23,7 +23,7 @@ test('parseSensorsJson picks hottest temperature and retains SSD', () => {
 
     const parsed = parseSensorsJson(sensorsJson);
     assert.equal(parsed.maxTemp, 82);
-    assert.deepEqual(parsed.extraTemps, [{ label: 'SSD', tempC: 35 }]);
+    assert.deepEqual(parsed.extraTemps, [{ label: 'NVMe', tempC: 35 }]);
 });
 
 test('thermal colors and title blocks follow the expected thresholds', () => {

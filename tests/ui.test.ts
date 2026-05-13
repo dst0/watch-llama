@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { AppState } from '../src/types/state.js';
-import { buildTelemetryLines } from '../src/ui.js';
+import { buildTelemetryLines } from '../src/ui/telemetry.js';
 
 test('buildTelemetryLines includes parallel header and raw gpu lines', () => {
     const state: AppState = {

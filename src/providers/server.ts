@@ -4,6 +4,10 @@ import type { InferenceMetrics } from '../types/state.js';
 
 const execFileAsync = promisify(execFile);
 
+export async function restartLlamaServer(): Promise<void> {
+    await execFileAsync('systemctl', ['restart', 'llama-server', 'llama-proxy']);
+}
+
 interface ModelsResponseEntry {
     id?: string;
     model?: string;
@@ -24,6 +28,7 @@ interface ModelsResponse {
 
 export interface LlamaServerSnapshot {
     inference: Partial<InferenceMetrics>;
+    status?: 'READY' | 'STOPPED';
     error?: string;
 }
 
@@ -170,7 +175,7 @@ export class LlamaServerProvider {
             const models = await fetchModels(this.apiBaseUrl);
             const primary = models[0];
             if (!primary) {
-                return { inference: fallbackInference };
+                return { inference: fallbackInference, status: 'READY' };
             }
 
             const modelName = primary.id ?? primary.model ?? primary.name ?? fallbackModel ?? 'unknown';
@@ -189,11 +194,12 @@ export class LlamaServerProvider {
                 snapshot.quantization = primary.details.quantization_level;
             }
 
-            return { inference: snapshot };
+            return { inference: snapshot, status: 'READY' };
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             return {
                 inference: fallbackInference,
+                status: 'STOPPED',
                 error: `llama-server API unavailable: ${message}`
             };
         }

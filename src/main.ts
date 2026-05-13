@@ -1,11 +1,12 @@
 import { createReadStream, promises as fs } from 'node:fs';
 import { ConfigManager, toUiSettings } from './config.js';
-import { LogWatcher, processLogsStreaming, renderReport, renderStats } from './providers/logs.js';
-import { LlamaServerProvider } from './providers/server.js';
+import { LogWatcher, processLogsStreaming } from './providers/logs/watcher.js';
+import { renderReport, renderStats } from './providers/logs/builder.js';
+import { LlamaServerProvider, restartLlamaServer } from './providers/server.js';
 import { SystemProvider } from './providers/system.js';
 import { AppStore } from './store.js';
 import { ThermalManager } from './utils/thermal.js';
-import { Tui } from './ui.js';
+import { Tui } from './ui/tui.js';
 import type { WatchLlamaConfig } from './types/state.js';
 
 async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider, serverProvider: LlamaServerProvider): Promise<void> {
@@ -15,7 +16,10 @@ async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider,
     ]);
 
     store.updateSystem(snapshot, store.state.thermalEmoji, store.state.titleBlocks);
-    store.updateInference(serverSnapshot.inference);
+    store.updateInference({ ...serverSnapshot.inference });
+    if (serverSnapshot.status === 'STOPPED') {
+        store.updateInference({ status: 'STOPPED' });
+    }
     store.setError('gpu', snapshot.gpu.error);
     store.setError('server', serverSnapshot.error);
 }
@@ -27,12 +31,10 @@ export async function runWatchLlama(): Promise<void> {
     const systemProvider = new SystemProvider();
     const serverProvider = new LlamaServerProvider(config.apiBaseUrl);
     const logWatcher = new LogWatcher(config);
-    const proxyWatcher = config.proxyLogPath ? new LogWatcher(config, config.proxyLogPath) : null;
 
     const ui = new Tui(store, {
         onQuit: () => {
             logWatcher.stop();
-            proxyWatcher?.stop();
         },
         onToggleSetting: async (key) => {
             const updated = await configManager.update({ [key]: !store.state.settings[key] });
@@ -45,7 +47,16 @@ export async function runWatchLlama(): Promise<void> {
             const updated = await configManager.update({ gpuTool: nextTool });
             store.updateSettings(toUiSettings(updated));
         },
-        onToggleFollow: () => undefined
+        onToggleFollow: () => undefined,
+        onRestartServer: async () => {
+            try {
+                await restartLlamaServer();
+                store.setError('server', undefined);
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                store.setError('server', `Restart failed: ${message}`);
+            }
+        }
     });
 
     store.setLogs(await logWatcher.loadReadableBacklog(config.maxLogLines));
@@ -58,15 +69,6 @@ export async function runWatchLlama(): Promise<void> {
     logWatcher.on('partialLine', (line: string) => store.setPendingLog(line));
     logWatcher.on('inference', onInference);
     logWatcher.on('errorState', onErrorState);
-
-    if (proxyWatcher) {
-        proxyWatcher.on('readableLine', onLogLine);
-        proxyWatcher.on('partialLine', (line: string) => store.setPendingLog(line));
-        proxyWatcher.on('inference', onInference);
-        // We don't necessarily want proxy errors to block the main TUI log status, 
-        // but we can log them if needed. For now, let's just use it as a source.
-        await proxyWatcher.start();
-    }
 
     await logWatcher.start();
     await runTelemetryLoop(store, systemProvider, serverProvider);
