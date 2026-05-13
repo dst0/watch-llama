@@ -24,12 +24,17 @@ export class ThermalManager {
         return '🟥';
     }
 
-    static updateTitle(state: AppState, hasErrors: boolean, hasOutput: boolean): { emoji: string; blocks: string } {
+    static updateTitle(state: AppState, hasErrors: boolean, isActive: boolean): { emoji: string; blocks: string } {
         const maxTemp = state.system.maxTemperature;
         const blocks = this.getTitleBlocks(maxTemp);
-        const statusText = hasOutput ? 'output' : 'idle';
+        const statusText = isActive 
+            ? (state.inference.status === 'PREFILLING' ? 'prefilling' : (state.inference.status === 'GENERATING' ? 'generating' : 'output')) 
+            : 'idle';
         const errorSuffix = hasErrors ? ' ⚠' : '';
-        process.stdout.write(`\x1b]2;👀 Watch Llama ${blocks}${errorSuffix} ${statusText} | ${state.inference.model} | ${maxTemp.toFixed(0)}°C\x07`);
+        const model = state.inference.model || 'llama-server';
+        const ctx = state.inference.contextSize ? ` (${state.inference.contextSize})` : '';
+        
+        process.stdout.write(`\x1b]0;👀 ${model}${ctx} | ${blocks}${errorSuffix} ${statusText}\x07`);
         return { emoji: this.getEmoji(maxTemp), blocks };
     }
 }

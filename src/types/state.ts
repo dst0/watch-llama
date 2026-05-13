@@ -1,7 +1,7 @@
 export const GPU_TOOLS = ['auto', 'nvidia-smi', 'amd-smi', 'rocm-smi', 'none'] as const;
 
 export type GpuTool = (typeof GPU_TOOLS)[number];
-export type InferenceStatus = 'IDLE' | 'GENERATING' | 'READY' | 'LOADING' | 'ERROR';
+export type InferenceStatus = 'IDLE' | 'PREFILLING' | 'GENERATING' | 'READY' | 'LOADING' | 'ERROR';
 
 export interface UiSettings {
     showGpu: boolean;
@@ -17,6 +17,7 @@ export interface WatchLlamaConfig extends UiSettings {
     homeDir: string;
     rawLogPath: string;
     readableLogPath: string;
+    proxyLogPath?: string | undefined;
     apiBaseUrl: string;
 }
 
@@ -67,6 +68,7 @@ export interface InferenceMetrics {
     contextSize?: number;
     quantization?: string;
     format?: string;
+    progress?: number | undefined;
 }
 
 export interface AppState {
@@ -78,4 +80,5 @@ export interface AppState {
     settings: UiSettings;
     errorMessages: Record<string, string>;
     lastLogAt: number;
+    pendingLogLine?: string | undefined;
 }

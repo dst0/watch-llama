@@ -35,7 +35,7 @@ export function buildTelemetryLines(state: AppState): string[] {
         : `{bold}=== LLAMA-SERVER  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
     const lines = [
         header,
-        `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}]`,
+        `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? ` ${(inference.progress * 100).toFixed(1)}%` : ''}]`,
         `    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`
     ];
 
@@ -47,8 +47,11 @@ export function buildTelemetryLines(state: AppState): string[] {
     }
 
     if (inference.tokensPerSecond > 0 || inference.promptEvalPerSecond > 0) {
+        const genRate = inference.tokensPerSecond > 0 ? `{yellow-fg}${inference.tokensPerSecond.toFixed(2)} t/s{/yellow-fg}` : '';
+        const ppRate = inference.promptEvalPerSecond > 0 ? `{yellow-fg}${inference.promptEvalPerSecond.toFixed(2)} pp/s{/yellow-fg}` : '';
+        const perfParts = [genRate, ppRate].filter(Boolean).join(' | ');
         lines.push(
-            `Speed: ${inference.tokensPerSecond.toFixed(2)} t/s | ${inference.promptEvalPerSecond.toFixed(2)} pp/s | Latency: ${inference.latencyMs.toFixed(0)}ms`
+            `  {yellow-fg}perf: ${perfParts}{/yellow-fg}`
         );
     }
 
@@ -190,17 +193,15 @@ export class Tui {
             return;
         }
 
-        if (delta < 0) {
-            this.follow = false;
-        }
+        this.follow = false;
 
-        this.logBox.scroll(delta);
+        this.logBox.setScroll(this.logBox.getScroll() + delta);
 
         if (this.logBox.getScrollPerc() >= 100) {
             this.follow = true;
         }
 
-        this.screen.render();
+        this.render(this.store.state);
     }
 
     private layout(state: AppState): void {
@@ -229,20 +230,29 @@ export class Tui {
     }
 
     render(state: AppState): void {
-        this.layout(state);
-
-        const hasOutput = Date.now() - state.lastLogAt < 2000;
+        const isPrefilling = state.inference.status === 'PREFILLING';
+        const isGenerating = state.inference.status === 'GENERATING';
+        const hasRecentActivity = Date.now() - state.lastLogAt < 2000;
+        const isActive = isPrefilling || isGenerating || hasRecentActivity;
         const hasErrors = Object.keys(state.errorMessages).length > 0;
-        const { emoji, blocks } = ThermalManager.updateTitle(state, hasErrors, hasOutput);
+        
+        // Synchronize thermal state and terminal title
+        const { emoji, blocks } = ThermalManager.updateTitle(state, hasErrors, isActive);
         state.thermalEmoji = emoji;
         state.titleBlocks = blocks;
+
+        this.layout(state);
 
         this.telemetryBox.setContent(buildTelemetryLines(state).join('\n'));
 
         if (state.settings.showLog) {
-            this.logBox.setContent(state.logs.join('\n'));
+            const currentScroll = this.logBox.getScroll();
+            const logsToRender = state.pendingLogLine ? [...state.logs, state.pendingLogLine] : state.logs;
+            this.logBox.setContent(logsToRender.join('\n'));
             if (this.follow) {
                 this.logBox.setScrollPerc(100);
+            } else {
+                this.logBox.setScroll(currentScroll);
             }
         }
 
@@ -252,12 +262,28 @@ export class Tui {
             .join(' | ');
         this.errorBox.setContent(errorText);
 
+        const thermalColor = ThermalManager.getColor(state.system.maxTemperature);
+        const blessedThermalColor = thermalColor === 'orange' ? 'yellow' : thermalColor;
+        const coloredEmoji = `{${blessedThermalColor}-fg}${state.thermalEmoji}{/}`;
+
         const hints = state.settings.showHints
             ? ' (G:GPU C:CPU L:Log H:Hint T:Tool | F:Follow | Q:Quit)'
             : '';
-        const activityLabel = hasOutput ? '{green-fg}output{/green-fg}' : '{yellow-fg}idle{/yellow-fg}';
+        
+        let activityLabel = '{yellow-fg}idle{/yellow-fg}';
+        if (isPrefilling) {
+            activityLabel = '{green-fg}prefilling{/green-fg}';
+        } else if (isGenerating) {
+            activityLabel = '{green-fg}generating{/green-fg}';
+        } else if (hasRecentActivity) {
+            activityLabel = '{green-fg}output{/green-fg}';
+        }
+
+        const currentLine = this.follow ? state.logs.length : Math.min(state.logs.length, this.logBox.getScroll() + 1);
+        const lineInfo = `(Line ${currentLine}/${state.logs.length})`;
+
         this.statusBar.setContent(
-            ` [${this.follow ? 'FOLLOWING' : 'PAUSED'}] (${state.logs.length} lines)${hints}  ${state.thermalEmoji} ${activityLabel}${hasErrors ? ' {red-fg}⚠{/red-fg}' : ''}`
+            ` [${this.follow ? 'FOLLOWING' : 'PAUSED'}] ${lineInfo}${hints}  ${coloredEmoji} ${activityLabel}${hasErrors ? ' {red-fg}⚠{/red-fg}' : ''}`
         );
 
         this.screen.render();

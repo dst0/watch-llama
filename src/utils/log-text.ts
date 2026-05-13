@@ -90,3 +90,25 @@ export function sanitizeRenderableText(text: string): string {
         .replace(/\n{3,}/g, '\n\n')
         .trimEnd();
 }
+
+/**
+ * Converts custom markup tags (like {italic}) to ANSI escape sequences for terminal output.
+ */
+export function renderTerminalMarkup(text: string): string {
+    return text
+        .replace(/{italic}/g, '\x1b[3m')
+        .replace(/{\/italic}/g, '\x1b[23m')
+        .replace(/{bold}/g, '\x1b[1m')
+        .replace(/{\/bold}/g, '\x1b[22m')
+        .replace(/{green-fg}/g, '\x1b[32m')
+        .replace(/{\/green-fg}/g, '\x1b[39m')
+        .replace(/{yellow-fg}/g, '\x1b[33m')
+        .replace(/{\/yellow-fg}/g, '\x1b[39m')
+        .replace(/{red-fg}/g, '\x1b[31m')
+        .replace(/{\/red-fg}/g, '\x1b[39m')
+        .replace(/{blue-fg}/g, '\x1b[34m')
+        .replace(/{\/blue-fg}/g, '\x1b[39m')
+        .replace(/{cyan-fg}/g, '\x1b[36m')
+        .replace(/{\/cyan-fg}/g, '\x1b[39m')
+        .replace(/{\/}/g, '\x1b[0m');
+}

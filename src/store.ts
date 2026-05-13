@@ -45,7 +45,8 @@ export class AppStore extends EventEmitter {
             titleBlocks: '🟩',
             settings: toUiSettings(config),
             errorMessages: {},
-            lastLogAt: 0
+            lastLogAt: 0,
+            pendingLogLine: undefined
         };
     }
 
@@ -70,6 +71,12 @@ export class AppStore extends EventEmitter {
         this.emit('change', this.state);
     }
 
+    setPendingLog(text: string | undefined): void {
+        if (this.state.pendingLogLine === text) return;
+        this.state.pendingLogLine = text;
+        this.emit('change', this.state);
+    }
+
     addLog(line: string): void {
         this.state.logs.push(line);
         if (this.state.logs.length > this.state.settings.maxLogLines) {
@@ -77,6 +84,7 @@ export class AppStore extends EventEmitter {
         }
 
         this.state.lastLogAt = Date.now();
+        this.state.pendingLogLine = undefined;
         this.emit('change', this.state);
     }
 

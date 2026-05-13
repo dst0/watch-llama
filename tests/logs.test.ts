@@ -91,3 +91,44 @@ test('parseLlamaServerProcessLine extracts runtime metadata', () => {
         parallel: 2
     });
 });
+
+test('collectRequestSummaries handles newer llama-server print_info and model_loader patterns', () => {
+    const rawLog = [
+        'llama_model_loader: loaded meta data with 52 key-value pairs and 733 tensors from /opt/llama/models/qwen.gguf (version GGUF V3 (latest))',
+        'print_info: arch                  = qwen35moe',
+        'print_info: n_ctx_train           = 262144',
+        'print_info: file type   = IQ3_S - 3.4375 bpw',
+        'print_info: file format = GGUF V3 (latest)',
+        'timings: {"prompt_n":40,"prompt_per_second":180.2,"predicted_n":45,"predicted_per_second":52.9,"predicted_ms":850}'
+    ].join('\n');
+
+    const summaries = collectRequestSummaries(rawLog);
+    assert.equal(summaries.length, 1);
+    assert.deepEqual(summaries[0], {
+        model: 'qwen.gguf',
+        modelPath: '/opt/llama/models/qwen.gguf',
+        architecture: 'qwen35moe',
+        contextSize: 262144,
+        quantization: 'IQ3_S - 3.4375 bpw',
+        format: 'GGUF V3 (latest)',
+        promptTokens: 40,
+        completionTokens: 45,
+        promptEvalPerSecond: 180.2,
+        tokensPerSecond: 52.9,
+        latencyMs: 850
+    });
+});
+
+test('collectRequestSummaries handles proxy JSON prompt and token patterns', () => {
+    const rawLog = [
+        'llm_load_print_meta: arch = qwen3',
+        '{"ts":"2026-05-13T07:16:00Z","type":"request","model":"qwen3","prompt":"Hello world"}',
+        '{"ts":"2026-05-13T07:16:01Z","type":"sse_proxy","event":{"type":"response.output_text.delta","delta":"Hi"}}',
+        'timings: {"prompt_n":2,"prompt_per_second":100,"predicted_n":1,"predicted_per_second":50,"predicted_ms":20}'
+    ].join('\n');
+
+    const summaries = collectRequestSummaries(rawLog);
+    assert.equal(summaries.length, 1);
+    assert.equal(summaries[0]?.promptTokens, 2);
+    assert.equal(summaries[0]?.completionTokens, 1);
+});

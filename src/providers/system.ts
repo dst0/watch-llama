@@ -41,7 +41,7 @@ function normalizeAdapterLabel(adapter: string): string {
     const normalized = firstSegment
         .toUpperCase()
         .replaceAll('AMDGPU', 'GPU')
-        .replaceAll('K10TEMP', 'K10')
+        .replaceAll('K10TEMP', 'CPU')
         .replaceAll('CORETEMP', 'CPU')
         .replaceAll('NVME', 'SSD')
         .replaceAll('ACPI', 'SYS')
@@ -51,7 +51,7 @@ function normalizeAdapterLabel(adapter: string): string {
 }
 
 function shouldHideTempLabel(label: string): boolean {
-    return ['CPU', 'K10', 'GPU', 'SYS', 'SYSTZ', 'ACPI', 'ACPITZ'].includes(label);
+    return ['CPU', 'GPU', 'SYS', 'SYSTZ', 'ACPI', 'ACPITZ'].includes(label);
 }
 
 async function safeReadText(filePath: string): Promise<string | null> {
@@ -139,10 +139,11 @@ function pickPrimaryCard(data: unknown): Record<string, unknown> | null {
     return null;
 }
 
-export function parseSensorsJson(raw: string): { maxTemp: number; extraTemps: TemperatureReading[] } {
+export function parseSensorsJson(raw: string): { maxTemp: number; extraTemps: TemperatureReading[]; cpuTemp?: number | undefined } {
     const data = JSON.parse(raw) as Record<string, unknown>;
     const tempMap = new Map<string, number>();
     let maxTemp = 0;
+    let cpuTemp: number | undefined;
 
     for (const [adapter, sensorsValue] of Object.entries(data)) {
         if (!isRecord(sensorsValue)) {
@@ -150,7 +151,7 @@ export function parseSensorsJson(raw: string): { maxTemp: number; extraTemps: Te
         }
 
         const label = normalizeAdapterLabel(adapter);
-        const shouldHide = shouldHideTempLabel(label);
+        const isCpuSensor = adapter.toLowerCase().includes('k10temp') || adapter.toLowerCase().includes('coretemp');
 
         for (const readings of Object.values(sensorsValue)) {
             if (!isRecord(readings)) {
@@ -168,6 +169,12 @@ export function parseSensorsJson(raw: string): { maxTemp: number; extraTemps: Te
                 }
 
                 maxTemp = Math.max(maxTemp, numericValue);
+                
+                if (isCpuSensor) {
+                    cpuTemp = Math.max(cpuTemp ?? 0, numericValue);
+                }
+
+                const shouldHide = shouldHideTempLabel(label);
                 if (!shouldHide) {
                     tempMap.set(label, Math.max(tempMap.get(label) ?? 0, numericValue));
                 }
@@ -177,6 +184,7 @@ export function parseSensorsJson(raw: string): { maxTemp: number; extraTemps: Te
 
     return {
         maxTemp,
+        cpuTemp,
         extraTemps: [...tempMap.entries()]
             .sort(([left], [right]) => left.localeCompare(right))
             .map(([label, tempC]) => ({ label, tempC }))
@@ -211,6 +219,8 @@ export class SystemProvider {
             this.getSystemTemps(),
             this.getGpu(preferredTool)
         ]);
+
+        cpu.temperature = temps.cpuTemp ?? cpu.temperature;
 
         const maxTemperature = Math.max(
             cpu.temperature,
@@ -366,19 +376,29 @@ export class SystemProvider {
         return 0;
     }
 
-    private async getSystemTemps(): Promise<{ maxTemp: number; extraTemps: TemperatureReading[] }> {
+    private async getSystemTemps(): Promise<{ maxTemp: number; extraTemps: TemperatureReading[]; cpuTemp?: number | undefined }> {
         try {
             const output = await runCommand('sensors', ['-j']);
             const parsed = parseSensorsJson(output);
-            if (parsed.maxTemp > 0) {
-                return parsed;
+            
+            // The user expects to see the actual heat (70-80°C). 
+            // In many modern systems, "CPU" is synonymous with the hottest detected sensor 
+            // among the core package, die, or APU junction.
+            const unifiedMax = Math.max(parsed.maxTemp, parsed.cpuTemp ?? 0);
+            
+            if (unifiedMax > 0) {
+                return {
+                    maxTemp: unifiedMax,
+                    extraTemps: parsed.extraTemps,
+                    cpuTemp: unifiedMax // Treat the system-wide max as the CPU primary for TUI display
+                };
             }
         } catch {
-            // Fall through to CPU-only fallback.
+            // Fall through
         }
 
         const cpuTemp = await this.getCpuTemperature();
-        return { maxTemp: cpuTemp, extraTemps: [] };
+        return { maxTemp: cpuTemp, extraTemps: [], cpuTemp };
     }
 
     private async getGpu(preferredTool: GpuTool): Promise<GpuMetrics> {
@@ -529,12 +549,18 @@ export class SystemProvider {
             throw new Error('no ROCm GPU data');
         }
 
+        // Prioritize Junction/Hotspot for load accuracy
+        const temperature = parseNumber(gpu['Temperature (Sensor junction) (C)']) ?? 
+                          parseNumber(gpu['Temperature (Sensor hotspot) (C)']) ??
+                          parseNumber(gpu['Temperature (Sensor edge) (C)']) ?? 
+                          parseNumber(gpu['Temperature (Sensor edge)']) ?? 0;
+
         return {
             available: true,
             utilization: parseNumber(gpu['GPU use (%)']) ?? parseNumber(gpu['GPU use']) ?? 0,
             memoryUsed: (parseNumber(gpu['VRAM Total Used Memory (B)']) ?? parseNumber(gpu['VRAM Total Used Memory']) ?? 0) / (1024 ** 3),
             memoryTotal: (parseNumber(gpu['VRAM Total Memory (B)']) ?? parseNumber(gpu['VRAM Total Memory']) ?? 0) / (1024 ** 3),
-            temperature: parseNumber(gpu['Temperature (Sensor edge) (C)']) ?? parseNumber(gpu['Temperature (Sensor edge)']) ?? 0,
+            temperature,
             power: parseNumber(gpu['Average Graphics Package Power (W)']) ?? parseNumber(gpu['Average Graphics Package Power']) ?? 0,
             fan: parseNumber(gpu['Fan speed (%)']) ?? 0,
             tool: 'rocm-smi'
