@@ -52,9 +52,25 @@ function extractQuotedField(line: string, field: string): string | null {
     return line.match(matcher)?.[1] ?? null;
 }
 
-function extractMetadata(line: string): Partial<InferenceMetrics> | null {
+export function extractMetadata(line: string): Partial<InferenceMetrics> | null {
     const updates: Partial<InferenceMetrics> = {};
+
+    if (line.trimStart().startsWith('{')) {
+        try {
+            const json = JSON.parse(line);
+            if (json.model && typeof json.model === 'string' && json.model !== 'unknown') {
+                updates.model = json.model;
+            }
+            if (json.body?.model && typeof json.body.model === 'string') {
+                updates.model = json.body.model;
+            }
+        } catch {
+            // Ignore parse errors
+        }
+    }
+
     const modelPath = line.match(MODEL_PATH_RE)?.[1]?.trim() ?? line.match(MODEL_LOAD_RE)?.[1]?.trim();
+
     if (modelPath) {
         updates.modelPath = modelPath;
         updates.model = trimModelName(modelPath);
@@ -138,7 +154,6 @@ function formatStatsLine(metrics: SessionMetrics): string {
 }
 
 export {
-    extractMetadata,
     parsePromptEvalLine,
     parseEvalLine,
     parseTotalLine,

@@ -84,6 +84,28 @@ export function promptEndsWithAssistantMarker(text: string): boolean {
     return tail === '### ASSISTANT' || tail === 'ASSISTANT:';
 }
 
+export function escapeBlessedTags(text: string): string {
+    return text
+        .replaceAll('{', '\\{')
+        .replaceAll('}', '\\}')
+        // Un-escape our known tags
+        .replaceAll('\\{italic\\}', '{italic}')
+        .replaceAll('\\{/italic\\}', '{/italic}')
+        .replaceAll('\\{bold\\}', '{bold}')
+        .replaceAll('\\{/bold\\}', '{/bold}')
+        .replaceAll('\\{green-fg\\}', '{green-fg}')
+        .replaceAll('\\{/green-fg\\}', '{/green-fg}')
+        .replaceAll('\\{yellow-fg\\}', '{yellow-fg}')
+        .replaceAll('\\{/yellow-fg\\}', '{/yellow-fg}')
+        .replaceAll('\\{red-fg\\}', '{red-fg}')
+        .replaceAll('\\{/red-fg\\}', '{/red-fg}')
+        .replaceAll('\\{blue-fg\\}', '{blue-fg}')
+        .replaceAll('\\{/blue-fg\\}', '{/blue-fg}')
+        .replaceAll('\\{cyan-fg\\}', '{cyan-fg}')
+        .replaceAll('\\{/cyan-fg\\}', '{/cyan-fg}')
+        .replaceAll('\\{/\\}', '{/}');
+}
+
 export function sanitizeRenderableText(text: string): string {
     return sanitizeDecodedText(stripAnsiSequences(text))
         .replace(/\t/g, '    ')

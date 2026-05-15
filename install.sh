@@ -26,22 +26,22 @@ mkdir -p "$INSTALL_DIR"
 echo "Step 3: Creating wrapper scripts..."
 cat <<EOF > "$INSTALL_DIR/watch-llama"
 #!/bin/bash
-node "$PROJECT_ROOT/dist/src/bin/watch-llama.js" "\$@"
+node --no-deprecation "$PROJECT_ROOT/dist/src/bin/watch-llama.js" "\$@"
 EOF
 
 cat <<EOF > "$INSTALL_DIR/llama-watch-readlog"
 #!/bin/bash
-node "$PROJECT_ROOT/dist/src/bin/llama-watch-readlog.js" "\$@"
+node --no-deprecation "$PROJECT_ROOT/dist/src/bin/llama-watch-readlog.js" "\$@"
 EOF
 
 cat <<EOF > "$INSTALL_DIR/llama-report"
 #!/bin/bash
-node "$PROJECT_ROOT/dist/src/bin/llama-report.js" "\$@"
+node --no-deprecation "$PROJECT_ROOT/dist/src/bin/llama-report.js" "\$@"
 EOF
 
 cat <<EOF > "$INSTALL_DIR/llama-stats"
 #!/bin/bash
-node "$PROJECT_ROOT/dist/src/bin/llama-stats.js" "\$@"
+node --no-deprecation "$PROJECT_ROOT/dist/src/bin/llama-stats.js" "\$@"
 EOF
 
 chmod +x "$INSTALL_DIR"/*

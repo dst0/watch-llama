@@ -10,6 +10,8 @@ TypeScript/Node monitoring tools for `llama-server`, ported from the relevant `w
 - Local JSON config persistence for UI toggles, log paths, and GPU tool selection.
 - GPU telemetry auto-detection for `nvidia-smi`, `amd-smi`, `rocm-smi`, plus CPU/RAM/sensor telemetry.
 - Live llama.cpp integration via `/v1/models` plus real stderr parsing for `slot print_timing` request blocks.
+- **Proxy Support:** Integration with `llama-cpp-agent-proxy`, including JSON log parsing, model redirection detection, and token deduplication.
+- **Sudo Awareness:** Automatically resolves user home directories (e.g. `~`) when run with `sudo`, ensuring consistent configuration and log paths.
 
 ## What is not ported
 
@@ -29,6 +31,16 @@ cd watch-llama
 npm install
 npm run build
 ```
+
+## Feature Details
+
+### Log Source Switching
+Press **`P`** in the TUI to toggle between **Raw** (standard server) and **Proxy** log sources. The tool intelligently detects model names and metadata from both sources.
+
+### UI Stability
+- **Anti-Drift:** Panels are strictly sized and long lines are truncated to prevent terminal wrapping from pushing the UI elements out of alignment.
+- **Intelligent Scrolling:** Mouse wheel and keyboard scrolling automatically pause auto-follow. Scrolling back to the bottom automatically resumes it.
+- **Rich Text:** AI reasoning text is automatically detected and rendered in *italics*.
 
 ## Commands
 
@@ -80,7 +92,8 @@ WATCH_LLAMA_POLL_INTERVAL_MS=2000
 - `H`: toggle hint text
 - `T`: cycle GPU tool (`auto -> nvidia-smi -> amd-smi -> rocm-smi -> none`)
 - `R`: restart llama services (`systemctl restart llama-server llama-proxy`)
-- `Up` / `Down` / `Page Up` / `Page Down` / `Home` / `End`: scroll log view
+- `P`: toggle log source (`Raw` vs `Proxy`)
+- `Up` / `Down` / `Page Up` / `Page Down` / `Home` / `End` / `Mouse Wheel`: scroll log view
 
 ## Development
 

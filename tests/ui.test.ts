@@ -50,7 +50,8 @@ test('buildTelemetryLines includes parallel header and raw gpu lines', () => {
             showHints: true,
             gpuTool: 'auto',
             maxLogLines: 3000,
-            pollIntervalMs: 2000
+            pollIntervalMs: 2000,
+            logSource: 'raw'
         },
         errorMessages: {},
         lastLogAt: Date.now()

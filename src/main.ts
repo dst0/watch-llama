@@ -12,11 +12,12 @@ import type { WatchLlamaConfig } from './types/state.js';
 async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider, serverProvider: LlamaServerProvider): Promise<void> {
     const [snapshot, serverSnapshot] = await Promise.all([
         systemProvider.getSnapshot(store.state.settings.gpuTool),
-        serverProvider.getSnapshot()
+        serverProvider.getSnapshot(store.state.settings.logSource)
     ]);
 
+
     store.updateSystem(snapshot, store.state.thermalEmoji, store.state.titleBlocks);
-    store.updateInference({ ...serverSnapshot.inference });
+    store.updateInference({ ...serverSnapshot.inference }, serverSnapshot.proxyStatus);
     if (serverSnapshot.status === 'STOPPED') {
         store.updateInference({ status: 'STOPPED' });
     }
@@ -56,6 +57,20 @@ export async function runWatchLlama(): Promise<void> {
                 const message = error instanceof Error ? error.message : String(error);
                 store.setError('server', `Restart failed: ${message}`);
             }
+        },
+        onToggleLogSource: async () => {
+            const nextSource = store.state.settings.logSource === 'raw' ? 'proxy' : 'raw';
+            if (nextSource === 'proxy' && !config.proxyLogPath) {
+                store.setError('log', 'Proxy log path not configured');
+                return;
+            }
+            
+            const updated = await configManager.update({ logSource: nextSource });
+            store.updateSettings(toUiSettings(updated));
+            
+            const newPath = nextSource === 'proxy' ? config.proxyLogPath! : config.rawLogPath;
+            await logWatcher.updatePath(newPath);
+            store.setError('log', undefined);
         }
     });
 
@@ -120,7 +135,7 @@ export async function runReportCommand(): Promise<void> {
     const [parsed, readableLog, serverSnapshot] = await Promise.all([
         processLogsStreaming(config),
         fs.readFile(config.readableLogPath, 'utf8').catch(() => ''),
-        serverProvider.getSnapshot()
+        serverProvider.getSnapshot(config.logSource)
     ]);
     
     process.stdout.write(`${renderReport(parsed, readableLog, serverSnapshot.inference)}\n`);
@@ -133,7 +148,7 @@ export async function runStatsCommand(): Promise<void> {
     
     const [parsed, serverSnapshot] = await Promise.all([
         processLogsStreaming(config),
-        serverProvider.getSnapshot()
+        serverProvider.getSnapshot(config.logSource)
     ]);
     
     process.stdout.write(`${renderStats(parsed, serverSnapshot.inference)}\n`);

@@ -4,7 +4,7 @@ import path from 'node:path';
 import type { WatchLlamaConfig } from '../../types/state.js';
 import { RequestTracker, type ParsedLog } from './tracker.js';
 import { ReadableLogBuilder, type BuilderUpdate } from './builder.js';
-import { sanitizeRenderableText, decodeEscapedText } from '../../utils/log-text.js';
+import { sanitizeRenderableText, decodeEscapedText, escapeBlessedTags } from '../../utils/log-text.js';
 
 export class LogWatcher extends EventEmitter {
     private readonly builder = new ReadableLogBuilder();
@@ -18,13 +18,24 @@ export class LogWatcher extends EventEmitter {
 
     constructor(private readonly config: WatchLlamaConfig, overriddenPath?: string) {
         super();
-        this.logPath = overriddenPath ?? this.config.rawLogPath;
+        this.logPath = overriddenPath ?? (this.config.logSource === 'proxy' && this.config.proxyLogPath ? this.config.proxyLogPath : this.config.rawLogPath);
+    }
+
+    async updatePath(newPath: string): Promise<void> {
+        const wasRunning = !!this.timer;
+        this.stop();
+        (this as any).logPath = newPath;
+        this.currentSize = 0;
+        this.rawRemainder = '';
+        if (wasRunning) {
+            await this.start();
+        }
     }
 
     async loadReadableBacklog(maxLines: number): Promise<string[]> {
         try {
             const raw = await fs.readFile(this.config.readableLogPath, 'utf8');
-            return raw.split(/\r?\n/).slice(-maxLines);
+            return raw.split(/\r?\n/).slice(-maxLines).map(line => escapeBlessedTags(line));
         } catch {
             return [];
         }
@@ -36,7 +47,15 @@ export class LogWatcher extends EventEmitter {
 
         try {
             const stats = await fs.stat(this.logPath);
-            this.currentSize = stats.size;
+            const readableStats = await fs.stat(this.config.readableLogPath).catch(() => ({ size: 0 }));
+            
+            // If readable log is empty, try to read some from the raw log
+            if (readableStats.size === 0) {
+                this.currentSize = Math.max(0, stats.size - 1024 * 1024); // Start 1MB back
+            } else {
+                this.currentSize = stats.size;
+            }
+            
             this.emit('errorState', { key: 'log', message: undefined });
         } catch {
             this.currentSize = 0;
@@ -118,7 +137,9 @@ export class LogWatcher extends EventEmitter {
             if (jsonDeltaMatch) {
                 let text = sanitizeRenderableText(decodeEscapedText(jsonDeltaMatch[1]!));
                 if (this.rawRemainder.includes('"type":"response.reasoning_text.delta"')) {
-                    text = `{italic}${text}{/italic}`;
+                    text = `{italic}${escapeBlessedTags(text)}{/italic}`;
+                } else {
+                    text = escapeBlessedTags(text);
                 }
                 this.emit('partialLine', text);
             }
@@ -131,11 +152,11 @@ export class LogWatcher extends EventEmitter {
         this.readableRemainder = parts.pop() ?? '';
 
         for (const line of parts) {
-            this.emit('readableLine', sanitizeRenderableText(line));
+            this.emit('readableLine', escapeBlessedTags(sanitizeRenderableText(line)));
         }
 
         if (this.readableRemainder) {
-            this.emit('partialLine', sanitizeRenderableText(this.readableRemainder));
+            this.emit('partialLine', escapeBlessedTags(sanitizeRenderableText(this.readableRemainder)));
         }
     }
 }

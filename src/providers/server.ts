@@ -1,6 +1,9 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import type { InferenceMetrics } from '../types/state.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import type { InferenceMetrics, ProxyStatus } from '../types/state.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -28,6 +31,7 @@ interface ModelsResponse {
 
 export interface LlamaServerSnapshot {
     inference: Partial<InferenceMetrics>;
+    proxyStatus?: ProxyStatus | undefined;
     status?: 'READY' | 'STOPPED';
     error?: string;
 }
@@ -39,6 +43,7 @@ export interface LlamaServerProcessInfo {
     alias?: string;
     contextSize?: number;
     parallel?: number;
+    command?: string;
 }
 
 function parsePortFromBaseUrl(apiBaseUrl: string): number | null {
@@ -66,17 +71,20 @@ export function parseLlamaServerProcessLine(line: string): LlamaServerProcessInf
 
     const pid = Number.parseInt(match[1] ?? '0', 10);
     const command = match[2] ?? '';
-    if (!command.includes('llama-server')) {
+    const isServer = command.includes('llama-server');
+    const isProxy = command.includes('llama-proxy');
+    
+    if (!isServer && !isProxy) {
         return null;
     }
 
-    const port = extractArg(command, /(?:^|\s)--port\s+(\d+)/);
-    const modelPath = extractArg(command, /(?:^|\s)-m\s+(\S+)/);
+    const port = extractArg(command, /(?:^|\s)--(?:port|p)\s+(\d+)/);
+    const modelPath = extractArg(command, /(?:^|\s)(?:-m|--model)\s+(\S+)/);
     const alias = extractArg(command, /(?:^|\s)--alias\s+(\S+)/);
     const contextSize = extractArg(command, /(?:^|\s)-c\s+(\d+)/);
     const parallel = extractArg(command, /(?:^|\s)--parallel\s+(\d+)/);
 
-    const result: LlamaServerProcessInfo = { pid };
+    const result: LlamaServerProcessInfo = { pid, command };
     if (port) {
         result.port = Number.parseInt(port, 10);
     }
@@ -98,7 +106,8 @@ export function parseLlamaServerProcessLine(line: string): LlamaServerProcessInf
 
 async function listLlamaServerProcesses(): Promise<LlamaServerProcessInfo[]> {
     try {
-        const { stdout } = await execFileAsync('pgrep', ['-af', 'llama-server'], {
+        const { stdout } = await execFileAsync('pgrep', ['-af', 'llama-server|llama-proxy'], {
+            shell: true,
             timeout: 2000,
             maxBuffer: 1024 * 1024
         });
@@ -149,12 +158,33 @@ async function fetchModels(apiBaseUrl: string): Promise<ModelsResponseEntry[]> {
 export class LlamaServerProvider {
     constructor(private readonly apiBaseUrl: string) {}
 
-    async getSnapshot(): Promise<LlamaServerSnapshot> {
+    private async getProxyStatus(port: number | null): Promise<ProxyStatus | undefined> {
+        const proxyPort = port || 11437;
+        const statusFile = path.join(os.homedir(), '.llama-cpp-agent-proxy', 'logs', proxyPort.toString(), 'proxy.status');
+        try {
+            if (fs.existsSync(statusFile)) {
+                return JSON.parse(fs.readFileSync(statusFile, 'utf8'));
+            }
+        } catch {}
+        return undefined;
+    }
+
+    async getSnapshot(logSource: 'raw' | 'proxy' = 'raw'): Promise<LlamaServerSnapshot> {
         const targetPort = parsePortFromBaseUrl(this.apiBaseUrl);
-        const processes = await listLlamaServerProcesses();
+        const allProcesses = await listLlamaServerProcesses();
+        
+        // Filter processes based on logSource
+        const processes = allProcesses.filter(p => {
+            const cmd = p.command || '';
+            if (logSource === 'proxy') return cmd.includes('llama-proxy');
+            return cmd.includes('llama-server');
+        });
+
+        // Use filtered if available, else all
+        const candidates = processes.length > 0 ? processes : allProcesses;
         const matchingProcess = targetPort === null
-            ? processes[0]
-            : processes.find((entry) => entry.port === targetPort) ?? processes[0];
+            ? candidates[0]
+            : candidates.find((entry) => entry.port === targetPort) ?? candidates[0];
 
         const fallbackInference: Partial<InferenceMetrics> = {};
         if (matchingProcess?.modelPath) {
@@ -194,11 +224,14 @@ export class LlamaServerProvider {
                 snapshot.quantization = primary.details.quantization_level;
             }
 
-            return { inference: snapshot, status: 'READY' };
+            const proxyStatus = logSource === 'proxy' ? await this.getProxyStatus(targetPort) : undefined;
+            return { inference: snapshot, proxyStatus, status: 'READY' };
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
+            const proxyStatus = logSource === 'proxy' ? await this.getProxyStatus(targetPort) : undefined;
             return {
                 inference: fallbackInference,
+                proxyStatus,
                 status: 'STOPPED',
                 error: `llama-server API unavailable: ${message}`
             };

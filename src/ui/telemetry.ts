@@ -3,15 +3,33 @@ import { escapeTags, temperatureMarkup, frequencyText } from './helpers.js';
 import { formatSensorLabel } from '../providers/system/thermal.js';
 
 export function buildTelemetryLines(state: AppState): string[] {
-    const { system, inference } = state;
+    const screenWidth = process.stdout.columns || 80;
+    const maxLineWidth = screenWidth - 4;
+    
+    const { system, inference, proxyStatus } = state;
+    const isProxy = state.settings.logSource === 'proxy';
+    const serverName = isProxy ? 'LLAMA-PROXY' : 'LLAMA-SERVER';
+    
     const header = inference.parallel !== undefined
-        ? `{bold}=== LLAMA-SERVER  parallel:${inference.parallel}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`
-        : `{bold}=== LLAMA-SERVER  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
+        ? `{bold}=== ${serverName}  parallel:${inference.parallel}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`
+        : `{bold}=== ${serverName}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
     const lines = [
         header,
         `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? ` ${(inference.progress * 100).toFixed(1)}%` : ''}]`,
-        `    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`
     ];
+
+    if (isProxy && proxyStatus) {
+        const active = proxyStatus.active_requests;
+        const title = proxyStatus.last_title || 'Idle';
+        lines.push(`  {yellow-fg}Active: ${active} | Last: ${escapeTags(title)}{/yellow-fg}`);
+        
+        const backendInfo = proxyStatus.backends.map(b => 
+            `${b.port}:[${b.status === 'READY' ? '{green-fg}OK{/green-fg}' : '{red-fg}' + b.status + '{/red-fg}'}]`
+        ).join(' ');
+        lines.push(`  {blue-fg}Backends: ${backendInfo}{/blue-fg}`);
+    } else {
+        lines.push(`    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`);
+    }
 
     if (state.settings.showCpu) {
         const extraTemps = system.extraTemps.map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(' | ');
@@ -39,5 +57,11 @@ export function buildTelemetryLines(state: AppState): string[] {
         lines.push(...gpuLines.map((line) => escapeTags(line)));
     }
 
-    return lines;
+    return lines.map(line => {
+        // Simple truncation that doesn't account for tags perfectly, but helps
+        if (line.length > maxLineWidth + 50) { // +50 to account for tags
+             return line.slice(0, maxLineWidth + 50);
+        }
+        return line;
+    });
 }

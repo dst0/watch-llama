@@ -1,0 +1,1657 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - img "Advertisement" [ref=e5]
+    - iframe [ref=e8]:
+      - insertion [ref=f23e3]:
+        - iframe [ref=f23e5]:
+          
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - link "новини" [ref=e12] [cursor=pointer]:
+          - /url: https://www.ukr.net/
+          - img "новини" [ref=e13]
+        - heading "Останні новини України" [level=1] [ref=e14]
+      - generic [ref=e18]:
+        - searchbox "Пошук" [ref=e19]
+        - button "Пошук" [ref=e20] [cursor=pointer]
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - iframe [ref=e25]:
+          - generic [ref=f1e3]:
+            - link "Пошта" [ref=f1e5] [cursor=pointer]:
+              - /url: https://mail.ukr.net
+            - generic [ref=f1e7]:
+              - generic [ref=f1e8]:
+                - textbox [ref=f1e11]:
+                  - /placeholder: Ім’я скриньки
+                - textbox [ref=f1e15]:
+                  - /placeholder: Пароль
+                - generic [ref=f1e16]:
+                  - checkbox "Чужий комп'ютер"
+                  - generic [ref=f1e17] [cursor=pointer]: Чужий комп'ютер
+              - generic [ref=f1e18]:
+                - generic [ref=f1e19]:
+                  - button "Увійти" [disabled] [ref=f1e20]
+                  - button "Вхід за ключем" [ref=f1e22] [cursor=pointer]:
+                    - img [ref=f1e23]
+                    - text: Вхід за ключем
+                - generic [ref=f1e25]:
+                  - link "Не вдається увійти?" [ref=f1e26] [cursor=pointer]:
+                    - /url: /recovery?client_id=9TFMHJACHt5KxBm2sQWS&lang=uk
+                  - link "Створити скриньку" [ref=f1e27] [cursor=pointer]:
+                    - /url: /registration?client_id=9TFMHJACHt5KxBm2sQWS&lang=uk
+        - generic [ref=e26]:
+          - heading "Вибране" [level=3] [ref=e27]
+          - generic [ref=e28]:
+            - generic [ref=e29]:
+              - link "Sinoptik" [ref=e30] [cursor=pointer]:
+                - /url: http://ua.sinoptik.ua/?utm_source=ukr.net&utm_medium=main_page&utm_campaign=main_izbrannoe
+              - link "Оракул" [ref=e31] [cursor=pointer]:
+                - /url: http://orakul.com
+              - link "Кіноафіша" [ref=e32] [cursor=pointer]:
+                - /url: http://kinoafisha.ua/ua/?utm_source=ukr.net&utm_medium=link&utm_campaign=izbranoe
+            - generic [ref=e33]:
+              - link "Rozetka" [ref=e34] [cursor=pointer]:
+                - /url: http://rozetka.com.ua/?utm_source=ukr_net_main&utm_medium=banner_logo&utm_campaign=logo_main
+              - link "Work.ua" [ref=e35] [cursor=pointer]:
+                - /url: https://www.work.ua/?utm_source=ukr.net&utm_medium=advert&utm_campaign=main_izbrannoe
+              - link "Booking" [ref=e36] [cursor=pointer]:
+                - /url: http://www.booking.com/index.html?aid=375206
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - heading "Автосайти" [level=3] [ref=e39]
+            - link "Машини продають на сайтi RST" [ref=e40] [cursor=pointer]:
+              - /url: http://rst.ua/
+          - generic [ref=e41]:
+            - heading "Партнерські матеріали" [level=3] [ref=e42]
+            - link "Новини компаній" [ref=e43] [cursor=pointer]:
+              - /url: https://www.ukr.net/news/companies.html
+          - generic [ref=e44]:
+            - heading "Подорожі" [level=3] [ref=e45]
+            - link "100% турів на TAT.ua" [ref=e46] [cursor=pointer]:
+              - /url: http://www.tat.ua/?utm_source=ukr.net&utm_medium=cpc&utm_content=general&utm_campaign=ukr.net
+            - link "Гарантовані автобусні тури" [ref=e47] [cursor=pointer]:
+              - /url: https://www.accordtour.com/tur_bude
+            - link "Booking - бронювання житла" [ref=e48] [cursor=pointer]:
+              - /url: http://www.booking.com/index.html?aid=338493
+          - generic [ref=e49]:
+            - heading "Нерухомість" [level=3] [ref=e50]
+            - link "DIM.RIA - новобудови України" [ref=e51] [cursor=pointer]:
+              - /url: https://dom.ria.com/uk/novostroyki/?withoutHeader=1&utm_source=ukrnet&utm_medium=clikukrnet_newbuilds&utm_campaign=newbuildings&r_audience=partners_buyers&r_source=ukr.net&r_medium=link&r_campaign=clikukrnet
+            - link "300x нерухомість" [ref=e52] [cursor=pointer]:
+              - /url: https://300x.ua/search/nedvizhimost/
+            - link "ЛУН - Всі новобудови" [ref=e53] [cursor=pointer]:
+              - /url: https://lun.ua
+            - link "FLATFY - Квартири шукай" [ref=e54] [cursor=pointer]:
+              - /url: https://flatfy.ua
+          - generic [ref=e55]:
+            - heading "Медицина" [level=3] [ref=e56]
+            - link "Точність лазера вражає!" [ref=e57] [cursor=pointer]:
+              - /url: https://www.ailas.com.ua/garnyj-zir-na-vse-jyttya.html?utm_source=ukr-net-link-garnyj-zir-na-vse-jyttya-1-ukr&utm_medium=ukr-net&utm_campaign=ukr-net
+            - link "Онлайн консультації лікарів" [ref=e58] [cursor=pointer]:
+              - /url: https://viveohealth.com/
+          - generic [ref=e59]:
+            - heading "Інтернет магазини" [level=3] [ref=e60]
+            - link "Годинники і прикраси Люксхроно" [ref=e61] [cursor=pointer]:
+              - /url: http://luxchrono.com.ua/
+            - link "Лічильники води Goodmax" [ref=e62] [cursor=pointer]:
+              - /url: https://goodmax.com.ua/uk/ru/catalog/87-schetchiki-dlya-vody
+            - link "Постільна білизна 1+1=3" [ref=e63] [cursor=pointer]:
+              - /url: http://lascala.ua/index.php?utm_source=ukr_netdom&utm_medium=link&utm_campaign=ukr_netdom
+            - link "Країна казок - для дітей" [ref=e64] [cursor=pointer]:
+              - /url: https://www.kraina-kazok.com.ua/
+            - link "Натяжні стелі Art Decor" [ref=e65] [cursor=pointer]:
+              - /url: https://artdecor.ua/uk/raschet-stoimosti-ua/
+            - link "Магазин електронiки" [ref=e66] [cursor=pointer]:
+              - /url: http://rozetka.com.ua/?utm_source=ukrnet&utm_medium=links&utm_campaign=rozetka
+          - generic [ref=e67]:
+            - heading "Робота та Освіта" [level=3] [ref=e68]
+            - link "WORK.ua – №1 в Україні" [ref=e69] [cursor=pointer]:
+              - /url: http://work.ua/?utm_source=ukr.net&utm_medium=advert&utm_campaign=main_rabota
+            - link "ROBOTA.ua - перевірені вакансії" [ref=e70] [cursor=pointer]:
+              - /url: https://robota.ua/?utm_source=ukrnet&utm_medium=cpc&utm_campaign=link
+            - link "Дистанційна освіта 1-11 клас" [ref=e71] [cursor=pointer]:
+              - /url: https://optima.school/?utm_source=ukrnetLink&utm_medium=cpm&utm_campaign=workgr&utm_term=ukrnetLink
+            - link "300x робота" [ref=e72] [cursor=pointer]:
+              - /url: https://300x.ua/search/rabota/
+            - link "Робота за кордоном - Layboard" [ref=e73] [cursor=pointer]:
+              - /url: https://layboard.com/ua
+            - link "Курси для дітей і дорослих" [ref=e74] [cursor=pointer]:
+              - /url: https://optima.study/
+          - generic [ref=e75]:
+            - heading "Жінкам" [level=3] [ref=e76]
+            - link "Автобусні тури в Європу" [ref=e77] [cursor=pointer]:
+              - /url: https://www.accordtour.com/vsi_avtobusni_tury
+            - link "Квіти - BuketLand" [ref=e78] [cursor=pointer]:
+              - /url: https://buketland.ua/
+            - link "Flowers-доставка квiтів" [ref=e79] [cursor=pointer]:
+              - /url: http://flowers.ua
+            - link "Нумерологічний прогнози" [ref=e80] [cursor=pointer]:
+              - /url: https://orakul.com/num/
+          - generic [ref=e81]:
+            - heading "Інтернет" [level=3] [ref=e82]
+            - link "Домени і Хостинг Hvosting.ua" [ref=e83] [cursor=pointer]:
+              - /url: http://hvosting.ua/
+            - link "Оренда серверів, колокейшн" [ref=e84] [cursor=pointer]:
+              - /url: https://besthosting.ua/ua/priceservers.php
+            - link "NIC.ua - домени і хостинг" [ref=e85] [cursor=pointer]:
+              - /url: http://nic.ua
+            - link "RX-Name домен com.ua 353 ₴" [ref=e86] [cursor=pointer]:
+              - /url: https://rx-name.ua/domains/tld/com.ua?utm_source=ukrnet&utm_medium=cpc&utm_campaign=domain_promotion&utm_term=domains&utm_content=textlink
+            - link "СМИ - InternetUA" [ref=e87] [cursor=pointer]:
+              - /url: http://internetua.com/
+          - generic [ref=e88]:
+            - heading "Спорт" [level=3] [ref=e89]
+            - link "Футбол на Спорт.ua" [ref=e90] [cursor=pointer]:
+              - /url: https://sport.ua/football?utm_source=ukrnet-mainpage&utm_medium=ukrnet-link
+            - link "Великий теніс України" [ref=e91] [cursor=pointer]:
+              - /url: http://www.ftu.org.ua
+            - link "Sport Business Media" [ref=e92] [cursor=pointer]:
+              - /url: https://sportbusiness.media
+          - generic [ref=e93]:
+            - heading "Держава" [level=3] [ref=e94]
+            - link "Верховна Рада України" [ref=e95] [cursor=pointer]:
+              - /url: http://rada.gov.ua
+            - link "Президент України" [ref=e96] [cursor=pointer]:
+              - /url: https://www.president.gov.ua/
+            - link "Прес-центр судової влади" [ref=e97] [cursor=pointer]:
+              - /url: https://court.gov.ua/
+            - link "Кабінет Міністрів України" [ref=e98] [cursor=pointer]:
+              - /url: https://www.kmu.gov.ua
+            - link "Нацбанк" [ref=e99] [cursor=pointer]:
+              - /url: http://www.bank.gov.ua/
+            - link "iGov - портал державних послуг" [ref=e100] [cursor=pointer]:
+              - /url: http://igov.org.ua
+      - iframe [ref=e102]:
+        
+      - generic [ref=e104]:
+        - link [ref=e105] [cursor=pointer]:
+          - /url: http://kinoafisha.ua/
+        - generic [ref=e107]:
+          - generic [ref=e108]:
+            - link "купити квитки" [ref=e109] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/shkola-santi?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A8%D0%BA%D0%BE%D0%BB%D0%B0+%D0%A1%D0%B0%D0%BD%D1%82%D1%8B
+            - link "Школа Санти" [ref=e110] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/shkola-santi?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A8%D0%BA%D0%BE%D0%BB%D0%B0+%D0%A1%D0%B0%D0%BD%D1%82%D1%8B
+            - paragraph [ref=e111]:
+              - link "Школа Санти" [ref=e112] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/shkola-santi?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A8%D0%BA%D0%BE%D0%BB%D0%B0+%D0%A1%D0%B0%D0%BD%D1%82%D1%8B
+          - generic [ref=e113]:
+            - link "купити квитки" [ref=e114] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/naglyadacs?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%BC%D0%BE%D1%82%D1%80%D0%B8%D1%82%D0%B5%D0%BB%D1%8C
+            - link "Наглядач" [ref=e115] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/naglyadacs?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%BC%D0%BE%D1%82%D1%80%D0%B8%D1%82%D0%B5%D0%BB%D1%8C
+            - paragraph [ref=e116]:
+              - link "Наглядач" [ref=e117] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/naglyadacs?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%BC%D0%BE%D1%82%D1%80%D0%B8%D1%82%D0%B5%D0%BB%D1%8C
+          - generic [ref=e118]:
+            - link "купити квитки" [ref=e119] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/sentimentalna-c-nn-st?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B5%D0%BD%D1%82%D0%B8%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F+%D1%86%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C
+            - link "Сентиментальна цінність" [ref=e120] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/sentimentalna-c-nn-st?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B5%D0%BD%D1%82%D0%B8%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F+%D1%86%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C
+            - paragraph [ref=e121]:
+              - link "Сентиментальна цінність" [ref=e122] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/sentimentalna-c-nn-st?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B5%D0%BD%D1%82%D0%B8%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F+%D1%86%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C
+          - generic [ref=e123]:
+            - link "купити квитки" [ref=e124] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/v-csn-st?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%92%D0%B5%D1%87%D0%BD%D0%BE%D1%81%D1%82%D1%8C
+            - link "Вічність" [ref=e125] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/v-csn-st?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%92%D0%B5%D1%87%D0%BD%D0%BE%D1%81%D1%82%D1%8C
+            - paragraph [ref=e126]:
+              - link "Вічність" [ref=e127] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/v-csn-st?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%92%D0%B5%D1%87%D0%BD%D0%BE%D1%81%D1%82%D1%8C
+          - generic [ref=e128]:
+            - link "купити квитки" [ref=e129] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/ostann-i-v-k-ng?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D0%B8%D0%B9+%D0%B2%D0%B8%D0%BA%D0%B8%D0%BD%D0%B3
+            - link "Останній вікінг" [ref=e130] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/ostann-i-v-k-ng?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D0%B8%D0%B9+%D0%B2%D0%B8%D0%BA%D0%B8%D0%BD%D0%B3
+            - paragraph [ref=e131]:
+              - link "Останній вікінг" [ref=e132] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/ostann-i-v-k-ng?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D0%B8%D0%B9+%D0%B2%D0%B8%D0%BA%D0%B8%D0%BD%D0%B3
+          - generic [ref=e133]:
+            - link "купити квитки" [ref=e134] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/zootropol-s-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%97%D0%BE%D0%BE%D1%82%D1%80%D0%BE%D0%BF%D0%BE%D0%BB%D0%B8%D1%81+2
+            - link "Зоотрополіс 2" [ref=e135] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/zootropol-s-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%97%D0%BE%D0%BE%D1%82%D1%80%D0%BE%D0%BF%D0%BE%D0%BB%D0%B8%D1%81+2
+            - paragraph [ref=e136]:
+              - link "Зоотрополіс 2" [ref=e137] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/zootropol-s-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%97%D0%BE%D0%BE%D1%82%D1%80%D0%BE%D0%BF%D0%BE%D0%BB%D0%B8%D1%81+2
+          - generic [ref=e138]:
+            - link "купити квитки" [ref=e139] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/jodnogo-viboru?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9D%D0%B8%D0%BA%D0%B0%D0%BA%D0%BE%D0%B3%D0%BE+%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%D0%B0
+            - link "Жодного вибору" [ref=e140] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/jodnogo-viboru?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9D%D0%B8%D0%BA%D0%B0%D0%BA%D0%BE%D0%B3%D0%BE+%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%D0%B0
+            - paragraph [ref=e141]:
+              - link "Жодного вибору" [ref=e142] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/jodnogo-viboru?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9D%D0%B8%D0%BA%D0%B0%D0%BA%D0%BE%D0%B3%D0%BE+%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%D0%B0
+          - generic [ref=e143]:
+            - link "купити квитки" [ref=e144] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/ti-kosmos?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A2%D1%8B+%E2%80%93+%D0%9A%D0%BE%D1%81%D0%BC%D0%BE%D1%81
+            - link "Ти – Космос" [ref=e145] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/ti-kosmos?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A2%D1%8B+%E2%80%93+%D0%9A%D0%BE%D1%81%D0%BC%D0%BE%D1%81
+            - paragraph [ref=e146]:
+              - link "Ти – Космос" [ref=e147] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/ti-kosmos?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A2%D1%8B+%E2%80%93+%D0%9A%D0%BE%D1%81%D0%BC%D0%BE%D1%81
+          - generic [ref=e148]:
+            - link "купити квитки" [ref=e149] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/nuarnberg?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9D%D1%8E%D1%80%D0%BD%D0%B1%D0%B5%D1%80%D0%B3
+            - link "Нюрнберг" [ref=e150] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/nuarnberg?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9D%D1%8E%D1%80%D0%BD%D0%B1%D0%B5%D1%80%D0%B3
+            - paragraph [ref=e151]:
+              - link "Нюрнберг" [ref=e152] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/nuarnberg?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9D%D1%8E%D1%80%D0%BD%D0%B1%D0%B5%D1%80%D0%B3
+          - generic [ref=e153]:
+            - link "купити квитки" [ref=e154] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/corne-p-r-ya?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A7%D1%91%D1%80%D0%BD%D0%BE%D0%B5+%D0%BF%D0%B5%D1%80%D0%BE
+            - link "Чорне пір'я" [ref=e155] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/corne-p-r-ya?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A7%D1%91%D1%80%D0%BD%D0%BE%D0%B5+%D0%BF%D0%B5%D1%80%D0%BE
+            - paragraph [ref=e156]:
+              - link "Чорне пір'я" [ref=e157] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/corne-p-r-ya?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A7%D1%91%D1%80%D0%BD%D0%BE%D0%B5+%D0%BF%D0%B5%D1%80%D0%BE
+          - generic [ref=e158]:
+            - link "купити квитки" [ref=e159] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/monstr-p-d-l-jkom?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9C%D0%BE%D0%BD%D1%81%D1%82%D1%80+%D0%BF%D0%BE%D0%B4+%D0%BA%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%8E
+            - link "Монстр під ліжком" [ref=e160] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/monstr-p-d-l-jkom?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9C%D0%BE%D0%BD%D1%81%D1%82%D1%80+%D0%BF%D0%BE%D0%B4+%D0%BA%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%8E
+            - paragraph [ref=e161]:
+              - link "Монстр під ліжком" [ref=e162] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/monstr-p-d-l-jkom?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9C%D0%BE%D0%BD%D1%81%D1%82%D1%80+%D0%BF%D0%BE%D0%B4+%D0%BA%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%8E
+          - generic [ref=e163]:
+            - link "купити квитки" [ref=e164] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/p-yat-nocsei-u-fredd-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D1%8F%D1%82%D1%8C+%D0%BD%D0%BE%D1%87%D0%B5%D0%B9+%D1%83+%D0%A4%D1%80%D0%B5%D0%B4%D0%B4%D0%B8+2
+            - link "П'ять ночей у Фредді 2" [ref=e165] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/p-yat-nocsei-u-fredd-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D1%8F%D1%82%D1%8C+%D0%BD%D0%BE%D1%87%D0%B5%D0%B9+%D1%83+%D0%A4%D1%80%D0%B5%D0%B4%D0%B4%D0%B8+2
+            - paragraph [ref=e166]:
+              - link "П'ять ночей у Фредді 2" [ref=e167] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/p-yat-nocsei-u-fredd-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D1%8F%D1%82%D1%8C+%D0%BD%D0%BE%D1%87%D0%B5%D0%B9+%D1%83+%D0%A4%D1%80%D0%B5%D0%B4%D0%B4%D0%B8+2
+          - generic [ref=e168]:
+            - link "купити квитки" [ref=e169] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/sirat?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B8%D1%80%D0%B0%D1%82
+            - link "Сират" [ref=e170] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/sirat?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B8%D1%80%D0%B0%D1%82
+            - paragraph [ref=e171]:
+              - link "Сират" [ref=e172] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/sirat?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B8%D1%80%D0%B0%D1%82
+          - generic [ref=e173]:
+            - link "купити квитки" [ref=e174] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/potop?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D1%82%D0%BE%D0%BF
+            - link "Повінь" [ref=e175] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/potop?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D1%82%D0%BE%D0%BF
+            - paragraph [ref=e176]:
+              - link "Повінь" [ref=e177] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/potop?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D1%82%D0%BE%D0%BF
+          - generic [ref=e178]:
+            - link "купити квитки" [ref=e179] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/wicked-carodeika-cast-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=Wicked%3A+%D0%A7%D0%B0%D1%80%D0%BE%D0%B4%D0%B5%D0%B9%D0%BA%D0%B0.+%D0%A7%D0%B0%D1%81%D1%82%D1%8C+2
+            - 'link "Wicked: Чародійка. Частина 2" [ref=e180] [cursor=pointer]':
+              - /url: https://kinoafisha.ua/ua/films/wicked-carodeika-cast-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=Wicked%3A+%D0%A7%D0%B0%D1%80%D0%BE%D0%B4%D0%B5%D0%B9%D0%BA%D0%B0.+%D0%A7%D0%B0%D1%81%D1%82%D1%8C+2
+            - paragraph [ref=e181]:
+              - 'link "Wicked: Чародійка. Частина 2" [ref=e182] [cursor=pointer]':
+                - /url: https://kinoafisha.ua/ua/films/wicked-carodeika-cast-2?utm_source=ukr.net&utm_medium=informer&utm_campaign=Wicked%3A+%D0%A7%D0%B0%D1%80%D0%BE%D0%B4%D0%B5%D0%B9%D0%BA%D0%B0.+%D0%A7%D0%B0%D1%81%D1%82%D1%8C+2
+          - generic [ref=e183]:
+            - link "купити квитки" [ref=e184] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/blakitna-stejka?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%93%D0%BE%D0%BB%D1%83%D0%B1%D0%B0%D1%8F+%D1%82%D1%80%D0%BE%D0%BF%D0%B0
+            - link "Блакитна стежка" [ref=e185] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/blakitna-stejka?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%93%D0%BE%D0%BB%D1%83%D0%B1%D0%B0%D1%8F+%D1%82%D1%80%D0%BE%D0%BF%D0%B0
+            - paragraph [ref=e186]:
+              - link "Блакитна стежка" [ref=e187] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/blakitna-stejka?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%93%D0%BE%D0%BB%D1%83%D0%B1%D0%B0%D1%8F+%D1%82%D1%80%D0%BE%D0%BF%D0%B0
+          - generic [ref=e188]:
+            - link "купити квитки" [ref=e189] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/nsaideri?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%98%D0%BD%D1%81%D0%B0%D0%B9%D0%B4%D0%B5%D1%80%D1%8B
+            - link "Інсайдери" [ref=e190] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/nsaideri?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%98%D0%BD%D1%81%D0%B0%D0%B9%D0%B4%D0%B5%D1%80%D1%8B
+            - paragraph [ref=e191]:
+              - link "Інсайдери" [ref=e192] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/nsaideri?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%98%D0%BD%D1%81%D0%B0%D0%B9%D0%B4%D0%B5%D1%80%D1%8B
+          - generic [ref=e193]:
+            - link "купити квитки" [ref=e194] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/luaz-ya-obmanu-3?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%98%D0%BB%D0%BB%D1%8E%D0%B7%D0%B8%D1%8F+%D0%BE%D0%B1%D0%BC%D0%B0%D0%BD%D0%B0+3
+            - link "Ілюзія обману 3" [ref=e195] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/luaz-ya-obmanu-3?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%98%D0%BB%D0%BB%D1%8E%D0%B7%D0%B8%D1%8F+%D0%BE%D0%B1%D0%BC%D0%B0%D0%BD%D0%B0+3
+            - paragraph [ref=e196]:
+              - link "Ілюзія обману 3" [ref=e197] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/luaz-ya-obmanu-3?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%98%D0%BB%D0%BB%D1%8E%D0%B7%D0%B8%D1%8F+%D0%BE%D0%B1%D0%BC%D0%B0%D0%BD%D0%B0+3
+          - generic [ref=e198]:
+            - link "купити квитки" [ref=e199] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/antarktida?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%90%D0%BD%D1%82%D0%B0%D1%80%D0%BA%D1%82%D0%B8%D0%B4%D0%B0
+            - link "Антарктида" [ref=e200] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/antarktida?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%90%D0%BD%D1%82%D0%B0%D1%80%D0%BA%D1%82%D0%B8%D0%B4%D0%B0
+            - paragraph [ref=e201]:
+              - link "Антарктида" [ref=e202] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/antarktida?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%90%D0%BD%D1%82%D0%B0%D1%80%D0%BA%D1%82%D0%B8%D0%B4%D0%B0
+          - generic [ref=e203]:
+            - link "купити квитки" [ref=e204] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/potyag-do-r-zdva?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D0%B5%D0%B7%D0%B4+%D0%BA+%D0%A0%D0%BE%D0%B6%D0%B4%D0%B5%D1%81%D1%82%D0%B2%D1%83
+            - link "Потяг до Різдва" [ref=e205] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/potyag-do-r-zdva?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D0%B5%D0%B7%D0%B4+%D0%BA+%D0%A0%D0%BE%D0%B6%D0%B4%D0%B5%D1%81%D1%82%D0%B2%D1%83
+            - paragraph [ref=e206]:
+              - link "Потяг до Різдва" [ref=e207] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/potyag-do-r-zdva?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9F%D0%BE%D0%B5%D0%B7%D0%B4+%D0%BA+%D0%A0%D0%BE%D0%B6%D0%B4%D0%B5%D1%81%D1%82%D0%B2%D1%83
+          - generic [ref=e208]:
+            - link "купити квитки" [ref=e209] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/vartov-r-zdva?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D1%82%D1%80%D0%B0%D0%B6%D0%B8+%D0%A0%D0%BE%D0%B6%D0%B4%D0%B5%D1%81%D1%82%D0%B2%D0%B0
+            - link "Вартові Різдва" [ref=e210] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/vartov-r-zdva?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D1%82%D1%80%D0%B0%D0%B6%D0%B8+%D0%A0%D0%BE%D0%B6%D0%B4%D0%B5%D1%81%D1%82%D0%B2%D0%B0
+            - paragraph [ref=e211]:
+              - link "Вартові Різдва" [ref=e212] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/vartov-r-zdva?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D1%82%D1%80%D0%B0%D0%B6%D0%B8+%D0%A0%D0%BE%D0%B6%D0%B4%D0%B5%D1%81%D1%82%D0%B2%D0%B0
+          - generic [ref=e213]:
+            - link "купити квитки" [ref=e214] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/naibagatsha-j-nka-u-sv-t?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B0%D0%BC%D0%B0%D1%8F+%D0%B1%D0%BE%D0%B3%D0%B0%D1%82%D0%B0%D1%8F+%D0%B6%D0%B5%D0%BD%D1%89%D0%B8%D0%BD%D0%B0+%D0%B2+%D0%BC%D0%B8%D1%80%D0%B5
+            - link "Найбагатша жінка у світі" [ref=e215] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/naibagatsha-j-nka-u-sv-t?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B0%D0%BC%D0%B0%D1%8F+%D0%B1%D0%BE%D0%B3%D0%B0%D1%82%D0%B0%D1%8F+%D0%B6%D0%B5%D0%BD%D1%89%D0%B8%D0%BD%D0%B0+%D0%B2+%D0%BC%D0%B8%D1%80%D0%B5
+            - paragraph [ref=e216]:
+              - link "Найбагатша жінка у світі" [ref=e217] [cursor=pointer]:
+                - /url: https://kinoafisha.ua/ua/films/naibagatsha-j-nka-u-sv-t?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%A1%D0%B0%D0%BC%D0%B0%D1%8F+%D0%B1%D0%BE%D0%B3%D0%B0%D1%82%D0%B0%D1%8F+%D0%B6%D0%B5%D0%BD%D1%89%D0%B8%D0%BD%D0%B0+%D0%B2+%D0%BC%D0%B8%D1%80%D0%B5
+          - generic [ref=e218]:
+            - link "купити квитки" [ref=e219] [cursor=pointer]:
+              - /url: https://kinoafisha.ua/ua/films/mag-csna-bitva-rozprava-sh-buiskii-ncident-h-pocsatok-gri-na-vibuvannya?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9C%D0%B0%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F+%D0%B1%D0%B8%D1%82%D0%B2%D0%B0%3A+%D0%A0%D0%B0%D1%81%D0%BF%D1%80%D0%B0%D0%B2%D0%B0.+%D0%A1%D0%B8%D0%B1%D1%83%D0%B9%D1%81%D0%BA%D0%B8%D0%B9+%D0%B8%D0%BD%D1%86%D0%B8%D0%B4%D0%B5%D0%BD%D1%82+%D1%85+%D0%9D%D0%B0%D1%87%D0%B0%D0%BB%D0%BE+%D0%B8%D0%B3%D1%80%D1%8B+%D0%BD%D0%B0+%D0%B2%D1%8B%D0%B1%D1%8B%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5
+            - 'link "Магічна битва: Розправа. Шібуйський інцидент х Початок гри на вибування" [ref=e220] [cursor=pointer]':
+              - /url: https://kinoafisha.ua/ua/films/mag-csna-bitva-rozprava-sh-buiskii-ncident-h-pocsatok-gri-na-vibuvannya?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9C%D0%B0%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F+%D0%B1%D0%B8%D1%82%D0%B2%D0%B0%3A+%D0%A0%D0%B0%D1%81%D0%BF%D1%80%D0%B0%D0%B2%D0%B0.+%D0%A1%D0%B8%D0%B1%D1%83%D0%B9%D1%81%D0%BA%D0%B8%D0%B9+%D0%B8%D0%BD%D1%86%D0%B8%D0%B4%D0%B5%D0%BD%D1%82+%D1%85+%D0%9D%D0%B0%D1%87%D0%B0%D0%BB%D0%BE+%D0%B8%D0%B3%D1%80%D1%8B+%D0%BD%D0%B0+%D0%B2%D1%8B%D0%B1%D1%8B%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5
+            - paragraph [ref=e221]:
+              - 'link "Магічна битва: Розправа. Шібуйський..." [ref=e222] [cursor=pointer]':
+                - /url: https://kinoafisha.ua/ua/films/mag-csna-bitva-rozprava-sh-buiskii-ncident-h-pocsatok-gri-na-vibuvannya?utm_source=ukr.net&utm_medium=informer&utm_campaign=%D0%9C%D0%B0%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F+%D0%B1%D0%B8%D1%82%D0%B2%D0%B0%3A+%D0%A0%D0%B0%D1%81%D0%BF%D1%80%D0%B0%D0%B2%D0%B0.+%D0%A1%D0%B8%D0%B1%D1%83%D0%B9%D1%81%D0%BA%D0%B8%D0%B9+%D0%B8%D0%BD%D1%86%D0%B8%D0%B4%D0%B5%D0%BD%D1%82+%D1%85+%D0%9D%D0%B0%D1%87%D0%B0%D0%BB%D0%BE+%D0%B8%D0%B3%D1%80%D1%8B+%D0%BD%D0%B0+%D0%B2%D1%8B%D0%B1%D1%8B%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5
+    - article [ref=e225]:
+      - generic [ref=e226]:
+        - heading "Головне" [level=2] [ref=e227]:
+          - link "Головне" [ref=e228] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/main.html
+        - list [ref=e229]:
+          - listitem [ref=e230]:
+            - link "Угорщина вперше викликала посла Росії через атаку на Закарпаття" [ref=e231] [cursor=pointer]:
+              - /url: https://zaxid.net/ugorshhina_vpershe_viklikala_posla_rosiyi_cherez_ataku_na_zakarpattya_n1636964
+            - generic [ref=e232]:
+              - text: (
+              - link "Zaxid.net" [ref=e233] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/zaxid-net-159.html
+              - text: )
+          - listitem [ref=e234]:
+            - 'link "Економістка, підприємець та астрологиня зі зв’язками у рф: хто така \"гадалка\" Андрія Єрмака" [ref=e235] [cursor=pointer]':
+              - /url: https://unn.ua/news/ekonomistka-pidpryiemets-ta-astrolohynia-zi-zviazkamy-u-rf-khto-taka-hadalka-andriia-yermaka
+            - generic [ref=e236]:
+              - text: (
+              - link "UNN" [ref=e237] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/unn-845.html
+              - text: )
+          - listitem [ref=e238]:
+            - 'link "Найтриваліший масований удар РФ за всю війну: що відомо про наслідки в 13 областях" [ref=e239] [cursor=pointer]':
+              - /url: https://zn.ua/ukr/war/najtrivalishij-masovanij-udar-rf-za-vsju-vijnu-shcho-vidomo-pro-naslidki-v-14-oblastjakh.html
+            - generic [ref=e240]:
+              - text: (
+              - link "ZN,ua" [ref=e241] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/zn-ua-588.html
+              - text: )
+        - link "всі головні події дня" [ref=e243] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/main.html
+      - generic [ref=e244]:
+        - heading "Війна" [level=2] [ref=e245]:
+          - link "Війна" [ref=e246] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/russianaggression.html
+        - generic [ref=e247]:
+          - time [ref=e248]: 21:58
+          - generic [ref=e249]:
+            - link "Масована атака РФ на Черкащину — є поранені та руйнування" [ref=e250] [cursor=pointer]:
+              - /url: https://uatv.ua/uk/masovana-ataka-rf-na-cherkashhynu-ye-poraneni-ta-rujnuvannya/
+            - generic [ref=e251]:
+              - text: (
+              - link "UA|TV" [ref=e252] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/ua-tv-3489.html
+              - text: )
+        - generic [ref=e253]:
+          - time [ref=e254]: 21:54
+          - generic [ref=e255]:
+            - link "РФ здійснила «одну з найдовших» атак по Україні (відео)" [ref=e256] [cursor=pointer]:
+              - /url: https://www.radiosvoboda.org/a/video-masovana-ataka-rf/33756234.html
+            - generic [ref=e257]:
+              - text: (
+              - link "Радіо Свобода" [ref=e258] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/radio-svoboda-378.html
+              - text: )
+        - generic [ref=e259]:
+          - time [ref=e260]: 21:50
+          - generic [ref=e261]:
+            - link "Кількість БПЛА, які застосовує противник на фронтах Слов'янська і Краматорська, вимірюється десятками тисяч" [ref=e262] [cursor=pointer]:
+              - /url: https://v-variant.com.ua/kilkist-bpla-iaki-zastosovuie-protivnik-na-frontakh-slovianska-i-kramatorska-vimiriuietsia-diesiatkami-tisiach/
+            - generic [ref=e263]:
+              - text: (
+              - link "Східний варіант" [ref=e264] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/shidnij-variant-3796.html
+              - text: )
+        - generic [ref=e265]:
+          - time [ref=e266]: 21:48
+          - generic [ref=e267]:
+            - 'link "Бійці ЗСУ врятували цивільних за допомогою наземного дрона: відео унікальної операції" [ref=e268] [cursor=pointer]':
+              - /url: https://www.rbc.ua/rus/news/biytsi-zsu-vryatuvali-tsivilnih-dopomogoyu-1778696908.html
+            - generic [ref=e269]:
+              - text: (
+              - link "РБК-Україна" [ref=e270] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/rbk-ukrayina-84.html
+              - text: )
+        - generic [ref=e271]:
+          - time [ref=e272]: 21:25
+          - generic [ref=e273]:
+            - link "Це питання часу, – Братчук заінтригував цілями України у Криму" [ref=e274] [cursor=pointer]:
+              - /url: https://24tv.ua/ataki-krim-yaku-tsil-planuye-uraziti-tam-ukrayina_n3067398&utm_source=ukrnet&utm_medium=cpm&utm_campaign=ukrnetvideo
+            - generic [ref=e275]:
+              - text: (
+              - link "24 канал" [ref=e276] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/24-kanal-628.html
+              - text: )
+        - link "всі новини про російську агресію в Україні" [ref=e278] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/russianaggression.html
+      - generic [ref=e279]:
+        - heading "Політика" [level=2] [ref=e280]:
+          - link "Політика" [ref=e281] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/politics.html
+        - generic [ref=e282]:
+          - time [ref=e283]: 21:58
+          - generic [ref=e284]:
+            - link "Зеленський зустрівся з Нікушором Даном - запропонував Румунії Drone Deal та обговорив вступ до ЄС" [ref=e285] [cursor=pointer]:
+              - /url: https://unn.ua/news/zelenskyi-zustrivsia-z-nikushorom-danom-zaproponuvav-rumunii-drone-deal-ta-obhovoryv-vstup-do-yes
+            - generic [ref=e286]:
+              - text: (
+              - link "UNN" [ref=e287] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/unn-845.html
+              - text: )
+        - generic [ref=e288]:
+          - time [ref=e289]: 21:43
+          - generic [ref=e290]:
+            - link "У Палаті представників США зібрали голоси, щоб винести на голосування допомогу Україні" [ref=e291] [cursor=pointer]:
+              - /url: https://www.eurointegration.com.ua/news/2026/05/13/7237530/
+            - generic [ref=e292]:
+              - text: (
+              - link "Європейська правда" [ref=e293] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/yevropejska-pravda-2364.html
+              - text: )
+        - generic [ref=e294]:
+          - time [ref=e295]: 21:26
+          - generic [ref=e296]:
+            - 'link "Drone Deal: Україна відправить в Литву експертів для захисту неба" [ref=e297] [cursor=pointer]':
+              - /url: https://dw.com/p/5DjP5?maca=ukr-rss-ukrnet-ukr-all-3816-xml
+            - generic [ref=e298]:
+              - text: (
+              - link "Deutsche Welle" [ref=e299] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/deutsche-welle-407.html
+              - text: )
+        - generic [ref=e300]:
+          - time [ref=e301]: 20:48
+          - generic [ref=e302]:
+            - 'link "Politico: Генсек Рютте запропонував країнам НАТО виділяти на допомогу Україні 0,25 % ВВП" [ref=e303] [cursor=pointer]':
+              - /url: https://babel.ua/news/126948-politico-gensek-ryutte-zaproponuvav-krajinam-nato-vidiliti-na-dopomogu-ukrajini-0-25-vvp
+            - generic [ref=e304]:
+              - text: (
+              - link "Бабель" [ref=e305] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/babel-3644.html
+              - text: )
+        - generic [ref=e306]:
+          - time [ref=e307]: 20:30
+          - generic [ref=e308]:
+            - link "ЄС і Данія приєднаються до угоди про Спецтрибунал щодо злочину агресії РФ – Сибіга" [ref=e309] [cursor=pointer]:
+              - /url: https://www.radiosvoboda.org/a/news-spetstrybunal-mzs-es-dania/33756207.html
+            - generic [ref=e310]:
+              - text: (
+              - link "Радіо Свобода" [ref=e311] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/radio-svoboda-378.html
+              - text: )
+        - link "всі політичні новини України" [ref=e313] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/politics.html
+      - generic [ref=e314]:
+        - heading "Економіка" [level=2] [ref=e315]:
+          - link "Економіка" [ref=e316] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/economics.html
+        - generic [ref=e317]:
+          - time [ref=e318]: 22:00
+          - generic [ref=e319]:
+            - 'link "Українець зробив застосунок \"ФОП Помічник\": що він вміє" [ref=e320] [cursor=pointer]':
+              - /url: https://retailers.ua/news/menedjment/ukrayinets-zrobiv-zastosunok-fop-pomichnik-scho-vin-vmiye/
+            - generic [ref=e321]:
+              - text: (
+              - link "Retailers.ua" [ref=e322] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/retailers-4737.html
+              - text: )
+        - generic [ref=e323]:
+          - time [ref=e324]: 21:56
+          - generic [ref=e325]:
+            - 'link "У травні посилили перевірки пенсій по інвалідності: кому можуть призупинити виплати" [ref=e326] [cursor=pointer]':
+              - /url: https://fbc.biz.ua/news/%classify%/u-travni-posilili-perevirki-pensij-po-invalidnosti-komu-mozhut-prizupiniti-viplati/
+            - generic [ref=e327]:
+              - text: (
+              - link "Перший бізнесовий" [ref=e328] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/pershij-biznesovij-4354.html
+              - text: )
+        - generic [ref=e329]:
+          - time [ref=e330]: 21:55
+          - generic [ref=e331]:
+            - 'link "Приватизовану квартиру можуть забрати навіть через 20 років: які помилки стають фатальними" [ref=e332] [cursor=pointer]':
+              - /url: https://24tv.ua/realestate24/privatizatsiya-kvartiri-ukrayini-chomu-sud-mozhe-skasuvati-pravo_n3067460
+            - generic [ref=e333]:
+              - text: (
+              - link "24 канал" [ref=e334] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/24-kanal-628.html
+              - text: )
+        - generic [ref=e335]:
+          - time [ref=e336]: 21:48
+          - generic [ref=e337]:
+            - 'link "Втрачено до 60% врожаю: що буде з популярною ягодою в Україні" [ref=e338] [cursor=pointer]':
+              - /url: https://www.obozrevatel.com/ukr/ekonomika-glavnaya/economy/vtracheno-do-60-vrozhayu-scho-bude-z-populyarnoyu-yagodoyu-v-ukraini.htm
+            - generic [ref=e339]:
+              - text: (
+              - link "OBOZ.UA" [ref=e340] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/oboz-ua-9.html
+              - text: )
+        - generic [ref=e341]:
+          - time [ref=e342]: 21:47
+          - generic [ref=e343]:
+            - link "ТАС Агро завершила весняну посівну 2026 та вперше виростила олійний льон" [ref=e344] [cursor=pointer]:
+              - /url: https://agroreview.com/content/roslyny/tas-agro-zavershyla-vesnyanu-posivnu-2/
+            - generic [ref=e345]:
+              - text: (
+              - link "AgroReview" [ref=e346] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/agroreview-3371.html
+              - text: )
+        - link "всі новини економіки та фінансів" [ref=e348] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/economics.html
+      - generic [ref=e349]:
+        - heading "Події" [level=2] [ref=e350]:
+          - link "Події" [ref=e351] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/criminal.html
+        - generic [ref=e352]:
+          - time [ref=e353]: 22:00
+          - generic [ref=e354]:
+            - link "В Ужгороді поліція затримала зловмисника, який з пневматичної гвинтівки вистрілив у людину" [ref=e355] [cursor=pointer]:
+              - /url: https://magnolia-tv.com/news/145648-v-uzhhorodi-politsiya-zatrymala-zlovmysnyka-yakyy-z-pnevmatychnoyi-hvyntivky-vystrilyv?prov=ukrnet
+            - generic [ref=e356]:
+              - text: (
+              - link "Магнолія-ТВ" [ref=e357] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/magnoliya-tv-18.html
+              - text: )
+        - generic [ref=e358]:
+          - time [ref=e359]: 21:51
+          - generic [ref=e360]:
+            - 'link "У Чикаго українець \"розвів\" мільярдера на 450 млн доларів: що вигадав" [ref=e361] [cursor=pointer]':
+              - /url: https://www.stopcor.org/ukr/section-zarubezhom/news-u-chikago-ukrainets-rozviv-milyardera-na-450-mln-dolariv-scho-vigadav-13-05-2026.html
+            - generic [ref=e362]:
+              - text: (
+              - link "СтопКор" [ref=e363] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/stopkor-2920.html
+              - text: )
+        - generic [ref=e364]:
+          - time [ref=e365]: 21:35
+          - generic [ref=e366]:
+            - 'link "Розстріляв побратимів під час служби: на Миколаївщині взяли під варту військового за подвійне вбивство" [ref=e367] [cursor=pointer]':
+              - /url: https://regionews.ua/ukr/news/nikolaevshchina/1778696631-rozstrilyav-pobratimiv-pid-chas-sluzhbi-na-mikolayivshchini-vzyali-pid-vartu-viyskovogo-za-podviyne-vbivstvo
+            - generic [ref=e368]:
+              - text: (
+              - link "RegioNews" [ref=e369] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/regionews-4010.html
+              - text: )
+        - generic [ref=e370]:
+          - time [ref=e371]: 21:30
+          - generic [ref=e372]:
+            - link "Засудили адміністратора телеграм-каналів, що повідомляли про мобілізаційні заходи на Київщині" [ref=e373] [cursor=pointer]:
+              - /url: https://internetua.com/zasudili-administratora-telegram-kanaliv-sxo-povidomlyali-pro-mobilizaciini-zahodi-na-kiyivsxini?utm_source=ukrnet_news
+            - generic [ref=e374]:
+              - text: (
+              - link "internetua" [ref=e375] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/internetua-189.html
+              - text: )
+        - generic [ref=e376]:
+          - time [ref=e377]: 21:04
+          - generic [ref=e378]:
+            - link "На Одещині розслідують закупівлі медобладнання за завищеними цінами" [ref=e379] [cursor=pointer]:
+              - /url: https://intent.press/news/crime/2026/na-odeshchini-rozsliduiut-zakupivli-medobladnannia-za-zavishchenimi-tsinami/
+            - generic [ref=e380]:
+              - text: (
+              - link "Інтент" [ref=e381] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/intent-3171.html
+              - text: )
+        - link "всі новини подій, аварій, катастроф" [ref=e383] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/criminal.html
+      - generic [ref=e384]:
+        - heading "Суспільство" [level=2] [ref=e385]:
+          - link "Суспільство" [ref=e386] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/society.html
+        - generic [ref=e387]:
+          - time [ref=e388]: 21:43
+          - generic [ref=e389]:
+            - link "У США зняли мурал з убитою українкою Іриною Заруцькою" [ref=e390] [cursor=pointer]:
+              - /url: https://bigkyiv.com.ua/u-ssha-znyaly-mural-z-ubytoyu-ukrayinkoyu-irynoyu-zaruczkoyu/
+            - generic [ref=e391]:
+              - text: (
+              - link "Big Kyiv" [ref=e392] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/velikij-kiyiv-3082.html
+              - text: )
+        - generic [ref=e393]:
+          - time [ref=e394]: 21:22
+          - generic [ref=e395]:
+            - link "Транснаціональний Культурний комплекс “Прекукутень-Аріушд-Кукутень-Трипілля” включено до Попереднього списку ЮНЕСКО" [ref=e396] [cursor=pointer]:
+              - /url: https://rubryka.com/2026/05/13/transnatsionalnyj-kulturnyj-kompleks-prekukuten-ariushd-kukuten-trypillya-vklyucheno-do-poperednogo-spysku-yunesko/
+            - generic [ref=e397]:
+              - text: (
+              - link "Рубрика" [ref=e398] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/rubrika-3543.html
+              - text: )
+        - generic [ref=e399]:
+          - time [ref=e400]: 21:13
+          - generic [ref=e401]:
+            - link "Євросоюз готує рішення про продовження захисту українців ще на два роки" [ref=e402] [cursor=pointer]:
+              - /url: https://politarena.ua/yevrosoiuz-hotuie-rishennia-pro-prodovzhennia-zakhystu-ukraintsiv-shche-na-dva-roky-169660/
+            - generic [ref=e403]:
+              - text: (
+              - link "Політарена" [ref=e404] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/politarena-4384.html
+              - text: )
+        - generic [ref=e405]:
+          - time [ref=e406]: 21:13
+          - generic [ref=e407]:
+            - 'link "Дощі в центрі й тепло на сході: прогноз погоди в Україні на завтра" [ref=e408] [cursor=pointer]':
+              - /url: https://weather.novyny.live/doshchi-v-tsentri-i-teplo-na-skhodi-prognoz-pogodi-v-ukrayini-na-zavtra-326377.html
+            - generic [ref=e409]:
+              - text: (
+              - link "Новини.LIVE" [ref=e410] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/novini-live-4100.html
+              - text: )
+        - generic [ref=e411]:
+          - time [ref=e412]: 21:06
+          - generic [ref=e413]:
+            - link "У Парижі відбулася світова прем’єра документального фільму «Мир для Ніни»" [ref=e414] [cursor=pointer]:
+              - /url: https://detector.media/infospace/article/249727/2026-05-13-u-paryzhi-vidbulasya-svitova-premiera-dokumentalnogo-filmu-myr-dlya-niny/
+            - generic [ref=e415]:
+              - text: (
+              - link "Детектор медіа" [ref=e416] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/detektor-media-2925.html
+              - text: )
+        - link "всі новини розділу Суспільство" [ref=e418] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/society.html
+      - generic [ref=e419]:
+        - link "Київські новини" [ref=e421] [cursor=pointer]:
+          - /url: javascript:void(0)
+        - generic [ref=e423]:
+          - time [ref=e424]: 21:51
+          - generic [ref=e425]:
+            - 'link "Смертельна ДТП в Ірпені: водія вантажівки, який збив 8-річну дівчинку, взяли під варту" [ref=e426] [cursor=pointer]':
+              - /url: https://life.kyiv.ua/news/smertelna-dtp-v-irpeni-vodiia-vantazhivky-iakyj-zbyv-8-richnu-divchynku-vzialy-p
+            - generic [ref=e427]:
+              - text: (
+              - link "Life.kyiv.ua" [ref=e428] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/lifekyiv-4552.html
+              - text: )
+        - generic [ref=e429]:
+          - time [ref=e430]: 21:11
+          - generic [ref=e431]:
+            - 'link "60 мільйонів вкладено, позов подано: ліквідатор Київського радіозаводу намагається відібрати у дітей спортклуб \"Восход\"" [ref=e432] [cursor=pointer]':
+              - /url: https://www.stopcor.org/ukr/section-suspilstvo/news-60-miljoniv-vkladeno-pozov-podano-likvidator-kiivskogo-radiozavodu-namagaetsya-vidibrati-u-ditej-sportklub-voshod-13-05-2026.html
+            - generic [ref=e433]:
+              - text: (
+              - link "СтопКор" [ref=e434] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/stopkor-2920.html
+              - text: )
+        - generic [ref=e435]:
+          - time [ref=e436]: 20:49
+          - generic [ref=e437]:
+            - link "Київські митники поповнили банк крові Інституту Шалімова на 32 літри. ФОТО" [ref=e438] [cursor=pointer]:
+              - /url: https://vechirniy.kyiv.ua/news/127106/
+            - generic [ref=e439]:
+              - text: (
+              - link "Вечірній Київ" [ref=e440] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/vechirnij-kiyiv-2781.html
+              - text: )
+        - generic [ref=e441]:
+          - time [ref=e442]: 19:45
+          - generic [ref=e443]:
+            - link "Жителям Київщини повернули доступ до 10 гектарів лісу та берега Київського водосховища" [ref=e444] [cursor=pointer]:
+              - /url: https://bigkyiv.com.ua/zhytelyam-kyyivshhyny-povernuly-dostup-do-10-gektariv-lisu-ta-berega-kyyivskogo-vodoshovyshha/
+            - generic [ref=e445]:
+              - text: (
+              - link "Big Kyiv" [ref=e446] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/velikij-kiyiv-3082.html
+              - text: )
+        - generic [ref=e447]:
+          - time [ref=e448]: 19:31
+          - generic [ref=e449]:
+            - 'link "Фейкова квартира в Києві: 21-річну хмельничанку ошукали на оренді житла" [ref=e450] [cursor=pointer]':
+              - /url: https://internetua.com/feikova-kvartira-v-kiyevi-21-ricsnu-hmelnicsanku-oshukali-na-orendi-jitla?utm_source=ukrnet_news
+            - generic [ref=e451]:
+              - text: (
+              - link "internetua" [ref=e452] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/internetua-189.html
+              - text: )
+        - link "всі новини розділу" [ref=e454] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/kyiv.html
+      - generic [ref=e455]:
+        - heading "Технології" [level=2] [ref=e456]:
+          - link "Технології" [ref=e457] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/technologies.html
+        - generic [ref=e458]:
+          - time [ref=e459]: 21:46
+          - generic [ref=e460]:
+            - 'link "Oppo ColorOS 16.1: Революція Android з ІІ-помічником та міжплатформним обміном" [ref=e461] [cursor=pointer]':
+              - /url: https://itnet.com.ua/uk/oppo-coloros-16-1-revolyuciya-android-s-ii-pomoshhnikom-i-mezhplatformennym-obmenom/
+            - generic [ref=e462]:
+              - text: (
+              - link "ITnet" [ref=e463] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/itnet-4489.html
+              - text: )
+        - generic [ref=e464]:
+          - time [ref=e465]: 21:21
+          - generic [ref=e466]:
+            - link "Samsung випустила першу бету One UI 9 для Galaxy S26" [ref=e467] [cursor=pointer]:
+              - /url: https://www.uitech.com.ua/tech-smartfoni/samsung-galaxy-s26-one-ui-9-beta-release/
+            - generic [ref=e468]:
+              - text: (
+              - link "Uitech" [ref=e469] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/uitech-4788.html
+              - text: )
+        - generic [ref=e470]:
+          - time [ref=e471]: 21:20
+          - generic [ref=e472]:
+            - link "Ілон Маск має намір побудувати мережу космопортів по всьому світу для SpaceX" [ref=e473] [cursor=pointer]:
+              - /url: https://toneto.net/news/tehnologii/lon-mask-ma---nam--r-pobuduvati-meregu-kosmoport--v-po-vsomu-sv--tu-dlya-SpaceX-
+            - generic [ref=e474]:
+              - text: (
+              - link "ТОнеТО" [ref=e475] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/toneto-556.html
+              - text: )
+        - generic [ref=e476]:
+          - time [ref=e477]: 21:15
+          - generic [ref=e478]:
+            - link "Смартфон від Дональда Трампа можна буде побачити вже цього тижня" [ref=e479] [cursor=pointer]:
+              - /url: https://noworries.news/smartfon-vid-donalda-trampa-mozhna-bude-pobachyty-vzhe-czogo-tyzhnya/
+            - generic [ref=e480]:
+              - text: (
+              - link "No worries!" [ref=e481] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/no-worries-4274.html
+              - text: )
+        - generic [ref=e482]:
+          - time [ref=e483]: 21:15
+          - generic [ref=e484]:
+            - 'link "Бета оновленого Steam Marketplace стартувала: Valve переробила маркет вперше за декілька років" [ref=e485] [cursor=pointer]':
+              - /url: https://itc.ua/ua/novini/beta-onovlenogo-steam-marketplace-startuvala-valve-pererobyla-market-vpershe-za-dekilka-rokiv/
+            - generic [ref=e486]:
+              - text: (
+              - link "ITC" [ref=e487] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/itc-4215.html
+              - text: )
+        - link "всі новини інформаційних технологій" [ref=e489] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/technologies.html
+      - generic [ref=e490]:
+        - heading "Наука" [level=2] [ref=e491]:
+          - link "Наука" [ref=e492] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/science.html
+        - generic [ref=e493]:
+          - time [ref=e494]: 21:46
+          - generic [ref=e495]:
+            - link "Зонд NASA пролетів повз Марс на швидкості 20 000 км/год" [ref=e496] [cursor=pointer]:
+              - /url: https://cikavosti.com/zond-nasa-proletiv-povz-mars-na-shvydkosti-20-000-km-god/
+            - generic [ref=e497]:
+              - text: (
+              - link "Cikavosti.com" [ref=e498] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/cikavosti-com-2066.html
+              - text: )
+        - generic [ref=e499]:
+          - time [ref=e500]: 21:12
+          - generic [ref=e501]:
+            - 'link "Люди будували з дерева ще до Homo sapiens: що знайшли археологи в Африці" [ref=e502] [cursor=pointer]':
+              - /url: https://expert.in.ua/nauka/lyudy-buduvaly-z-dereva-shhe-do-homo-sapiens-shho-znajshly-arheology-v-afrytsi/
+            - generic [ref=e503]:
+              - text: (
+              - link "Експерт" [ref=e504] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/ekspert-3683.html
+              - text: )
+        - generic [ref=e505]:
+          - time [ref=e506]: 21:04
+          - generic [ref=e507]:
+            - link "Пішли по допомогу. Вчені ідентифікували рештки моряків полярної експедиції 1845 року" [ref=e508] [cursor=pointer]:
+              - /url: https://techno.nv.ua/ukr/popscience/ekspediciya-franklina-chotiroh-chleniv-ekipazhu-identifikuvali-zavdyaki-dnk-50607597.html
+            - generic [ref=e509]:
+              - text: (
+              - link "NV" [ref=e510] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/nv-2347.html
+              - text: )
+        - generic [ref=e511]:
+          - time [ref=e512]: 21:01
+          - generic [ref=e513]:
+            - link "У бурштині знайшли світлячка віком майже 100 млн років" [ref=e514] [cursor=pointer]:
+              - /url: https://socportal.info/ua/news/u-burshtini-znaishli-svitlyachka-vikom-maizhe-100-mln-rokiv/
+            - generic [ref=e515]:
+              - text: (
+              - link "Соцпортал" [ref=e516] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/socportal-1954.html
+              - text: )
+        - generic [ref=e517]:
+          - time [ref=e518]: 20:52
+          - generic [ref=e519]:
+            - link "Науковці назвали раціони для біологічного \"омолодження\" літніх людей" [ref=e520] [cursor=pointer]:
+              - /url: https://news.online.ua/naukovci-nazvali-racion-dlia-biologicnogo-omolodzennia-litnix-liudei-904011/
+            - generic [ref=e521]:
+              - text: (
+              - link "ONLINE.UA" [ref=e522] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/online-ua-270.html
+              - text: )
+        - link "всі новини науки" [ref=e524] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/science.html
+      - generic [ref=e525]:
+        - heading "Авто" [level=2] [ref=e526]:
+          - link "Авто" [ref=e527] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/auto.html
+        - generic [ref=e528]:
+          - time [ref=e529]: 21:52
+          - generic [ref=e530]:
+            - link "Cupra Leon Sportstourer вразив стилем і ходом" [ref=e531] [cursor=pointer]:
+              - /url: https://newsyou.info/2026/05/cupra-leon-sportstourer-vraziv-stilem-i-xodom
+            - generic [ref=e532]:
+              - text: (
+              - link "Newsyou" [ref=e533] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsyou-2834.html
+              - text: )
+        - generic [ref=e534]:
+          - time [ref=e535]: 21:36
+          - generic [ref=e536]:
+            - link "Легендарний Mitsubishi Pajero готують до повернення після багаторічної паузи" [ref=e537] [cursor=pointer]:
+              - /url: https://mmr.net.ua/new-cars/239649
+            - generic [ref=e538]:
+              - text: (
+              - link "MMR" [ref=e539] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/mmr-129.html
+              - text: )
+        - generic [ref=e540]:
+          - time [ref=e541]: 21:02
+          - generic [ref=e542]:
+            - link "Daimler Truck відкриває новий завод в Аргентині для вантажівок і автобусів" [ref=e543] [cursor=pointer]:
+              - /url: https://newsauto.com.ua/novyny/daimler-truck-opens-new-factory-argentina/
+            - generic [ref=e544]:
+              - text: (
+              - link "Newsauto.com.ua" [ref=e545] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsauto-com-ua-4462.html
+              - text: )
+        - generic [ref=e546]:
+          - time [ref=e547]: 20:56
+          - generic [ref=e548]:
+            - 'link "Новий Ford Edge L 2026 розсекретили до прем’єри: що змінилося в кросовері" [ref=e549] [cursor=pointer]':
+              - /url: https://uamotors.com.ua/auto/165820
+            - generic [ref=e550]:
+              - text: (
+              - link "UAMotors" [ref=e551] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/uamotors-3542.html
+              - text: )
+        - generic [ref=e552]:
+          - time [ref=e553]: 20:48
+          - generic [ref=e554]:
+            - link "Mercedes-Benz продав усі свої автосалони в Берліні канадській компанії Global Auto Holdings" [ref=e555] [cursor=pointer]:
+              - /url: https://mind.ua/news/20305161
+            - generic [ref=e556]:
+              - text: (
+              - link "mind" [ref=e557] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/mind-3333.html
+              - text: )
+        - link "всі автоновини" [ref=e559] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/auto.html
+      - generic [ref=e560]:
+        - heading "Спорт" [level=2] [ref=e561]:
+          - link "Спорт" [ref=e562] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/sport.html
+        - generic [ref=e563]:
+          - time [ref=e564]: 21:58
+          - generic [ref=e565]:
+            - link "Леброн Джеймс може погодитися на мінімальний контракт заради титулу" [ref=e566] [cursor=pointer]:
+              - /url: https://www.ua-football.com/ua/sport/basketball/1778698092-lebron-dzheyms-mozhe-pogoditisya-na-minimalniy-kontrakt-zaradi-titulu.html?utm_source=ukrnet&utm_medium=cpc&utm_campaign=uanewsukrnet
+            - generic [ref=e567]:
+              - text: (
+              - link "UA-Футбол" [ref=e568] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/ua-futbol-644.html
+              - text: )
+        - generic [ref=e569]:
+          - time [ref=e570]: 21:56
+          - generic [ref=e571]:
+            - link "Іран підкуповує друзів України фантастичною сумою – все заради проведення товариського матчу" [ref=e572] [cursor=pointer]:
+              - /url: https://football24.ua/news/iran-pidkupovuye-druziv-ukrayiny-fantastychnoyu-sumoyu-vse-zarady-provedennya-tovaryskoho-matchu-942246
+            - generic [ref=e573]:
+              - text: (
+              - link "Футбол 24" [ref=e574] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/futbol-24-792.html
+              - text: )
+        - generic [ref=e575]:
+          - time [ref=e576]: 21:55
+          - generic [ref=e577]:
+            - link "Визначився найкращий новачок сезону в НХЛ" [ref=e578] [cursor=pointer]:
+              - /url: https://champion.com.ua/ukr/ice-hockey/nazvano-naykrashchogo-novachka-sezonu-v-nhl-1073178/
+            - generic [ref=e579]:
+              - text: (
+              - link "Сhampion.com.ua" [ref=e580] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/shampion-com-ua-651.html
+              - text: )
+        - generic [ref=e581]:
+          - time [ref=e582]: 21:54
+          - generic [ref=e583]:
+            - link "Флорентіно Перес звинуватив суддів у крадіжці 18 очок" [ref=e584] [cursor=pointer]:
+              - /url: https://footballgazeta.com/spain/florentino-peres-zvinuvativ-suddiv-u-kradizhci-18-ochok.html
+            - generic [ref=e585]:
+              - text: (
+              - link "Football Gazeta" [ref=e586] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/football-gazeta-2341.html
+              - text: )
+        - generic [ref=e587]:
+          - time [ref=e588]: 21:50
+          - generic [ref=e589]:
+            - 'link "«Увесь наш світ збожеволів»: Усик зробив резонансну заяву перед боєм із Верховеном" [ref=e590] [cursor=pointer]':
+              - /url: https://sport-express.ua/box/44591-uves-nash-svit-zbozhevoliv-usik-zrobiv-rezonansnu-zayavu-pered-boyem-iz-verkhovenom
+            - generic [ref=e591]:
+              - text: (
+              - link "Sport-Express" [ref=e592] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/sport-express-770.html
+              - text: )
+        - 'link "всі спортивні новини: футбол, бокс, хокей..." [ref=e594] [cursor=pointer]':
+          - /url: https://www.ukr.net/news/sport.html
+      - generic [ref=e595]:
+        - heading "Здоров’я" [level=2] [ref=e596]:
+          - link "Здоров’я" [ref=e597] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/health.html
+        - generic [ref=e598]:
+          - time [ref=e599]: 21:53
+          - generic [ref=e600]:
+            - link "НСЗУ контролюватиме запис на КТ і МРТ у лікарнях" [ref=e601] [cursor=pointer]:
+              - /url: https://itmed.org/news/nszu_kontrolyuvatime_zapis_na_kt_i_mrt_u_likarnyakh_60976/
+            - generic [ref=e602]:
+              - text: (
+              - link "ITMED" [ref=e603] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/itmed-3700.html
+              - text: )
+        - generic [ref=e604]:
+          - time [ref=e605]: 21:45
+          - generic [ref=e606]:
+            - 'link "Для шикарної фігури: дієтологиня назвала 7 продуктів, які знищать жир на животі" [ref=e607] [cursor=pointer]':
+              - /url: https://blik.ua/health/33363-dlya-shikarnoyi-figuri-diyetologinya-nazvala-7-produktiv-yaki-znishat-zhir-na-zhivoti
+            - generic [ref=e608]:
+              - text: (
+              - link "BLIK" [ref=e609] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/blik-535.html
+              - text: )
+        - generic [ref=e610]:
+          - time [ref=e611]: 21:41
+          - generic [ref=e612]:
+            - link "Продукти, які допоможуть убезпечити організм від хвороби Альцгеймера" [ref=e613] [cursor=pointer]:
+              - /url: https://newsyou.info/2026/05/produkti-yaki-dopomozhut-ubezpechiti-organizm-vid-xvorobi-alcgejmera
+            - generic [ref=e614]:
+              - text: (
+              - link "Newsyou" [ref=e615] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsyou-2834.html
+              - text: )
+        - generic [ref=e616]:
+          - time [ref=e617]: 21:30
+          - generic [ref=e618]:
+            - 'link "Як зменшити шкоду від сидячої роботи: прості звички на щодень" [ref=e619] [cursor=pointer]':
+              - /url: https://pravdatutnews.com/health/2026/05/13/78807-yak-zmenshyty-shkodu-vid-sydyachoyi-roboty-prosti-zvychky-na
+            - generic [ref=e620]:
+              - text: (
+              - link "Pravdatutnews" [ref=e621] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/pravdatutnews-4068.html
+              - text: )
+        - generic [ref=e622]:
+          - time [ref=e623]: 21:10
+          - generic [ref=e624]:
+            - link "Небезпека вживання соди при підвищеній кислотності шлунка" [ref=e625] [cursor=pointer]:
+              - /url: https://toneto.net/news/krasota-zdorove-sport/nebezpeka-vgivannya-sodi-pri-p--dvishchen--y-kislotnost---shlunka
+            - generic [ref=e626]:
+              - text: (
+              - link "ТОнеТО" [ref=e627] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/toneto-556.html
+              - text: )
+        - link "всі новини медицини, краси та косметології" [ref=e629] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/health.html
+      - generic [ref=e630]:
+        - heading "Шоу-бізнес" [level=2] [ref=e631]:
+          - link "Шоу-бізнес" [ref=e632] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/show_business.html
+        - generic [ref=e633]:
+          - time [ref=e634]: 21:42
+          - generic [ref=e635]:
+            - link "Перукар Кім Кардаш'ян бере за стрижку 200 тисяч доларів" [ref=e636] [cursor=pointer]:
+              - /url: https://newsyou.info/2026/05/perukar-kim-kardashyan-bere-za-strizhku-200-tisyach-dolariv-2
+            - generic [ref=e637]:
+              - text: (
+              - link "Newsyou" [ref=e638] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsyou-2834.html
+              - text: )
+        - generic [ref=e639]:
+          - time [ref=e640]: 21:42
+          - generic [ref=e641]:
+            - 'link "Пітер Джексон повертається в режисерське крісло через 12 років: \"Пригоди Тінтіна 2\" офіційно підтверджено" [ref=e642] [cursor=pointer]':
+              - /url: https://itc.ua/ua/novini/adventures-tintin-2-peter-jackson-cannes-confirmed-2026/
+            - generic [ref=e643]:
+              - text: (
+              - link "ITC" [ref=e644] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/itc-4215.html
+              - text: )
+        - generic [ref=e645]:
+          - time [ref=e646]: 21:25
+          - generic [ref=e647]:
+            - link "Зірка серіалу \"Тед Лассо\" став професійним футболістом у 35 років – підписав контракт і вже зіграв матч" [ref=e648] [cursor=pointer]:
+              - /url: https://sport24.ua/uk/football/news/153255-zirka-serialu-ted-lasso-stav-profesiynim-futbolistom-u-35-rokiv-pidpisav-kontrakt-i-vzhe-zigrav-match
+            - generic [ref=e649]:
+              - text: (
+              - link "Спорт 24" [ref=e650] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/sport-24-4196.html
+              - text: )
+        - generic [ref=e651]:
+          - time [ref=e652]: 20:59
+          - generic [ref=e653]:
+            - link "Ксенія Мішина показала, як навчається аюрведи в Індії" [ref=e654] [cursor=pointer]:
+              - /url: https://liza.ua/stars/kseniya-mishyna-pokazala-yak-navchayetsya-ayurvedy-v-indiyi/
+            - generic [ref=e655]:
+              - text: (
+              - link "Liza.ua" [ref=e656] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/liza-2123.html
+              - text: )
+        - generic [ref=e657]:
+          - time [ref=e658]: 20:55
+          - generic [ref=e659]:
+            - 'link "«Вирішив пограти з сином у свої 30+»: чоловік MamaRika розсмішив мережу кумедним відео про свій вік" [ref=e660] [cursor=pointer]':
+              - /url: https://blik.ua/show-biz/33360-virishiv-pograti-z-sinom-u-svoyi-30-cholovik-mamarika-rozsmishiv-merezhu-kumednim-video-pro-svii-vik
+            - generic [ref=e661]:
+              - text: (
+              - link "BLIK" [ref=e662] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/blik-535.html
+              - text: )
+        - link "всі новини розділу Шоу-бізнес" [ref=e664] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/show_business.html
+      - generic [ref=e665]:
+        - heading "За кордоном" [level=2] [ref=e666]:
+          - link "За кордоном" [ref=e667] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/world.html
+        - generic [ref=e668]:
+          - time [ref=e669]: 21:58
+          - generic [ref=e670]:
+            - 'link "У 6 разів більше: незалежні аналітики назвали рекордну ціну \"Золотого купола\"" [ref=e671] [cursor=pointer]':
+              - /url: https://internetua.com/u-6-raziv-bilshe-nezalejni-analitiki-nazvali-rekordnu-cinu-zolotogo-kupola-?utm_source=ukrnet_news
+            - generic [ref=e672]:
+              - text: (
+              - link "internetua" [ref=e673] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/internetua-189.html
+              - text: )
+        - generic [ref=e674]:
+          - time [ref=e675]: 21:47
+          - generic [ref=e676]:
+            - 'link "UNIFIL: \"В последние дни БПЛА \"Хизбаллы\" неоднократно атаковали наши базы\"" [ref=e677] [cursor=pointer]':
+              - /url: https://www.newsru.co.il/mideast/13may2026/un_202.html
+            - generic [ref=e678]:
+              - text: (
+              - link "NEWSru.co.il" [ref=e679] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsru-co-il-2372.html
+              - text: )
+        - generic [ref=e680]:
+          - time [ref=e681]: 21:43
+          - generic [ref=e682]:
+            - 'link "Президент Латвії звернувся до партій на тлі розпаду коаліції: \"Нестабільність – не на часі\"" [ref=e683] [cursor=pointer]':
+              - /url: https://www.eurointegration.com.ua/news/2026/05/13/7237531/
+            - generic [ref=e684]:
+              - text: (
+              - link "Європейська правда" [ref=e685] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/yevropejska-pravda-2364.html
+              - text: )
+        - generic [ref=e686]:
+          - time [ref=e687]: 21:40
+          - generic [ref=e688]:
+            - link "Помер відомий радянський ведучий Володимир Молчанов, який робив дивні заяви про Україну" [ref=e689] [cursor=pointer]:
+              - /url: https://toneto.net/news/kultura/mav-druginu-nap--vukra--nku-ta-druz--v-u-kolomi----pomer-v--domiy-radyanskiy-veduchiy-volodimir-molchanov--yakiy-robiv-divn---zayavi-pro-ukra--nu-v--n-zayavlyav--shcho-ne-moge-spriymati-ukra--nu-ta-ros--yu-yak-dv---okrem---kra--ni-shou-Oboz
+            - generic [ref=e690]:
+              - text: (
+              - link "ТОнеТО" [ref=e691] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/toneto-556.html
+              - text: )
+        - generic [ref=e692]:
+          - time [ref=e693]: 21:31
+          - generic [ref=e694]:
+            - link "Ексглава МЗС Словаччини розкритикував Фіцо через російські дрони біля кордону України" [ref=e695] [cursor=pointer]:
+              - /url: https://nenka.info/eksglava-mzs-slovachchyny-rozkrytykuvav-ficzo-cherez-rosijski-drony-bilya-kordonu-ukrayiny/
+            - generic [ref=e696]:
+              - text: (
+              - link "Nenka.info" [ref=e697] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/nenka-info-4517.html
+              - text: )
+        - link "всі новини з-за кордону" [ref=e699] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/world.html
+      - generic [ref=e700]:
+        - heading "Курйози" [level=2] [ref=e701]:
+          - link "Курйози" [ref=e702] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/curious.html
+        - generic [ref=e703]:
+          - time [ref=e704]: 20:56
+          - generic [ref=e705]:
+            - 'link "Ремонт на кухні призвів до скарбів: пара випадково знайшла клад XVII століття під підлогою" [ref=e706] [cursor=pointer]':
+              - /url: https://www.unian.ua/curiosities/skarb-pid-nogami-remont-na-fermi-v-angliji-prinis-vlasnikam-75-000-dolariv-13381110.html?utm_source=ukrnet_news
+            - generic [ref=e707]:
+              - text: (
+              - link "УНІАН" [ref=e708] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/unian-36.html
+              - text: )
+        - generic [ref=e709]:
+          - time [ref=e710]: 20:02
+          - generic [ref=e711]:
+            - 'link "Три помилки за лічені секунди: в Аргентині забили один із найдивніших автоголів року" [ref=e712] [cursor=pointer]':
+              - /url: https://newsyou.info/2026/05/tri-pomilki-za-licheni-sekundi-v-argentini-zabili-odin-iz-najdivnishix-avtogoliv-roku
+            - generic [ref=e713]:
+              - text: (
+              - link "Newsyou" [ref=e714] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsyou-2834.html
+              - text: )
+        - generic [ref=e715]:
+          - time [ref=e716]: 18:23
+          - generic [ref=e717]:
+            - link "Фан «МЮ» зробив цікаве зізнання Гвардіолі в ліфті та розвеселив його одним жестом" [ref=e718] [cursor=pointer]:
+              - /url: https://ua.tribuna.com/uk/football/blogs/3168862-fan-myu-zrobyv-tsikave-ziznannya-hvardioli-v-lifti-ta-rozvesel/
+            - generic [ref=e719]:
+              - text: (
+              - link "Tribuna.com" [ref=e720] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/tribuna-com-3681.html
+              - text: )
+        - generic [ref=e721]:
+          - time [ref=e722]: 18:18
+          - generic [ref=e723]:
+            - 'link "Студентка привела в університет таксу: такої реакції викладача на собаку не очікував ніхто" [ref=e724] [cursor=pointer]':
+              - /url: https://24tv.ua/pets24/sobaka-universiteti-zdivuvala-vikladacha-yak-vin-vidreaguvav_n3066638
+            - generic [ref=e725]:
+              - text: (
+              - link "24 канал" [ref=e726] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/24-kanal-628.html
+              - text: )
+        - generic [ref=e727]:
+          - time [ref=e728]: 17:44
+          - generic [ref=e729]:
+            - link "У США випустили сатиричну гру про Трампа та війну в Ірані, яку неможливо виграти" [ref=e730] [cursor=pointer]:
+              - /url: https://life.pravda.com.ua/culture/u-ssha-vipustili-satirichnu-gru-pro-viynu-v-irani-iniciyovanu-trampom-314947/
+            - generic [ref=e731]:
+              - text: (
+              - link "Українська правда" [ref=e732] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/ukrayinska-pravda-30.html
+              - text: )
+        - link "всі кумедні, курйозні новини" [ref=e734] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/curious.html
+      - generic [ref=e735]:
+        - heading "Фоторепортаж" [level=2] [ref=e736]:
+          - link "Фоторепортаж" [ref=e737] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/fotoreportazh.html
+        - generic [ref=e738]:
+          - time [ref=e739]: 20:52
+          - generic [ref=e740]:
+            - link "Кеті Перрі поділилася новим фото зі своєю дочкою" [ref=e741] [cursor=pointer]:
+              - /url: https://newsyou.info/2026/05/keti-perri-podililasya-novim-foto-zi-svoyeyu-dochkoyu-2
+            - generic [ref=e742]:
+              - text: (
+              - link "Newsyou" [ref=e743] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsyou-2834.html
+              - text: )
+        - generic [ref=e744]:
+          - time [ref=e745]: 20:51
+          - generic [ref=e746]:
+            - 'link "LELÈKA зізналася, як опинилася у психлікарні в Німеччині: \"Був депресивний розлад\"" [ref=e747] [cursor=pointer]':
+              - /url: https://www.rbc.ua/rus/entertainment/lel-ka-ziznalasya-k-opinilasya-psihlikarni-1778694506.html
+            - generic [ref=e748]:
+              - text: (
+              - link "РБК-Україна" [ref=e749] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/rbk-ukrayina-84.html
+              - text: )
+        - generic [ref=e750]:
+          - time [ref=e751]: 20:10
+          - generic [ref=e752]:
+            - link "Стало відомо, як склалися долі найвідоміших учасників \"Фабрики зірок\"" [ref=e753] [cursor=pointer]:
+              - /url: https://toneto.net/news/kultura/vtrachen---kar---ri--pere--zd-do-rf--vstup-do-v--yska----z--rkova-slava--yak-sklalisya-dol---nayv--dom--shih-uchasnik--v--fabriki-z--rok-
+            - generic [ref=e754]:
+              - text: (
+              - link "ТОнеТО" [ref=e755] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/toneto-556.html
+              - text: )
+        - generic [ref=e756]:
+          - time [ref=e757]: 20:00
+          - generic [ref=e758]:
+            - 'link "Збивав гелікоптери та БПЛА: воїн «Боржомі» пройшов шлях від солдата до командира батареї" [ref=e759] [cursor=pointer]':
+              - /url: https://armyinform.com.ua/2026/05/13/zbyvav-gelikoptery-ta-bpla-voyin-borzhomi-projshov-shlyah-vid-soldata-do-komandyra-batareyi/
+            - generic [ref=e760]:
+              - text: (
+              - link "АрміяINFORM" [ref=e761] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/armiyainform-4025.html
+              - text: )
+        - generic [ref=e762]:
+          - time [ref=e763]: 19:59
+          - generic [ref=e764]:
+            - link "У справі футболіста, якого виганяв італійський клуб, стався несподіваний поворот. Фотофакт" [ref=e765] [cursor=pointer]:
+              - /url: https://www.obozrevatel.com/ukr/sport-oboz/u-spravi-futbolista-yakogo-viganyav-italijskij-klub-stavsya-nespodivanij-povorot-fotofakt.htm
+            - generic [ref=e766]:
+              - text: (
+              - link "OBOZ.UA" [ref=e767] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/oboz-ua-9.html
+              - text: )
+        - link "всі фотоновини" [ref=e769] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/fotoreportazh.html
+      - generic [ref=e770]:
+        - heading "Відео" [level=2] [ref=e771]:
+          - link "Відео" [ref=e772] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/video.html
+        - generic [ref=e773]:
+          - time [ref=e774]: 21:30
+          - generic [ref=e775]:
+            - 'link "Удар по Франківську: поранено 9 людей, серед них - неповнолітні" [ref=e776] [cursor=pointer]':
+              - /url: https://www.dsnews.ua/ukr/politics/udar-po-frankovsku-raneny-9-chelovek-sredi-nih-nesovershennoletnie-13052026-459280
+            - generic [ref=e777]:
+              - text: (
+              - link "Dsnews" [ref=e778] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/delovaya-stolica-610.html
+              - text: )
+        - generic [ref=e779]:
+          - time [ref=e780]: 21:17
+          - generic [ref=e781]:
+            - link "Рим. Рууд обіграв “нейтрального” Хачанова та вчетверте вийшов до півфіналу змагань" [ref=e782] [cursor=pointer]:
+              - /url: https://btu.org.ua/ua/news/svitovuy-tenis/rym-ruud-obihrav-neitralnoho-khachanova-ta-vchetverte-vyishov-do-pivfinalu-zmahan.html
+            - generic [ref=e783]:
+              - text: (
+              - link "Великий теніс України" [ref=e784] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/velikij-tenis-ukrayini-3172.html
+              - text: )
+        - generic [ref=e785]:
+          - time [ref=e786]: 20:40
+          - generic [ref=e787]:
+            - link "Морський дрон, знайдений біля берегів Греції, не є Magura — компанія UFORSE / Відео" [ref=e788] [cursor=pointer]:
+              - /url: https://www.blackseanews.net/read/243854
+            - generic [ref=e789]:
+              - text: (
+              - link "BlackSeaNews" [ref=e790] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/blackseanews-1630.html
+              - text: )
+        - generic [ref=e791]:
+          - time [ref=e792]: 20:12
+          - generic [ref=e793]:
+            - link "Де зараз Олександр Рибак – один з найпопулярніших переможців Євробачення" [ref=e794] [cursor=pointer]:
+              - /url: https://24tv.ua/show24/oleksandr-ribak-peremig-yevrobachenni-2009-yak-sklalos-yogo-zhittya_n3067252
+            - generic [ref=e795]:
+              - text: (
+              - link "24 канал" [ref=e796] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/24-kanal-628.html
+              - text: )
+        - generic [ref=e797]:
+          - time [ref=e798]: 20:02
+          - generic [ref=e799]:
+            - link "Один із найдорожчих розвідувальних дронів РФ знищили українські військові, — СБС (ВІДЕО)" [ref=e800] [cursor=pointer]:
+              - /url: https://uatv.ua/uk/odyn-iz-najdorozhchyh-rozviduvalnyh-droniv-rf-znyshhyly-ukrayinski-vijskovi-sbs-video/
+            - generic [ref=e801]:
+              - text: (
+              - link "UA|TV" [ref=e802] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/ua-tv-3489.html
+              - text: )
+        - link "всі відео новини" [ref=e804] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/video.html
+      - generic [ref=e805]:
+        - heading "Lifestyle" [level=2] [ref=e806]:
+          - link "Lifestyle" [ref=e807] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/lifestyle.html
+        - generic [ref=e808]:
+          - time [ref=e809]: 21:54
+          - generic [ref=e810]:
+            - 'link "Від 50 гривень до $10 тисяч: скільки політики платять ворожкам" [ref=e811] [cursor=pointer]':
+              - /url: https://expert.in.ua/polityka/vid-50-gryven-do-10-tysyach-skilky-polityky-platyat-vorozhkam/
+            - generic [ref=e812]:
+              - text: (
+              - link "Експерт" [ref=e813] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/ekspert-3683.html
+              - text: )
+        - generic [ref=e814]:
+          - time [ref=e815]: 21:17
+          - generic [ref=e816]:
+            - 'link "Чому у США засуджені роками чекають на смертну кару: що відбувається у тюрмах" [ref=e817] [cursor=pointer]':
+              - /url: https://newsyou.info/2026/05/chomu-u-ssha-zasudzheni-rokami-chekayut-na-smertnu-karu-shho-vidbuvayetsya-u-tyurmax
+            - generic [ref=e818]:
+              - text: (
+              - link "Newsyou" [ref=e819] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsyou-2834.html
+              - text: )
+        - generic [ref=e820]:
+          - time [ref=e821]: 20:55
+          - generic [ref=e822]:
+            - 'link "Залізний портал у минуле: де побачити той самий рудник, який був місцем зйомок фільму \"Червоний\"" [ref=e823] [cursor=pointer]':
+              - /url: https://travel.24tv.ua/kochubeyivski-shtolni-de-roztashovani-koli-yak-buli-stvoreni_n3061642
+            - generic [ref=e824]:
+              - text: (
+              - link "24 канал" [ref=e825] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/24-kanal-628.html
+              - text: )
+        - generic [ref=e826]:
+          - time [ref=e827]: 20:53
+          - generic [ref=e828]:
+            - link "Є два підходи. Що робити, якщо керівник порушує ваші кордони" [ref=e829] [cursor=pointer]:
+              - /url: https://nv.ua/ukr/blogs/kordoni-na-roboti-yak-pravilno-vstanoviti-poradi-psihologa-50607685.html
+            - generic [ref=e830]:
+              - text: (
+              - link "NV" [ref=e831] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/nv-2347.html
+              - text: )
+        - generic [ref=e832]:
+          - time [ref=e833]: 19:50
+          - generic [ref=e834]:
+            - 'link "Кракен існує: на глибині 1000 метрів учені виявили кальмара розміром з автобус" [ref=e835] [cursor=pointer]':
+              - /url: https://blik.ua/nauka/33356-kraken-isnuye-na-glibini-1000-metriv-ucheni-viyavili-kalmara-rozmirom-z-avtobus
+            - generic [ref=e836]:
+              - text: (
+              - link "BLIK" [ref=e837] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/blik-535.html
+              - text: )
+        - link "всі новини про подорожі, розваги, дозвілля" [ref=e839] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/lifestyle.html
+      - generic [ref=e840]:
+        - heading "Кулінарія" [level=2] [ref=e841]:
+          - link "Кулінарія" [ref=e842] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/food.html
+        - generic [ref=e843]:
+          - time [ref=e844]: 21:49
+          - generic [ref=e845]:
+            - link "Рецепт домашнього зефіру маршмеллоу" [ref=e846] [cursor=pointer]:
+              - /url: https://newsyou.info/2026/05/recept-domashnogo-zefiru-marshmellou
+            - generic [ref=e847]:
+              - text: (
+              - link "Newsyou" [ref=e848] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsyou-2834.html
+              - text: )
+        - generic [ref=e849]:
+          - time [ref=e850]: 21:30
+          - generic [ref=e851]:
+            - 'link "Яєчна «павутинка» і томатна засмажка: переможниця «Мастершеф» показала борщ свого дитинства" [ref=e852] [cursor=pointer]':
+              - /url: https://blik.ua/cooking/33362-yayechna-pavutinka-i-tomatna-zasmazhka-peremozhnicya-mastershef-pokazala-borsh-svogo-ditinstva
+            - generic [ref=e853]:
+              - text: (
+              - link "BLIK" [ref=e854] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/blik-535.html
+              - text: )
+        - generic [ref=e855]:
+          - time [ref=e856]: 21:08
+          - generic [ref=e857]:
+            - 'link "Який смачний салат приготувати із зернистим сиром: дуже поживна і проста страва" [ref=e858] [cursor=pointer]':
+              - /url: https://food.obozrevatel.com/ukr/novosti-kulinarii/yakij-smachnij-salat-prigotuvati-iz-zernistim-sirom-duzhe-pozhivna-i-prosta-strava.htm
+            - generic [ref=e859]:
+              - text: (
+              - link "OBOZ.UA" [ref=e860] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/oboz-ua-9.html
+              - text: )
+        - generic [ref=e861]:
+          - time [ref=e862]: 20:55
+          - generic [ref=e863]:
+            - 'link "Кульбабу дарма називають бур’яном: з неї готують варення, салати та інші страви" [ref=e864] [cursor=pointer]':
+              - /url: https://24tv.ua/smachnonews24/retsepti-kulbabi-shho-prigotuvati-kvitiv-listya-korinnya_n3067346
+            - generic [ref=e865]:
+              - text: (
+              - link "24 канал" [ref=e866] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/24-kanal-628.html
+              - text: )
+        - generic [ref=e867]:
+          - time [ref=e868]: 19:17
+          - generic [ref=e869]:
+            - 'link "Не лише шашлик: 3 незвичайні страви на мангалі для всієї родини" [ref=e870] [cursor=pointer]':
+              - /url: https://vsviti.com.ua/life/food/178604
+            - generic [ref=e871]:
+              - text: (
+              - link "ВСВІТІ" [ref=e872] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/vsviti-1804.html
+              - text: )
+        - link "всі новини про їжу, рецепти, правильне харчування" [ref=e874] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/food.html
+      - generic [ref=e875]:
+        - heading "Сад-город" [level=2] [ref=e876]:
+          - link "Сад-город" [ref=e877] [cursor=pointer]:
+            - /url: https://www.ukr.net/news/sadgorod.html
+        - generic [ref=e878]:
+          - time [ref=e879]: 21:47
+          - generic [ref=e880]:
+            - link "Фермери підвищили врожайність салату на 160% завдяки гідропоніці" [ref=e881] [cursor=pointer]:
+              - /url: https://agroweek.com/agrotehnologiyi/fermery-pidvyshhyly-vrozhajnist-salatu-160/
+            - generic [ref=e882]:
+              - text: (
+              - link "Agroweek" [ref=e883] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/agroweekcom-4619.html
+              - text: )
+        - generic [ref=e884]:
+          - time [ref=e885]: 21:37
+          - generic [ref=e886]:
+            - 'link "Ці добрива можуть знищити орхідею: що не можна сипати у горщик" [ref=e887] [cursor=pointer]':
+              - /url: https://expert.in.ua/sad-gorod/tsi-dobryva-mozhut-znyshhyty-orhideyu-shho-ne-mozhna-sypaty-u-gorshhyk/
+            - generic [ref=e888]:
+              - text: (
+              - link "Експерт" [ref=e889] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/ekspert-3683.html
+              - text: )
+        - generic [ref=e890]:
+          - time [ref=e891]: 21:11
+          - generic [ref=e892]:
+            - 'link "Як відновити часник, який пожовтів: експрес-спосіб" [ref=e893] [cursor=pointer]':
+              - /url: https://newsyou.info/2026/05/yak-vidnoviti-chasnik-yakij-pozhovtiv-ekspres-sposib
+            - generic [ref=e894]:
+              - text: (
+              - link "Newsyou" [ref=e895] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/newsyou-2834.html
+              - text: )
+        - generic [ref=e896]:
+          - time [ref=e897]: 20:32
+          - generic [ref=e898]:
+            - 'link "Можуть нашкодити саду: які багаторічні рослини краще не садити" [ref=e899] [cursor=pointer]':
+              - /url: https://nashemisto.dp.ua/2026/05/13/mozhut-nashkodyty-sadu-iaki-bahatorichni-roslyny-krashche-ne-sadyty/
+            - generic [ref=e900]:
+              - text: (
+              - link "Наше місто" [ref=e901] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/nashe-misto-2926.html
+              - text: )
+        - generic [ref=e902]:
+          - time [ref=e903]: 20:14
+          - generic [ref=e904]:
+            - 'link "Для тих, у кого немає городу: як виростити помідори на підвіконні або балконі" [ref=e905] [cursor=pointer]':
+              - /url: https://today.ua/489785-dlya-teh-u-kogo-net-ogoroda-kak-vyrastit-pomidory-na-podokonnike-ili-balkone/
+            - generic [ref=e906]:
+              - text: (
+              - link "Today.ua" [ref=e907] [cursor=pointer]:
+                - /url: https://www.ukr.net/source/today-ua-3636.html
+              - text: )
+        - link "всі новини про сад та город" [ref=e909] [cursor=pointer]:
+          - /url: https://www.ukr.net/news/sadgorod.html
+  - generic [ref=e911]:
+    - navigation [ref=e913] [cursor=pointer]: Українською
+    - generic [ref=e914]:
+      - generic [ref=e915]:
+        - list [ref=e916]:
+          - listitem [ref=e917] [cursor=pointer]: Погода
+          - listitem [ref=e918] [cursor=pointer]: Валюта
+          - listitem [ref=e919] [cursor=pointer]: Пальне
+          - listitem [ref=e920] [cursor=pointer]: Оракул
+          - listitem [ref=e921] [cursor=pointer]: Кіно
+        - iframe [ref=e924]:
+          - generic [ref=f4e2]:
+            - button "Брісбен" [ref=f4e5] [cursor=pointer]
+            - generic [ref=f4e6]:
+              - link "+15° Невелика хмарність" [ref=f4e7] [cursor=pointer]:
+                - /url: https://sinoptik.ua/pohoda/brisben
+                - generic [ref=f4e8]: +15°
+                - generic "Невелика хмарність" [ref=f4e9]
+              - generic [ref=f4e10]:
+                - generic [ref=f4e11]: "вологість: 94%"
+                - generic [ref=f4e12]: "тиск: 768 мм"
+                - generic [ref=f4e13]:
+                  - text: "вітер: 1.9 м/с,"
+                  - generic "Південний" [ref=f4e14]
+            - generic [ref=f4e15]:
+              - link "На сьогодні" [ref=f4e16] [cursor=pointer]:
+                - /url: https://sinoptik.ua/pohoda/brisben
+              - link "завтра" [ref=f4e17] [cursor=pointer]:
+                - /url: https://sinoptik.ua/pohoda/brisben/2026-05-15
+              - link "10 днів" [ref=f4e18] [cursor=pointer]:
+                - /url: https://sinoptik.ua/pohoda/brisben/10-dniv
+              - link "в інших містах" [ref=f4e19] [cursor=pointer]:
+                - /url: https://sinoptik.ua/mapa/ukraina
+      - generic [ref=e925]:
+        - img "Advertisement" [ref=e926]
+        - iframe [ref=e929]:
+          - iframe [ref=f46e3]:
+            
+      - img "Advertisement" [ref=e931]
+    - generic [ref=e932]:
+      - generic [ref=e933]:
+        - heading "Авто" [level=3] [ref=e934]
+        - generic [ref=e935]:
+          - link "Шини для авто та диски" [ref=e937] [cursor=pointer]:
+            - /url: https://shinadiski.com.ua/
+          - link "Автозапчастини" [ref=e939] [cursor=pointer]:
+            - /url: https://www.zapchast.com.ua/
+          - link "Акумулятори Electron" [ref=e941] [cursor=pointer]:
+            - /url: https://avtoapteka.ua/ua/electron/
+        - generic [ref=e942]:
+          - link "Шини та диски" [ref=e944] [cursor=pointer]:
+            - /url: https://autoshini.ua/
+          - link "Авторезина та диски" [ref=e946] [cursor=pointer]:
+            - /url: http://rezina.cc/?utm_source=ukr.net&utm_medium=cpc&utm_campaign=link_shiny-diski_ssylka-na-glavnoy&utm_content=text
+      - generic [ref=e947]:
+        - heading "Техніка та прилади" [level=3] [ref=e948]
+        - generic [ref=e949]:
+          - link "Тепловізори" [ref=e951] [cursor=pointer]:
+            - /url: https://sotnyk.net/ua/teplovizory/
+          - link "Мобільні аксесуари" [ref=e953] [cursor=pointer]:
+            - /url: https://www.aks.ua/uk/
+        - generic [ref=e954]:
+          - link "Оптика для полювання" [ref=e956] [cursor=pointer]:
+            - /url: https://www.optics-pro.com.ua/?utm_source=ukrnet&utm_medium=links&utm_campaign=optica
+          - link "Тепловізори і оптика" [ref=e958] [cursor=pointer]:
+            - /url: https://ukroptica.com.ua/ua/
+      - generic [ref=e959]:
+        - heading "Волонтер" [level=3] [ref=e960]
+        - generic [ref=e961]:
+          - link "Об'єднання волонтерів" [ref=e963] [cursor=pointer]:
+            - /url: https://helplist.io
+          - link "Підтримка армії" [ref=e965] [cursor=pointer]:
+            - /url: https://savelife.in.ua/donate/
+          - link "Житло біженцям" [ref=e967] [cursor=pointer]:
+            - /url: https://shelter.dopomagai.org/create?utm_source=ukrnet&utm_medium=banner&utm_campaign=ukrnet_host&utm_id=ukrnet
+          - link "Допомога ЗСУ" [ref=e969] [cursor=pointer]:
+            - /url: https://bank.gov.ua/ua/about/support-the-armed-forces
+          - link "Свалявський рух опору" [ref=e971] [cursor=pointer]:
+            - /url: https://www.facebook.com/groups/687761881312683
+          - link "Проєкт Атлас 1300" [ref=e973] [cursor=pointer]:
+            - /url: https://atlas-1300.com/
+        - generic [ref=e974]:
+          - link "Petlink-вет допомога" [ref=e976] [cursor=pointer]:
+            - /url: https://petlink.com.ua/?utm_source=ukrnet_holovnaya_desktop
+          - link "Соціал краудфандинг" [ref=e978] [cursor=pointer]:
+            - /url: https://welfare.green/
+          - link "Dovidka.info" [ref=e980] [cursor=pointer]:
+            - /url: https://dovidka.info/
+          - link "Права ветеранів" [ref=e982] [cursor=pointer]:
+            - /url: https://prava-veteraniv.com/
+          - link "Проєкт Хочу к своим" [ref=e984] [cursor=pointer]:
+            - /url: https://hochuksvoim.com/uk/news
+      - generic [ref=e985]:
+        - heading "Офіційні канали" [level=3] [ref=e986]
+        - generic [ref=e987]:
+          - link "Офіс Президента" [ref=e989] [cursor=pointer]:
+            - /url: https://www.facebook.com/president.gov.ua
+          - link "Кабінет Міністрів" [ref=e991] [cursor=pointer]:
+            - /url: https://www.facebook.com/KabminUA
+          - link "Мін. внутрішніх справ" [ref=e993] [cursor=pointer]:
+            - /url: https://www.facebook.com/mvs.gov.ua
+          - link "ДСНС України" [ref=e995] [cursor=pointer]:
+            - /url: https://www.facebook.com/MNS.GOV.UA
+          - link "ТерО ЗСУ" [ref=e997] [cursor=pointer]:
+            - /url: https://www.facebook.com/TerritorialDefenseForces
+          - link "СтратКом ЗСУ" [ref=e999] [cursor=pointer]:
+            - /url: https://www.facebook.com/AFUStratCom
+          - link "Держспецзвʼязок" [ref=e1001] [cursor=pointer]:
+            - /url: https://www.facebook.com/dsszzi
+          - link "ЗС України" [ref=e1003] [cursor=pointer]:
+            - /url: https://www.facebook.com/AFUkraine
+        - generic [ref=e1004]:
+          - link "Ген штаб ЗСУ" [ref=e1006] [cursor=pointer]:
+            - /url: https://www.facebook.com/GeneralStaff.ua
+          - link "Міністерство оборони" [ref=e1008] [cursor=pointer]:
+            - /url: https://www.facebook.com/MinistryofDefence.UA
+          - link "Національна поліція" [ref=e1010] [cursor=pointer]:
+            - /url: https://www.facebook.com/UA.National.Police
+          - link "ДПС України" [ref=e1012] [cursor=pointer]:
+            - /url: https://www.facebook.com/DPSUkraine
+          - link "Нацгвардія України" [ref=e1014] [cursor=pointer]:
+            - /url: https://www.facebook.com/NGUmainpage
+          - link "Центр інф. безпеки" [ref=e1016] [cursor=pointer]:
+            - /url: https://www.facebook.com/StratcomCentreUA
+          - link "ВМС ЗСУ" [ref=e1018] [cursor=pointer]:
+            - /url: https://www.facebook.com/navy.mil.gov.ua
+      - generic [ref=e1019]:
+        - img "Advertisement" [ref=e1020]
+        - iframe [ref=e1023]:
+          
+      - generic [ref=e1024]:
+        - heading "Рух транспорту та робота інфраструктури" [level=3] [ref=e1025]
+        - generic [ref=e1026]:
+          - link "Міністерство інфраструктури України" [ref=e1028] [cursor=pointer]:
+            - /url: https://t.me/miUkraune
+          - link "Украерорух" [ref=e1030] [cursor=pointer]:
+            - /url: https://t.me/uksatse_official
+          - link "Адміністрація морських портів України" [ref=e1032] [cursor=pointer]:
+            - /url: https://www.facebook.com/uspa.gov.ua
+          - link "Державна служба України з безпеки на транспорті (ДСБТ)" [ref=e1034] [cursor=pointer]:
+            - /url: https://www.facebook.com/DSBT.UA
+        - generic [ref=e1035]:
+          - link "Укрзалізниця" [ref=e1037] [cursor=pointer]:
+            - /url: https://t.me/UkrzalInfo
+          - link "Міжнародний аеропорт “Бориспіль”" [ref=e1039] [cursor=pointer]:
+            - /url: https://www.facebook.com/airportboryspil/
+          - link "Міжнародний аеропорт “Львів”" [ref=e1041] [cursor=pointer]:
+            - /url: https://www.facebook.com/lvivinternationalairport/
+      - generic [ref=e1042]:
+        - heading "Корисна інформація для ФОПів" [level=3] [ref=e1043]
+        - link "ФОП 3-ї групи ЄП-5%" [ref=e1046] [cursor=pointer]:
+          - /url: https://www.ukr.net/helpful/2026_04_07_manual_3gr_1.pdf
+        - link "ФОП 2-ї групи ЄП" [ref=e1049] [cursor=pointer]:
+          - /url: https://www.ukr.net/helpful/2026_01_13_manual_2gr_2025.pdf
+    - generic [ref=e1051]:
+      - link [ref=e1052] [cursor=pointer]:
+        - /url: https://trafmag.com/?utm_source=ukr.net&utm_medium=referral#advertising_formats
+      - generic [ref=e1054]:
+        - generic [ref=e1055]:
+          - link "Kherson 2023, pencils A painting of Russian terrorists blowing up a dam in 2023" [ref=e1056] [cursor=pointer]:
+            - /url: https://trafmag.com/letsgo?data=OTUwfDEzODcyfDE1OS4xOTYuMTIuMTczfDg5MjYxMzY3fDE3Nzg2OTkwMTF8Yzk3MjYwOTZhNmJlZDUxODRjYjU2ZDNiNDI0MDFmMGZ8MzMz&vid=12173940424682
+          - paragraph [ref=e1057]:
+            - link "A painting of Russian terrorists blowing up a dam in 2023" [ref=e1058] [cursor=pointer]:
+              - /url: https://trafmag.com/letsgo?data=OTUwfDEzODcyfDE1OS4xOTYuMTIuMTczfDg5MjYxMzY3fDE3Nzg2OTkwMTF8Yzk3MjYwOTZhNmJlZDUxODRjYjU2ZDNiNDI0MDFmMGZ8MzMz&vid=12173940424682
+        - generic [ref=e1059]:
+          - link "Допоможи армії Задонать на офіційний рахунок Міністерства оборони України" [ref=e1060] [cursor=pointer]:
+            - /url: https://trafmag.com/letsgo?data=OTUwfDEzODcyfDE1OS4xOTYuMTIuMTczfDcyMDc2ODA1fDE3Nzg2OTkwMTF8M2I4NjI0Mzg0OTVjNjE5NjJjMjM1YjM0NWUzZjFmYjN8MzMz&vid=12173940424682
+          - paragraph [ref=e1061]:
+            - link "Задонать на офіційний рахунок Міністерства оборони України" [ref=e1062] [cursor=pointer]:
+              - /url: https://trafmag.com/letsgo?data=OTUwfDEzODcyfDE1OS4xOTYuMTIuMTczfDcyMDc2ODA1fDE3Nzg2OTkwMTF8M2I4NjI0Mzg0OTVjNjE5NjJjMjM1YjM0NWUzZjFmYjN8MzMz&vid=12173940424682
+    - generic [ref=e1069]:
+      - link "logo logo" [ref=e1071] [cursor=pointer]:
+        - /url: "#"
+        - generic "logo" [ref=e1072]:
+          - link [ref=e1073]:
+            - /url: https://widgets.mgid.com/?utm_source=www.ukr.net&utm_medium=referral&utm_campaign=widgets&utm_content=1516503
+        - generic "logo" [ref=e1074]:
+          - link [ref=e1075]:
+            - /url: https://www.mgid.com/services/privacy-policy
+      - generic [ref=e1077] [cursor=pointer]:
+        - link [ref=e1079]:
+          - /url: https://clck.mgid.com/ghits/26302778/i/57848193/0/pp/1/1?h=jIWAqpBGyL6OLpG0y5vsyNQ0udeWTcIr_tb7VFvXIWq_zQDuuK605__2lpKji75nIQX-jb3L2SzVTuC5-l1QVppcI4UqYm2rQHCDJ0rEWka-34Sy-u7_j0GwOK96DX6l&rid=6f034213-4efe-11f1-99c3-c4cbe1e8d87e&tt=Direct&att=3&afrd=32&iv=11&ct=1&gdprApplies=0&muid=q4dvEaK-rU3c&st=600&mp4=1&h2=mVK3AaM6woxMJVpxPFsmE6Y_dgVD4T_IAjwtd2jOcdpRGCPw-Jj4BtYdULfjGweqmPg4Dw5uEmkGDAtSPGN2Bg**
+        - link "Watch The Most Jaw‑Dropping Figure Skating Moments" [ref=e1084]:
+          - /url: https://clck.mgid.com/ghits/26302778/i/57848193/0/pp/1/1?h=jIWAqpBGyL6OLpG0y5vsyNQ0udeWTcIr_tb7VFvXIWq_zQDuuK605__2lpKji75nIQX-jb3L2SzVTuC5-l1QVppcI4UqYm2rQHCDJ0rEWka-34Sy-u7_j0GwOK96DX6l&rid=6f034213-4efe-11f1-99c3-c4cbe1e8d87e&tt=Direct&att=3&afrd=32&iv=11&ct=1&gdprApplies=0&muid=q4dvEaK-rU3c&st=600&mp4=1&h2=mVK3AaM6woxMJVpxPFsmE6Y_dgVD4T_IAjwtd2jOcdpRGCPw-Jj4BtYdULfjGweqmPg4Dw5uEmkGDAtSPGN2Bg**
+    - link [ref=e1087] [cursor=pointer]:
+      - /url: https://arey.mil.gov.ua/
+  - generic [ref=e1088]:
+    - link "Підтримка користувачів" [ref=e1089] [cursor=pointer]:
+      - /url: https://www.ukr.net/contacts/
+    - text: •
+    - link "Конфіденційність" [ref=e1090] [cursor=pointer]:
+      - /url: https://www.ukr.net/terms/
+    - text: •
+    - link "Про стрічку новин" [ref=e1091] [cursor=pointer]:
+      - /url: https://www.ukr.net/news/terms.html
+    - text: •
+    - link "Підключення до стрічки" [ref=e1092] [cursor=pointer]:
+      - /url: https://www.ukr.net/add_to_feed/
+    - text: •
+    - link "Розміщення рекламних новин" [ref=e1093] [cursor=pointer]:
+      - /url: https://www.ukr.net/add_to_adv/
+    - text: •
+    - link "Реклама на порталі" [ref=e1094] [cursor=pointer]:
+      - /url: http://adline.kiev.ua/
+    - text: •
+    - link "Про нас" [ref=e1095] [cursor=pointer]:
+      - /url: https://www.ukr.net/about.html

@@ -11,13 +11,14 @@ export interface UiSettings {
     gpuTool: GpuTool;
     maxLogLines: number;
     pollIntervalMs: number;
+    logSource: 'raw' | 'proxy';
 }
 
 export interface WatchLlamaConfig extends UiSettings {
     homeDir: string;
     rawLogPath: string;
     readableLogPath: string;
-    proxyLogPath?: string | undefined;
+    proxyLogPath: string | undefined;
     apiBaseUrl: string;
 }
 
@@ -71,9 +72,17 @@ export interface InferenceMetrics {
     progress?: number | undefined;
 }
 
+export interface ProxyStatus {
+    active_requests: number;
+    last_title: string;
+    backends: { port: number; status: string }[];
+    timestamp: string;
+}
+
 export interface AppState {
     system: SystemMetrics;
     inference: InferenceMetrics;
+    proxyStatus?: ProxyStatus | undefined;
     logs: string[];
     thermalEmoji: string;
     titleBlocks: string;

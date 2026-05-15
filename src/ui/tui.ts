@@ -11,6 +11,7 @@ interface TuiActions {
     onCycleGpuTool: () => void | Promise<void>;
     onToggleFollow: () => void;
     onRestartServer: () => void | Promise<void>;
+    onToggleLogSource: () => void | Promise<void>;
 }
 
 export class Tui {
@@ -21,13 +22,15 @@ export class Tui {
     private readonly statusBar: blessed.Widgets.BoxElement;
     private follow = true;
     private exitResolver: (() => void) | null = null;
+    private lastTelemetryHeight = 10;
 
     constructor(private readonly store: AppStore, private readonly actions: TuiActions) {
         this.screen = blessed.screen({
             smartCSR: true,
             title: 'watch-llama',
             fullUnicode: true,
-            mouse: true
+            mouse: true,
+            dockBorders: true
         });
 
         this.telemetryBox = blessed.box({
@@ -38,6 +41,7 @@ export class Tui {
             border: 'line',
             label: ' Telemetry ',
             tags: true,
+            wrap: false,
             style: { border: { fg: 'cyan' } }
         });
 
@@ -52,9 +56,12 @@ export class Tui {
             alwaysScroll: true,
             keys: false,
             mouse: true,
-            tags: false,
+            tags: true,
+            wrap: false,
             scrollbar: {
-                ch: ' '
+                ch: ' ',
+                style: { bg: 'blue' },
+                track: { bg: 'black' }
             },
             style: { border: { fg: 'blue' } }
         });
@@ -65,6 +72,7 @@ export class Tui {
             width: '100%',
             height: 1,
             tags: true,
+            wrap: false,
             style: { fg: 'yellow', bg: 'black' }
         });
 
@@ -74,6 +82,7 @@ export class Tui {
             width: '100%',
             height: 1,
             tags: true,
+            wrap: false,
             style: { fg: 'white', bg: 'black' }
         });
 
@@ -83,8 +92,33 @@ export class Tui {
         this.screen.append(this.statusBar);
 
         this.setupKeys();
+        this.setupMouse();
         this.screen.on('resize', () => this.render(this.store.state));
         this.store.on('change', (state: AppState) => this.render(state));
+    }
+
+    private setupMouse(): void {
+        this.logBox.on('scroll', () => {
+            const scrollPerc = this.logBox.getScrollPerc();
+            
+            // If we are at or very near the bottom, we follow.
+            const isAtBottom = scrollPerc >= 100;
+            
+            if (this.follow !== isAtBottom) {
+                this.follow = isAtBottom;
+                // Force a render to update the status bar (PAUSED -> FOLLOWING)
+                this.render(this.store.state);
+            }
+        });
+
+        this.logBox.on('mouse', (data: any) => {
+            if (data.action === 'wheelup' || data.action === 'wheeldown') {
+                // The scroll event will handle the flag, but we need to ensure
+                // the status bar updates even if the scroll percentage didn't change 
+                // (e.g. scrolling up then immediately back down).
+                this.render(this.store.state);
+            }
+        });
     }
 
     private setupKeys(): void {
@@ -104,6 +138,7 @@ export class Tui {
         this.screen.key(['c'], () => void this.actions.onToggleSetting('showCpu'));
         this.screen.key(['l'], () => void this.actions.onToggleSetting('showLog'));
         this.screen.key(['h'], () => void this.actions.onToggleSetting('showHints'));
+        this.screen.key(['p'], () => void this.actions.onToggleLogSource());
         this.screen.key(['t'], () => void this.actions.onCycleGpuTool());
         this.screen.key(['r'], () => void this.actions.onRestartServer());
 
@@ -139,14 +174,7 @@ export class Tui {
             return;
         }
 
-        this.follow = false;
-
-        this.logBox.setScroll(this.logBox.getScroll() + delta);
-
-        if (this.logBox.getScrollPerc() >= 100) {
-            this.follow = true;
-        }
-
+        this.logBox.scroll(delta);
         this.render(this.store.state);
     }
 
@@ -156,18 +184,29 @@ export class Tui {
         const errorHeight = hasErrors ? 1 : 0;
         const statusHeight = 1;
         const screenHeight = Number(this.screen.height);
+        
         const maxTelemetryHeight = state.settings.showLog
             ? Math.max(8, Math.floor((screenHeight - errorHeight - statusHeight) * 2 / 3))
             : screenHeight - errorHeight - statusHeight;
-        const desiredTelemetryHeight = buildTelemetryLines(state).length + 2;
+        
+        const telemetryLines = buildTelemetryLines(state);
+        const desiredTelemetryHeight = telemetryLines.length + 2;
         const telemetryHeight = Math.max(6, Math.min(maxTelemetryHeight, desiredTelemetryHeight));
         const logHeight = Math.max(0, screenHeight - telemetryHeight - errorHeight - statusHeight);
 
-        this.telemetryBox.top = 0;
-        this.telemetryBox.height = telemetryHeight;
+        // Only update if changed to minimize jitter
+        if (this.telemetryBox.height !== telemetryHeight) {
+            this.telemetryBox.height = telemetryHeight;
+        }
 
-        this.logBox.top = telemetryHeight;
-        this.logBox.height = logHeight;
+        if (this.logBox.top !== telemetryHeight) {
+            this.logBox.top = telemetryHeight;
+        }
+        
+        if (this.logBox.height !== logHeight) {
+            this.logBox.height = logHeight;
+        }
+        
         this.logBox.hidden = !state.settings.showLog;
 
         this.errorBox.bottom = statusHeight;
@@ -196,12 +235,18 @@ export class Tui {
         if (state.settings.showLog) {
             const currentScroll = this.logBox.getScroll();
             const logsToRender = state.pendingLogLine ? [...state.logs, state.pendingLogLine] : state.logs;
-            this.logBox.setContent(logsToRender.join('\n'));
-            if (this.follow) {
-                this.logBox.setScrollPerc(100);
-            } else {
-                this.logBox.setScroll(currentScroll);
+            const newContent = logsToRender.join('\n');
+            
+            if (this.logBox.getContent() !== newContent) {
+                this.logBox.setContent(newContent);
+                if (this.follow) {
+                    this.logBox.setScrollPerc(100);
+                } else {
+                    this.logBox.setScroll(currentScroll);
+                }
             }
+            
+            this.logBox.setLabel(` Readable Log [${state.settings.logSource.toUpperCase()}] `);
         }
 
         const errorText = Object.values(state.errorMessages)
@@ -215,7 +260,7 @@ export class Tui {
         const coloredEmoji = `{${blessedThermalColor}-fg}${state.thermalEmoji}{/}`;
 
         const hints = state.settings.showHints
-            ? ' (G:GPU C:CPU L:Log H:Hint T:Tool R:Restart | F:Follow | Q:Quit)'
+            ? ' (G:GPU C:CPU L:Log H:Hint T:Tool R:Restart P:Source | F:Follow | Q:Quit)'
             : '';
         
         let activityLabel = 'idle';
@@ -234,9 +279,15 @@ export class Tui {
         const currentLine = this.follow ? state.logs.length : Math.min(state.logs.length, this.logBox.getScroll() + 1);
         const lineInfo = `(Line ${currentLine}/${state.logs.length})`;
 
-        this.statusBar.setContent(
-            ` [${this.follow ? 'FOLLOWING' : 'PAUSED'}] ${lineInfo}${hints}  ${coloredEmoji} ${activityLabel}${hasErrors ? ' {red-fg}⚠{/red-fg}' : ''}`
-        );
+        let statusContent = ` [${this.follow ? 'FOLLOWING' : 'PAUSED'}] ${lineInfo}${hints}  ${coloredEmoji} ${activityLabel}${hasErrors ? ' {red-fg}⚠{/red-fg}' : ''}`;
+        
+        // Truncate to prevent wrapping which causes drifting
+        const screenWidth = Number(this.screen.width);
+        if (statusContent.length > screenWidth) {
+            statusContent = statusContent.slice(0, screenWidth - 1);
+        }
+
+        this.statusBar.setContent(statusContent);
 
         this.screen.render();
     }

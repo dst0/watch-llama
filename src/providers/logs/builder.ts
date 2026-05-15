@@ -25,6 +25,7 @@ const INIT_SAMPLER_RE = /slot init_sampler: id\s+\d+\s+\|\s+task\s+(\d+)\s+\|.*t
 const PRINT_TIMING_RE = /slot print_timing: id\s+\d+\s+\|\s+task\s+(\d+)\s+\|/i;
 const DONE_REQUEST_RE = /srv\s+log_server_r: done request:\s+(POST|GET|HEAD)\s+(\S+)\s+\S+\s+(\d{3})/i;
 const STATUS_MESSAGE_RE = /level=(?:INFO|WARN|ERROR)\s+msg="([^"]+)"/i;
+const SYSTEM_EVENT_RE = /kv_cache_shift_left|compacting context|system_prompt|llama_new_context_with_model|model_load|deprecated/i;
 
 export interface BuilderUpdate {
     appendText: string;
@@ -118,6 +119,10 @@ export function extractTokenText(line: string): string | null {
     if (line.trimStart().startsWith('{')) {
         try {
             const json = JSON.parse(line);
+            
+            // Handle streaming deltas
+            if (json.type === 'sse_upstream') return null; // Avoid duplicate deltas
+            
             const delta = json.event?.delta;
             if (delta !== undefined) {
                 let text = sanitizeRenderableText(decodeEscapedText(delta));
@@ -125,6 +130,24 @@ export function extractTokenText(line: string): string | null {
                     text = `{italic}${text}{/italic}`;
                 }
                 return text;
+            }
+
+            // Handle full proxy responses
+            if (json.type === 'response' && json.body?.output) {
+                const output = json.body.output;
+                if (Array.isArray(output)) {
+                    return output.map((msg: any) => {
+                        if (Array.isArray(msg.content)) {
+                            return msg.content.map((part: any) => part.text || part.output_text || '').join('');
+                        }
+                        return String(msg.content || '');
+                    }).join('\n');
+                }
+            }
+            
+            // OpenAI compatible responses
+            if (json.choices && Array.isArray(json.choices)) {
+                return json.choices.map((c: any) => c.message?.content || c.text || '').join('\n');
             }
         } catch {
             // Fall back to regex
@@ -159,6 +182,11 @@ export class ReadableLogBuilder {
         const inference: Partial<Record<string, unknown>> = {};
         let appendText = '';
 
+        const metadata = extractMetadata(line);
+        if (metadata) {
+            Object.assign(inference, metadata);
+        }
+
         const prompt = extractPromptText(line);
         if (prompt) {
             const formattedPrompt = formatPromptText(prompt);
@@ -177,7 +205,13 @@ export class ReadableLogBuilder {
         if (tokenText !== null) {
             appendText += tokenText;
             if (tokenText.length > 0) {
-                inference.status = 'GENERATING';
+                // If it looks like a full JSON response (not a delta), it might be the end
+                if (line.trimStart().startsWith('{') && !line.includes('"delta"')) {
+                    appendText += '\n';
+                    inference.status = 'IDLE';
+                } else {
+                    inference.status = 'GENERATING';
+                }
                 inference.progress = undefined;
             }
         }
@@ -295,9 +329,9 @@ export class ReadableLogBuilder {
             }
         }
 
-        if (/level=(WARN|ERROR)/.test(line)) {
+        if (/level=(WARN|ERROR)/.test(line) || SYSTEM_EVENT_RE.test(line)) {
             const message = STATUS_MESSAGE_RE.exec(line)?.[1] ?? sanitizeRenderableText(line);
-            appendText += `[${formatEventTimestamp()}] ${message}\n`;
+            appendText += `\n[${formatEventTimestamp()}] ${message}\n`;
         }
 
         if (Object.keys(inference).length > 0) return { appendText, inference };

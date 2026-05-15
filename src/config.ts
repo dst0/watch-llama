@@ -6,7 +6,19 @@ import type { UiSettings, WatchLlamaConfig } from './types/state.js';
 
 dotenv.config({ quiet: true });
 
-const DEFAULT_HOME_DIR = process.env['WATCH_LLAMA_HOME'] ?? path.join(os.homedir(), '.watch-llama');
+function getActualHomeDir(): string {
+    const sudoUser = process.env['SUDO_USER'];
+    if (sudoUser && sudoUser !== 'root') {
+        // On Linux, the home dir for a user is typically /home/username
+        // We can also try to get it from the passwd file if needed, 
+        // but /home/username is a very safe bet for this environment.
+        return path.join('/home', sudoUser);
+    }
+    return os.homedir();
+}
+
+const ACTUAL_HOME = getActualHomeDir();
+const DEFAULT_HOME_DIR = process.env['WATCH_LLAMA_HOME'] ?? path.join(ACTUAL_HOME, '.watch-llama');
 
 const DEFAULT_SETTINGS: UiSettings = {
     showGpu: true,
@@ -15,7 +27,8 @@ const DEFAULT_SETTINGS: UiSettings = {
     showHints: true,
     gpuTool: 'auto',
     maxLogLines: 3000,
-    pollIntervalMs: 2000
+    pollIntervalMs: 2000,
+    logSource: 'raw'
 };
 
 function parseBoolean(value: string | undefined, fallback: boolean): boolean {
@@ -49,16 +62,28 @@ function buildDefaults(homeDir: string): WatchLlamaConfig {
         showHints: DEFAULT_SETTINGS.showHints,
         gpuTool: (process.env['WATCH_LLAMA_GPU_TOOL'] as WatchLlamaConfig['gpuTool'] | undefined) ?? DEFAULT_SETTINGS.gpuTool,
         maxLogLines: parseNumber(process.env['WATCH_LLAMA_MAX_LOG_LINES'], DEFAULT_SETTINGS.maxLogLines),
-        pollIntervalMs: parseNumber(process.env['WATCH_LLAMA_POLL_INTERVAL_MS'], DEFAULT_SETTINGS.pollIntervalMs)
+        pollIntervalMs: parseNumber(process.env['WATCH_LLAMA_POLL_INTERVAL_MS'], DEFAULT_SETTINGS.pollIntervalMs),
+        logSource: (process.env['WATCH_LLAMA_LOG_SOURCE'] as 'raw' | 'proxy' | undefined) ?? DEFAULT_SETTINGS.logSource
     };
+}
+
+function expandTilde(filePath: string | undefined): string | undefined {
+    if (!filePath) return filePath;
+    if (filePath.startsWith('~/')) {
+        return path.join(ACTUAL_HOME, filePath.slice(2));
+    }
+    if (filePath === '~') {
+        return ACTUAL_HOME;
+    }
+    return filePath;
 }
 
 function sanitizeConfig(candidate: WatchLlamaConfig): WatchLlamaConfig {
     return {
         homeDir: candidate.homeDir,
-        rawLogPath: candidate.rawLogPath,
-        readableLogPath: candidate.readableLogPath,
-        proxyLogPath: candidate.proxyLogPath,
+        rawLogPath: expandTilde(candidate.rawLogPath)!,
+        readableLogPath: expandTilde(candidate.readableLogPath)!,
+        proxyLogPath: expandTilde(candidate.proxyLogPath),
         apiBaseUrl: candidate.apiBaseUrl,
         showGpu: Boolean(candidate.showGpu),
         showCpu: Boolean(candidate.showCpu),
@@ -66,7 +91,8 @@ function sanitizeConfig(candidate: WatchLlamaConfig): WatchLlamaConfig {
         showHints: Boolean(candidate.showHints),
         gpuTool: candidate.gpuTool,
         maxLogLines: Math.max(1000, candidate.maxLogLines),
-        pollIntervalMs: Math.max(1000, candidate.pollIntervalMs)
+        pollIntervalMs: Math.max(1000, candidate.pollIntervalMs),
+        logSource: candidate.logSource === 'proxy' ? 'proxy' : 'raw'
     };
 }
 
@@ -83,6 +109,7 @@ function readEnvironmentOverrides(homeDir: string): Partial<WatchLlamaConfig> {
     const gpuTool = process.env['WATCH_LLAMA_GPU_TOOL'];
     const maxLogLines = process.env['WATCH_LLAMA_MAX_LOG_LINES'];
     const pollIntervalMs = process.env['WATCH_LLAMA_POLL_INTERVAL_MS'];
+    const logSource = process.env['WATCH_LLAMA_LOG_SOURCE'];
 
     if (rawLogPath !== undefined) {
         overrides.rawLogPath = rawLogPath;
@@ -117,6 +144,9 @@ function readEnvironmentOverrides(homeDir: string): Partial<WatchLlamaConfig> {
     if (pollIntervalMs !== undefined) {
         overrides.pollIntervalMs = parseNumber(pollIntervalMs, DEFAULT_SETTINGS.pollIntervalMs);
     }
+    if (logSource !== undefined) {
+        overrides.logSource = logSource as 'raw' | 'proxy';
+    }
 
     return overrides;
 }
@@ -138,7 +168,8 @@ export function toUiSettings(config: WatchLlamaConfig): UiSettings {
         showHints: config.showHints,
         gpuTool: config.gpuTool,
         maxLogLines: config.maxLogLines,
-        pollIntervalMs: config.pollIntervalMs
+        pollIntervalMs: config.pollIntervalMs,
+        logSource: config.logSource
     };
 }
 

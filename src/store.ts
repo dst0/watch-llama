@@ -1,5 +1,5 @@
 import EventEmitter from 'node:events';
-import type { AppState, InferenceMetrics, SystemMetrics, UiSettings, WatchLlamaConfig } from './types/state.js';
+import type { AppState, InferenceMetrics, SystemMetrics, UiSettings, WatchLlamaConfig, ProxyStatus } from './types/state.js';
 
 const EMPTY_SYSTEM: SystemMetrics = {
     cpu: { utilization: 0, temperature: 0, frequencyMHz: 0 },
@@ -28,7 +28,8 @@ function toUiSettings(config: WatchLlamaConfig): UiSettings {
         showHints: config.showHints,
         gpuTool: config.gpuTool,
         maxLogLines: config.maxLogLines,
-        pollIntervalMs: config.pollIntervalMs
+        pollIntervalMs: config.pollIntervalMs,
+        logSource: config.logSource
     };
 }
 
@@ -57,11 +58,12 @@ export class AppStore extends EventEmitter {
         this.emit('change', this.state);
     }
 
-    updateInference(metrics: Partial<InferenceMetrics>): void {
+    updateInference(metrics: Partial<InferenceMetrics>, proxyStatus?: ProxyStatus): void {
         this.state.inference = {
             ...this.state.inference,
             ...metrics
         };
+        this.state.proxyStatus = proxyStatus;
         this.emit('change', this.state);
     }
 
