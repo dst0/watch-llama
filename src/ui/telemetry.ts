@@ -2,8 +2,7 @@ import type { AppState } from '../types/state.js';
 import { escapeTags, temperatureMarkup, frequencyText } from './helpers.js';
 import { formatSensorLabel } from '../providers/system/thermal.js';
 
-export function buildTelemetryLines(state: AppState): string[] {
-    const screenWidth = process.stdout.columns || 80;
+export function buildTelemetryLines(state: AppState, screenWidth = 80): string[] {
     const maxLineWidth = screenWidth - 4;
     
     const { system, inference, proxyStatus } = state;
@@ -23,9 +22,13 @@ export function buildTelemetryLines(state: AppState): string[] {
         const title = proxyStatus.last_title || 'Idle';
         lines.push(`  {yellow-fg}Active: ${active} | Last: ${escapeTags(title)}{/yellow-fg}`);
         
-        const backendInfo = proxyStatus.backends.map(b => 
-            `${b.port}:[${b.status === 'READY' ? '{green-fg}OK{/green-fg}' : '{red-fg}' + b.status + '{/red-fg}'}]`
-        ).join(' ');
+        const backendInfo = proxyStatus.backends.map(b => {
+            const statusTag = b.status === 'READY' ? '{green-fg}OK{/green-fg}' : '{red-fg}' + b.status + '{/red-fg}';
+            const progressTag = b.progress !== undefined && b.progress > 0
+                ? ` {cyan-fg}prefill ${(b.progress * 100).toFixed(0)}%{/cyan-fg}`
+                : '';
+            return `${b.port}:[${statusTag}]${progressTag}`;
+        }).join(' ');
         lines.push(`  {blue-fg}Backends: ${backendInfo}{/blue-fg}`);
     } else {
         lines.push(`    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`);

@@ -75,7 +75,8 @@ export interface InferenceMetrics {
 export interface ProxyStatus {
     active_requests: number;
     last_title: string;
-    backends: { port: number; status: string }[];
+    prefill_progress?: number;
+    backends: { port: number; status: string; progress?: number }[];
     timestamp: string;
 }
 

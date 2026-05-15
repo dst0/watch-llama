@@ -17,7 +17,11 @@ async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider,
 
 
     store.updateSystem(snapshot, store.state.thermalEmoji, store.state.titleBlocks);
-    store.updateInference({ ...serverSnapshot.inference }, serverSnapshot.proxyStatus);
+    const inferenceMetrics = { ...serverSnapshot.inference };
+    if (serverSnapshot.proxyStatus?.prefill_progress !== undefined) {
+        inferenceMetrics.progress = serverSnapshot.proxyStatus.prefill_progress;
+    }
+    store.updateInference(inferenceMetrics, serverSnapshot.proxyStatus);
     if (serverSnapshot.status === 'STOPPED') {
         store.updateInference({ status: 'STOPPED' });
     }
