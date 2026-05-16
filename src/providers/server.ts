@@ -203,28 +203,8 @@ export class LlamaServerProvider {
     }
 
     private async getProxyStatus(): Promise<ProxyStatus | undefined> {
-        // If we have never received a status, try a one-off fetch first
-        if (!this.lastProxyStatus) {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 1000);
-            try {
-                const response = await fetch(new URL("/v1/status", this.apiBaseUrl), {
-                    method: "GET",
-                    signal: controller.signal
-                });
-                if (response.ok) {
-                    this.lastProxyStatus = await response.json() as ProxyStatus;
-                }
-            } catch (error) {
-                // ignore
-            } finally {
-                clearTimeout(timer);
-            }
-        }
-        
-        // Start background SSE if not already started
+        // Exclusively use background SSE for proxy status
         this.startSse();
-        
         return this.lastProxyStatus;
     }
 
