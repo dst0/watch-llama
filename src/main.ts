@@ -30,6 +30,8 @@ async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider,
             inferenceMetrics.status = 'PREFILLING';
         } else if (backends.some(b => b.status === 'GEN')) {
             inferenceMetrics.status = 'GENERATING';
+        } else if (backends.some(b => b.status === 'LOADING')) {
+            inferenceMetrics.status = 'LOADING';
         }
     }
 

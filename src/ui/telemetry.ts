@@ -34,6 +34,8 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
                 statusTag = "{green-fg}OK{/green-fg}";
             } else if (b.status === "PREFILL" || b.status === "GEN") {
                 statusTag = `{green-fg}${b.status}{/green-fg}`;
+            } else if (b.status === "LOADING") {
+                statusTag = `{yellow-fg}${b.status}{/yellow-fg}`;
             } else {
                 statusTag = `{red-fg}${b.status}{/red-fg}`;
             }
