@@ -2,8 +2,8 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
 import type { InferenceMetrics, ProxyStatus } from '../types/state.js';
+import { ACTUAL_HOME } from '../utils/home.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -158,14 +158,22 @@ async function fetchModels(apiBaseUrl: string): Promise<ModelsResponseEntry[]> {
 export class LlamaServerProvider {
     constructor(private readonly apiBaseUrl: string) {}
 
-    private async getProxyStatus(port: number | null): Promise<ProxyStatus | undefined> {
-        const proxyPort = port || 11437;
-        const statusFile = path.join(os.homedir(), '.llama-cpp-agent-proxy', 'logs', proxyPort.toString(), 'proxy.status');
+    private async getProxyStatus(): Promise<ProxyStatus | undefined> {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 1000);
         try {
-            if (fs.existsSync(statusFile)) {
-                return JSON.parse(fs.readFileSync(statusFile, 'utf8'));
+            const response = await fetch(new URL("/v1/status", this.apiBaseUrl), {
+                method: "GET",
+                signal: controller.signal
+            });
+            if (response.ok) {
+                return await response.json() as ProxyStatus;
             }
-        } catch {}
+        } catch (error) {
+            // ignore
+        } finally {
+            clearTimeout(timer);
+        }
         return undefined;
     }
 
@@ -173,7 +181,6 @@ export class LlamaServerProvider {
         const targetPort = parsePortFromBaseUrl(this.apiBaseUrl);
         const allProcesses = await listLlamaServerProcesses();
         
-        // Filter processes based on logSource
         const processes = allProcesses.filter(p => {
             const cmd = p.command || '';
             if (logSource === 'proxy') return cmd.includes('llama-proxy');
@@ -224,11 +231,11 @@ export class LlamaServerProvider {
                 snapshot.quantization = primary.details.quantization_level;
             }
 
-            const proxyStatus = logSource === 'proxy' ? await this.getProxyStatus(targetPort) : undefined;
+            const proxyStatus = logSource === 'proxy' ? await this.getProxyStatus() : undefined;
             return { inference: snapshot, proxyStatus, status: 'READY' };
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
-            const proxyStatus = logSource === 'proxy' ? await this.getProxyStatus(targetPort) : undefined;
+            const proxyStatus = logSource === 'proxy' ? await this.getProxyStatus() : undefined;
             return {
                 inference: fallbackInference,
                 proxyStatus,

@@ -3,21 +3,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { promises as fs } from 'node:fs';
 import type { UiSettings, WatchLlamaConfig } from './types/state.js';
+import { ACTUAL_HOME } from './utils/home.js';
 
 dotenv.config({ quiet: true });
 
-function getActualHomeDir(): string {
-    const sudoUser = process.env['SUDO_USER'];
-    if (sudoUser && sudoUser !== 'root') {
-        // On Linux, the home dir for a user is typically /home/username
-        // We can also try to get it from the passwd file if needed, 
-        // but /home/username is a very safe bet for this environment.
-        return path.join('/home', sudoUser);
-    }
-    return os.homedir();
-}
-
-const ACTUAL_HOME = getActualHomeDir();
 const DEFAULT_HOME_DIR = process.env['WATCH_LLAMA_HOME'] ?? path.join(ACTUAL_HOME, '.watch-llama');
 
 const DEFAULT_SETTINGS: UiSettings = {

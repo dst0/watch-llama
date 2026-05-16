@@ -26,18 +26,16 @@ export class Tui {
 
     constructor(private readonly store: AppStore, private readonly actions: TuiActions) {
         this.screen = blessed.screen({
-            smartCSR: true,
             title: 'watch-llama',
             fullUnicode: true,
-            mouse: true,
-            dockBorders: true
+            mouse: true
         });
 
         this.telemetryBox = blessed.box({
             top: 0,
             left: 0,
             width: '100%',
-            height: 10,
+            height: 8,
             border: 'line',
             label: ' Telemetry ',
             tags: true,
@@ -46,10 +44,10 @@ export class Tui {
         });
 
         this.logBox = blessed.box({
-            top: 10,
+            top: 8,
             left: 0,
             width: '100%',
-            height: '100%-12',
+            height: '100%-10',
             border: 'line',
             label: ' Readable Log ',
             scrollable: true,
@@ -67,7 +65,7 @@ export class Tui {
         });
 
         this.errorBox = blessed.box({
-            bottom: 1,
+            top: '100%-2',
             left: 0,
             width: '100%',
             height: 1,
@@ -77,7 +75,7 @@ export class Tui {
         });
 
         this.statusBar = blessed.box({
-            bottom: 0,
+            top: '100%-1',
             left: 0,
             width: '100%',
             height: 1,
@@ -179,39 +177,52 @@ export class Tui {
     }
 
     private layout(state: AppState): void {
-        const errorKeys = Object.keys(state.errorMessages);
-        const hasErrors = errorKeys.length > 0;
+        const hasErrors = Object.keys(state.errorMessages).length > 0;
         const errorHeight = hasErrors ? 1 : 0;
         const statusHeight = 1;
         const screenHeight = Number(this.screen.height);
+        const screenWidth = Number(this.screen.width);
         
         const maxTelemetryHeight = state.settings.showLog
             ? Math.max(8, Math.floor((screenHeight - errorHeight - statusHeight) * 2 / 3))
             : screenHeight - errorHeight - statusHeight;
         
-        const telemetryLines = buildTelemetryLines(state);
+        const telemetryLines = buildTelemetryLines(state, screenWidth);
         const desiredTelemetryHeight = telemetryLines.length + 2;
         const telemetryHeight = Math.max(6, Math.min(maxTelemetryHeight, desiredTelemetryHeight));
         const logHeight = Math.max(0, screenHeight - telemetryHeight - errorHeight - statusHeight);
 
-        // Only update if changed to minimize jitter
+        // Update telemetryBox
         if (this.telemetryBox.height !== telemetryHeight) {
             this.telemetryBox.height = telemetryHeight;
         }
+        if (this.telemetryBox.top !== 0) {
+            this.telemetryBox.top = 0;
+        }
 
+        // Update logBox
         if (this.logBox.top !== telemetryHeight) {
             this.logBox.top = telemetryHeight;
         }
-        
         if (this.logBox.height !== logHeight) {
             this.logBox.height = logHeight;
         }
-        
         this.logBox.hidden = !state.settings.showLog;
 
-        this.errorBox.bottom = statusHeight;
+        // Update errorBox and statusBar with explicit top positions
+        const errorTop = screenHeight - statusHeight - errorHeight;
+        if (this.errorBox.top !== errorTop) {
+            this.errorBox.top = errorTop;
+        }
+        if (this.errorBox.height !== errorHeight) {
+            this.errorBox.height = errorHeight;
+        }
         this.errorBox.hidden = !hasErrors;
-        this.errorBox.height = hasErrors ? 1 : 0;
+
+        const statusTop = screenHeight - statusHeight;
+        if (this.statusBar.top !== statusTop) {
+            this.statusBar.top = statusTop;
+        }
     }
 
     render(state: AppState): void {
@@ -230,7 +241,7 @@ export class Tui {
 
         this.layout(state);
 
-        this.telemetryBox.setContent(buildTelemetryLines(state).join('\n'));
+        this.telemetryBox.setContent(buildTelemetryLines(state, Number(this.screen.width)).join('\n'));
 
         if (state.settings.showLog) {
             const currentScroll = this.logBox.getScroll();
