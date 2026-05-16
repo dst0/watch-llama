@@ -74,6 +74,9 @@ export interface InferenceMetrics {
 
 export interface ProxyStatus {
     active_requests: number;
+    queue_size: number;
+    ports: Record<string, { active: number }>;
+    queues: Record<string, { size: number; active: boolean }>;
     last_title: string;
     prefill_progress?: number;
     backends: { port: number; status: string; progress?: number }[];
