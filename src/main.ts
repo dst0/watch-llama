@@ -19,6 +19,7 @@ async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider,
     store.updateSystem(snapshot, store.state.thermalEmoji, store.state.titleBlocks);
     const inferenceMetrics = { ...serverSnapshot.inference };
     
+    let hasProxyStatus = false;
     if (serverSnapshot.proxyStatus) {
         if (serverSnapshot.proxyStatus.prefill_progress !== undefined) {
             inferenceMetrics.progress = serverSnapshot.proxyStatus.prefill_progress;
@@ -28,15 +29,18 @@ async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider,
         const backends = serverSnapshot.proxyStatus.backends || [];
         if (backends.some(b => b.status === 'PREFILL')) {
             inferenceMetrics.status = 'PREFILLING';
+            hasProxyStatus = true;
         } else if (backends.some(b => b.status === 'GEN')) {
             inferenceMetrics.status = 'GENERATING';
+            hasProxyStatus = true;
         } else if (backends.some(b => b.status === 'LOADING')) {
             inferenceMetrics.status = 'LOADING';
+            hasProxyStatus = true;
         }
     }
 
     store.updateInference(inferenceMetrics, serverSnapshot.proxyStatus);
-    if (serverSnapshot.status === 'STOPPED') {
+    if (serverSnapshot.status === 'STOPPED' && !hasProxyStatus) {
         store.updateInference({ status: 'STOPPED' });
     }
     store.setError('gpu', snapshot.gpu.error);
