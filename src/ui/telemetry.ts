@@ -1,57 +1,67 @@
-import type { AppState } from '../types/state.js';
-import { escapeTags, temperatureMarkup, frequencyText } from './helpers.js';
-import { formatSensorLabel } from '../providers/system/thermal.js';
+import type { AppState } from "../types/state.js";
+import { escapeTags, temperatureMarkup, frequencyText } from "./helpers.js";
+import { formatSensorLabel } from "../providers/system/thermal.js";
 
 export function buildTelemetryLines(state: AppState, screenWidth = 80): string[] {
     const maxLineWidth = screenWidth - 4;
     
     const { system, inference, proxyStatus } = state;
-    const isProxy = state.settings.logSource === 'proxy';
-    const serverName = isProxy ? 'LLAMA-PROXY' : 'LLAMA-SERVER';
+    const isProxy = state.settings.logSource === "proxy";
+    const serverName = isProxy ? "LLAMA-PROXY" : "LLAMA-SERVER";
     
     const header = inference.parallel !== undefined
         ? `{bold}=== ${serverName}  parallel:${inference.parallel}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`
         : `{bold}=== ${serverName}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
     const lines = [
         header,
-        `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? ` ${(inference.progress * 100).toFixed(1)}%` : ''}]`,
+        `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? " " + (inference.progress * 100).toFixed(1) + "%" : ""}]`,
     ];
 
     if (isProxy && proxyStatus) {
         const active = proxyStatus.active_requests;
-        const title = proxyStatus.last_title || 'Idle';
-        lines.push(`  {yellow-fg}Active: ${active} | Last: ${escapeTags(title)}{/yellow-fg}`);
+        const queueSize = proxyStatus.queue_size || 0;
+        const title = proxyStatus.last_title || "Idle";
         
-        const backendInfo = proxyStatus.backends.map(b => {
-            const statusTag = b.status === 'READY' ? '{green-fg}OK{/green-fg}' : '{red-fg}' + b.status + '{/red-fg}';
+        const portInfo = Object.entries(proxyStatus.ports || {})
+            .map(([port, info]) => `${port}:${info.active}`)
+            .join(" ");
+            
+        lines.push(`  {yellow-fg}Active: ${active} [${portInfo}] | Queue: ${queueSize} | Last: ${escapeTags(title)}{/yellow-fg}`);
+        
+        const backendInfo = (proxyStatus.backends || []).map(b => {
+            const statusTag = b.status === "READY" ? "{green-fg}OK{/green-fg}" : "{red-fg}" + b.status + "{/red-fg}";
+            const queueInfo = (proxyStatus.queues || {})[b.port.toString()];
+            const queueTag = queueInfo 
+                ? ` {magenta-fg}Q:${queueInfo.size}${queueInfo.active ? "*" : ""}{/magenta-fg}`
+                : "";
             const progressTag = b.progress !== undefined && b.progress > 0
                 ? ` {cyan-fg}prefill ${(b.progress * 100).toFixed(0)}%{/cyan-fg}`
-                : '';
-            return `${b.port}:[${statusTag}]${progressTag}`;
-        }).join(' ');
+                : "";
+            return `${b.port}:[${statusTag}]${queueTag}${progressTag}`;
+        }).join(" ");
         lines.push(`  {blue-fg}Backends: ${backendInfo}{/blue-fg}`);
     } else {
-        lines.push(`    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? 'unknown'} | ${escapeTags(inference.architecture ?? 'unknown')} | ${escapeTags(inference.quantization ?? 'unknown')} | ${escapeTags(inference.format ?? 'unknown')}`);
+        lines.push(`    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? "unknown"} | ${escapeTags(inference.architecture ?? "unknown")} | ${escapeTags(inference.quantization ?? "unknown")} | ${escapeTags(inference.format ?? "unknown")}`);
     }
 
     if (state.settings.showCpu) {
-        const extraTemps = system.extraTemps.map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(' | ');
+        const extraTemps = system.extraTemps.map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(" | ");
         lines.push(
-            `CPU: ${system.cpu.utilization.toFixed(0)}% ${frequencyText(system.cpu.frequencyMHz)} ${temperatureMarkup(system.cpu.temperature)} | RAM: ${system.ramUsed.toFixed(1)}/${system.ramTotal.toFixed(1)}GiB${extraTemps ? ` | ${extraTemps}` : ''}`
+            `CPU: ${system.cpu.utilization.toFixed(0)}% ${frequencyText(system.cpu.frequencyMHz)} ${temperatureMarkup(system.cpu.temperature)} | RAM: ${system.ramUsed.toFixed(1)}/${system.ramTotal.toFixed(1)}GiB${extraTemps ? " | " + extraTemps : ""}`
         );
     }
 
     if (inference.tokensPerSecond > 0 || inference.promptEvalPerSecond > 0) {
-        const genRate = inference.tokensPerSecond > 0 ? `{yellow-fg}${inference.tokensPerSecond.toFixed(2)} t/s{/yellow-fg}` : '';
-        const ppRate = inference.promptEvalPerSecond > 0 ? `{yellow-fg}${inference.promptEvalPerSecond.toFixed(2)} pp/s{/yellow-fg}` : '';
-        const perfParts = [genRate, ppRate].filter(Boolean).join(' | ');
+        const genRate = inference.tokensPerSecond > 0 ? `{yellow-fg}${inference.tokensPerSecond.toFixed(2)} t/s{/yellow-fg}` : "";
+        const ppRate = inference.promptEvalPerSecond > 0 ? `{yellow-fg}${inference.promptEvalPerSecond.toFixed(2)} pp/s{/yellow-fg}` : "";
+        const perfParts = [genRate, ppRate].filter(Boolean).join(" | ");
         lines.push(
             `  {yellow-fg}perf: ${perfParts}{/yellow-fg}`
         );
     }
 
     if (state.settings.showGpu) {
-        lines.push('');
+        lines.push("");
         const gpuLines = system.gpu.displayLines.length > 0
             ? system.gpu.displayLines
             : system.gpu.available
@@ -61,8 +71,7 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
     }
 
     return lines.map(line => {
-        // Simple truncation that doesn't account for tags perfectly, but helps
-        if (line.length > maxLineWidth + 50) { // +50 to account for tags
+        if (line.length > maxLineWidth + 50) {
              return line.slice(0, maxLineWidth + 50);
         }
         return line;
