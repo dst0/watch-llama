@@ -1,14 +1,15 @@
-import { execFile } from "node:child_process";
+import { exec, execFile } from "node:child_process";
 import { promisify } from "node:util";
 import fs from "node:fs";
 import path from "node:path";
 import type { InferenceMetrics, ProxyStatus } from "../types/state.js";
 import { ACTUAL_HOME } from "../utils/home.js";
 
+const execAsync = promisify(exec);
 const execFileAsync = promisify(execFile);
 
 export async function restartLlamaServer(): Promise<void> {
-    await execFileAsync("systemctl", ["restart", "llama-server", "llama-proxy"]);
+    await execAsync("sudo -n pkill -9 -f llama-server; sudo -n systemctl restart llama-server-main lms-micro llama-proxy");
 }
 
 interface ModelsResponseEntry {
