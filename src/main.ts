@@ -18,9 +18,21 @@ async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider,
 
     store.updateSystem(snapshot, store.state.thermalEmoji, store.state.titleBlocks);
     const inferenceMetrics = { ...serverSnapshot.inference };
-    if (serverSnapshot.proxyStatus?.prefill_progress !== undefined) {
-        inferenceMetrics.progress = serverSnapshot.proxyStatus.prefill_progress;
+    
+    if (serverSnapshot.proxyStatus) {
+        if (serverSnapshot.proxyStatus.prefill_progress !== undefined) {
+            inferenceMetrics.progress = serverSnapshot.proxyStatus.prefill_progress;
+        }
+
+        // Map proxy backend statuses to main status
+        const backends = serverSnapshot.proxyStatus.backends || [];
+        if (backends.some(b => b.status === 'PREFILL')) {
+            inferenceMetrics.status = 'PREFILLING';
+        } else if (backends.some(b => b.status === 'GEN')) {
+            inferenceMetrics.status = 'GENERATING';
+        }
     }
+
     store.updateInference(inferenceMetrics, serverSnapshot.proxyStatus);
     if (serverSnapshot.status === 'STOPPED') {
         store.updateInference({ status: 'STOPPED' });

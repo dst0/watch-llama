@@ -29,12 +29,20 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
         lines.push(`  {yellow-fg}Active: ${active} [${portInfo}] | Queue: ${queueSize} | Last: ${escapeTags(title)}{/yellow-fg}`);
         
         const backendInfo = (proxyStatus.backends || []).map(b => {
-            const statusTag = b.status === "READY" ? "{green-fg}OK{/green-fg}" : "{red-fg}" + b.status + "{/red-fg}";
+            let statusTag = "";
+            if (b.status === "READY") {
+                statusTag = "{green-fg}OK{/green-fg}";
+            } else if (b.status === "PREFILL" || b.status === "GEN") {
+                statusTag = `{green-fg}${b.status}{/green-fg}`;
+            } else {
+                statusTag = `{red-fg}${b.status}{/red-fg}`;
+            }
+
             const queueInfo = (proxyStatus.queues || {})[b.port.toString()];
             const queueTag = queueInfo 
                 ? ` {magenta-fg}Q:${queueInfo.size}${queueInfo.active ? "*" : ""}{/magenta-fg}`
                 : "";
-            const progressTag = b.progress !== undefined && b.progress > 0
+            const progressTag = b.progress !== undefined && b.progress > 0 && b.progress < 1
                 ? ` {cyan-fg}prefill ${(b.progress * 100).toFixed(0)}%{/cyan-fg}`
                 : "";
             return `${b.port}:[${statusTag}]${queueTag}${progressTag}`;
