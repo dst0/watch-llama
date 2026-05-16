@@ -1,14 +1,14 @@
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
-import fs from 'node:fs';
-import path from 'node:path';
-import type { InferenceMetrics, ProxyStatus } from '../types/state.js';
-import { ACTUAL_HOME } from '../utils/home.js';
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import fs from "node:fs";
+import path from "node:path";
+import type { InferenceMetrics, ProxyStatus } from "../types/state.js";
+import { ACTUAL_HOME } from "../utils/home.js";
 
 const execFileAsync = promisify(execFile);
 
 export async function restartLlamaServer(): Promise<void> {
-    await execFileAsync('systemctl', ['restart', 'llama-server', 'llama-proxy']);
+    await execFileAsync("systemctl", ["restart", "llama-server", "llama-proxy"]);
 }
 
 interface ModelsResponseEntry {
@@ -32,7 +32,7 @@ interface ModelsResponse {
 export interface LlamaServerSnapshot {
     inference: Partial<InferenceMetrics>;
     proxyStatus?: ProxyStatus | undefined;
-    status?: 'READY' | 'STOPPED';
+    status?: "READY" | "STOPPED";
     error?: string;
 }
 
@@ -53,7 +53,7 @@ function parsePortFromBaseUrl(apiBaseUrl: string): number | null {
             return Number.parseInt(url.port, 10);
         }
 
-        return url.protocol === 'https:' ? 443 : 80;
+        return url.protocol === "https:" ? 443 : 80;
     } catch {
         return null;
     }
@@ -69,10 +69,10 @@ export function parseLlamaServerProcessLine(line: string): LlamaServerProcessInf
         return null;
     }
 
-    const pid = Number.parseInt(match[1] ?? '0', 10);
-    const command = match[2] ?? '';
-    const isServer = command.includes('llama-server');
-    const isProxy = command.includes('llama-proxy');
+    const pid = Number.parseInt(match[1] ?? "0", 10);
+    const command = match[2] ?? "";
+    const isServer = command.includes("llama-server");
+    const isProxy = command.includes("llama-proxy");
     
     if (!isServer && !isProxy) {
         return null;
@@ -106,14 +106,14 @@ export function parseLlamaServerProcessLine(line: string): LlamaServerProcessInf
 
 async function listLlamaServerProcesses(): Promise<LlamaServerProcessInfo[]> {
     try {
-        const { stdout } = await execFileAsync('pgrep', ['-af', 'llama-server|llama-proxy'], {
+        const { stdout } = await execFileAsync("pgrep", ["-af", "llama-server|llama-proxy"], {
             shell: true,
             timeout: 2000,
             maxBuffer: 1024 * 1024
         });
 
         return stdout
-            .split('\n')
+            .split("\n")
             .map((line) => parseLlamaServerProcessLine(line.trim()))
             .filter((entry): entry is LlamaServerProcessInfo => entry !== null);
     } catch {
@@ -139,8 +139,8 @@ async function fetchModels(apiBaseUrl: string): Promise<ModelsResponseEntry[]> {
     const timer = setTimeout(() => controller.abort(), 1500);
 
     try {
-        const response = await fetch(new URL('/v1/models', apiBaseUrl), {
-            method: 'GET',
+        const response = await fetch(new URL("/v1/models", apiBaseUrl), {
+            method: "GET",
             signal: controller.signal
         });
 
@@ -156,35 +156,86 @@ async function fetchModels(apiBaseUrl: string): Promise<ModelsResponseEntry[]> {
 }
 
 export class LlamaServerProvider {
+    private lastProxyStatus: ProxyStatus | undefined;
+    private sseStarted = false;
+
     constructor(private readonly apiBaseUrl: string) {}
 
-    private async getProxyStatus(): Promise<ProxyStatus | undefined> {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 1000);
-        try {
-            const response = await fetch(new URL("/v1/status", this.apiBaseUrl), {
-                method: "GET",
-                signal: controller.signal
-            });
-            if (response.ok) {
-                return await response.json() as ProxyStatus;
+    private startSse() {
+        if (this.sseStarted) return;
+        this.sseStarted = true;
+
+        const connect = async () => {
+            try {
+                const response = await fetch(new URL("/v1/status/events", this.apiBaseUrl));
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const reader = response.body?.getReader();
+                if (!reader) throw new Error("No reader");
+
+                const decoder = new TextDecoder();
+                let buffer = "";
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split("\n\n");
+                    buffer = parts.pop() || "";
+                    
+                    for (const part of parts) {
+                        const line = part.trim();
+                        if (line.startsWith("data: ")) {
+                            try {
+                                this.lastProxyStatus = JSON.parse(line.slice(6));
+                            } catch {}
+                        }
+                    }
+                }
+            } catch (error) {
+                // Silent retry
             }
-        } catch (error) {
-            // ignore
-        } finally {
-            clearTimeout(timer);
-        }
-        return undefined;
+            setTimeout(connect, 3000);
+        };
+        
+        connect();
     }
 
-    async getSnapshot(logSource: 'raw' | 'proxy' = 'raw'): Promise<LlamaServerSnapshot> {
+    private async getProxyStatus(): Promise<ProxyStatus | undefined> {
+        // If we have never received a status, try a one-off fetch first
+        if (!this.lastProxyStatus) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 1000);
+            try {
+                const response = await fetch(new URL("/v1/status", this.apiBaseUrl), {
+                    method: "GET",
+                    signal: controller.signal
+                });
+                if (response.ok) {
+                    this.lastProxyStatus = await response.json() as ProxyStatus;
+                }
+            } catch (error) {
+                // ignore
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+        
+        // Start background SSE if not already started
+        this.startSse();
+        
+        return this.lastProxyStatus;
+    }
+
+    async getSnapshot(logSource: "raw" | "proxy" = "raw"): Promise<LlamaServerSnapshot> {
         const targetPort = parsePortFromBaseUrl(this.apiBaseUrl);
         const allProcesses = await listLlamaServerProcesses();
         
         const processes = allProcesses.filter(p => {
-            const cmd = p.command || '';
-            if (logSource === 'proxy') return cmd.includes('llama-proxy');
-            return cmd.includes('llama-server');
+            const cmd = p.command || "";
+            if (logSource === "proxy") return cmd.includes("llama-proxy");
+            return cmd.includes("llama-server");
         });
 
         // Use filtered if available, else all
@@ -212,10 +263,10 @@ export class LlamaServerProvider {
             const models = await fetchModels(this.apiBaseUrl);
             const primary = models[0];
             if (!primary) {
-                return { inference: fallbackInference, status: 'READY' };
+                return { inference: fallbackInference, status: "READY" };
             }
 
-            const modelName = primary.id ?? primary.model ?? primary.name ?? fallbackModel ?? 'unknown';
+            const modelName = primary.id ?? primary.model ?? primary.name ?? fallbackModel ?? "unknown";
             const snapshot: Partial<InferenceMetrics> = {
                 ...fallbackInference,
                 model: modelName
@@ -231,15 +282,15 @@ export class LlamaServerProvider {
                 snapshot.quantization = primary.details.quantization_level;
             }
 
-            const proxyStatus = logSource === 'proxy' ? await this.getProxyStatus() : undefined;
-            return { inference: snapshot, proxyStatus, status: 'READY' };
+            const proxyStatus = logSource === "proxy" ? await this.getProxyStatus() : undefined;
+            return { inference: snapshot, proxyStatus, status: "READY" };
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
-            const proxyStatus = logSource === 'proxy' ? await this.getProxyStatus() : undefined;
+            const proxyStatus = logSource === "proxy" ? await this.getProxyStatus() : undefined;
             return {
                 inference: fallbackInference,
                 proxyStatus,
-                status: 'STOPPED',
+                status: "STOPPED",
                 error: `llama-server API unavailable: ${message}`
             };
         }
