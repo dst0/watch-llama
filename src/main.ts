@@ -21,13 +21,17 @@ async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider,
     
     let hasProxyStatus = false;
     if (serverSnapshot.proxyStatus) {
-        if (serverSnapshot.proxyStatus.prefill_progress !== undefined) {
+        const backends = serverSnapshot.proxyStatus.backends || [];
+        const isPrefilling = backends.some(b => b.status === 'PREFILL');
+        
+        if (isPrefilling && serverSnapshot.proxyStatus.prefill_progress !== undefined) {
             inferenceMetrics.progress = serverSnapshot.proxyStatus.prefill_progress;
+        } else {
+            inferenceMetrics.progress = undefined;
         }
 
         // Map proxy backend statuses to main status
-        const backends = serverSnapshot.proxyStatus.backends || [];
-        if (backends.some(b => b.status === 'PREFILL')) {
+        if (isPrefilling) {
             inferenceMetrics.status = 'PREFILLING';
             hasProxyStatus = true;
         } else if (backends.some(b => b.status === 'GEN')) {
@@ -35,6 +39,9 @@ async function runTelemetryLoop(store: AppStore, systemProvider: SystemProvider,
             hasProxyStatus = true;
         } else if (backends.some(b => b.status === 'LOADING')) {
             inferenceMetrics.status = 'LOADING';
+            hasProxyStatus = true;
+        } else {
+            inferenceMetrics.status = 'IDLE';
             hasProxyStatus = true;
         }
     }

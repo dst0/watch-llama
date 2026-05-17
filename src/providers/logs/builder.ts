@@ -198,6 +198,7 @@ export class ReadableLogBuilder {
                     appendText += '### ASSISTANT\n';
                 }
                 inference.status = 'PREFILLING';
+                inference.progress = 0;
             }
         }
 
@@ -209,10 +210,11 @@ export class ReadableLogBuilder {
                 if (line.trimStart().startsWith('{') && !line.includes('"delta"')) {
                     appendText += '\n';
                     inference.status = 'IDLE';
+                    inference.progress = undefined;
                 } else {
                     inference.status = 'GENERATING';
+                    inference.progress = undefined;
                 }
-                inference.progress = undefined;
             }
         }
 

@@ -28,16 +28,19 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
             
         lines.push(`  {yellow-fg}Active: ${active} [${portInfo}] | Queue: ${queueSize} | Last: ${escapeTags(title)}{/yellow-fg}`);
         
+        if (proxyStatus.redirect_server) {
+            const rs = proxyStatus.redirect_server;
+            const availTag = rs.available ? "{green-fg}ONLINE{/green-fg}" : "{red-fg}OFFLINE{/red-fg}";
+            lines.push(`  {magenta-fg}Redirect: ${rs.host}:${rs.port} [${availTag}] Model: ${escapeTags(rs.model)} Active: ${rs.active_requests}{/magenta-fg}`);
+        }
+        
         const backendInfo = (proxyStatus.backends || []).map(b => {
             let statusTag = "";
-            if (b.status === "READY") {
+            const healthy = ["READY", "PREFILL", "GEN"].includes(b.status);
+            if (healthy) {
                 statusTag = "{green-fg}OK{/green-fg}";
-            } else if (b.status === "PREFILL" || b.status === "GEN") {
-                statusTag = `{green-fg}${b.status}{/green-fg}`;
-            } else if (b.status === "LOADING") {
-                statusTag = `{yellow-fg}${b.status}{/yellow-fg}`;
             } else {
-                statusTag = `{red-fg}${b.status}{/red-fg}`;
+                statusTag = "{red-fg}N/A{/red-fg}";
             }
 
             const queueInfo = (proxyStatus.queues || {})[b.port.toString()];
