@@ -86,7 +86,7 @@ export interface ProxyStatus {
     queues: Record<string, { size: number; active: boolean }>;
     last_title: string;
     prefill_progress?: number;
-    backends: { port: number; status: string; progress?: number }[];
+    backends: { port: number; status: string; progress?: number; model?: string }[];
     timestamp: string;
 }
 

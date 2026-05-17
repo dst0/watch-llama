@@ -12,12 +12,21 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
     const header = inference.parallel !== undefined
         ? `{bold}=== ${serverName}  parallel:${inference.parallel}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`
         : `{bold}=== ${serverName}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
-    const lines = [
-        header,
-        `  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? " " + (inference.progress * 100).toFixed(1) + "%" : ""}]`,
-    ];
+    const lines = [ header ];
 
     if (isProxy && proxyStatus) {
+        const backends = proxyStatus.backends || [];
+        if (backends.length === 0) {
+            lines.push(`  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? " " + (inference.progress * 100).toFixed(1) + "%" : ""}]`);
+        } else {
+            for (const b of backends) {
+                const mName = b.model || inference.model || "unknown";
+                let statusStr = b.status === "READY" ? "IDLE" : (b.status === "GEN" ? "GENERATING" : (b.status === "PREFILL" ? "PREFILLING" : b.status));
+                const progressTag = b.progress !== undefined && b.progress > 0 && b.progress < 1 ? ` ${(b.progress * 100).toFixed(1)}%` : "";
+                lines.push(`  {green-fg}${escapeTags(mName)}{/green-fg} [${statusStr}${progressTag}]`);
+            }
+        }
+
         const active = proxyStatus.active_requests;
         const queueSize = proxyStatus.queue_size || 0;
         const title = proxyStatus.last_title || "Idle";
@@ -51,6 +60,7 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
         }).join(" ");
         lines.push(`  {blue-fg}Backends: ${backendInfo}{/blue-fg}`);
     } else {
+        lines.push(`  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? " " + (inference.progress * 100).toFixed(1) + "%" : ""}]`);
         lines.push(`    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? "unknown"} | ${escapeTags(inference.architecture ?? "unknown")} | ${escapeTags(inference.quantization ?? "unknown")} | ${escapeTags(inference.format ?? "unknown")}`);
     }
 
