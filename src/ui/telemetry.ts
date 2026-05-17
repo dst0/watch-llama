@@ -47,10 +47,7 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
             const queueTag = queueInfo 
                 ? ` {magenta-fg}Q:${queueInfo.size}${queueInfo.active ? "*" : ""}{/magenta-fg}`
                 : "";
-            const progressTag = b.progress !== undefined && b.progress > 0 && b.progress < 1
-                ? ` {cyan-fg}prefill ${(b.progress * 100).toFixed(0)}%{/cyan-fg}`
-                : "";
-            return `${b.port}:[${statusTag}]${queueTag}${progressTag}`;
+            return `${b.port}:[${statusTag}]${queueTag}`;
         }).join(" ");
         lines.push(`  {blue-fg}Backends: ${backendInfo}{/blue-fg}`);
     } else {
