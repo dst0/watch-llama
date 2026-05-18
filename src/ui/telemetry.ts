@@ -16,14 +16,30 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
 
     if (isProxy && proxyStatus) {
         const backends = proxyStatus.backends || [];
+        const renderedModels = new Set<string>();
+        const ctxBatch = ` ctx:${inference.contextSize ?? "?"} batch:${inference.parallel ?? "?"}`;
+
         if (backends.length === 0) {
-            lines.push(`  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? " " + (inference.progress * 100).toFixed(1) + "%" : ""}]`);
+            const showProgress = inference.status === "PREFILLING" && inference.progress !== undefined && inference.progress < 1;
+            lines.push(`  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${showProgress ? " " + (inference.progress! * 100).toFixed(1) + "%" : ""}]${ctxBatch}`);
+            renderedModels.add(inference.model);
         } else {
             for (const b of backends) {
                 const mName = b.model || inference.model || "unknown";
-                let statusStr = b.status === "READY" ? "IDLE" : (b.status === "GEN" ? "GENERATING" : (b.status === "PREFILL" ? "PREFILLING" : b.status));
-                const progressTag = b.progress !== undefined && b.progress > 0 && b.progress < 1 ? ` ${(b.progress * 100).toFixed(1)}%` : "";
-                lines.push(`  {green-fg}${escapeTags(mName)}{/green-fg} [${statusStr}${progressTag}]`);
+                const statusStr = b.status === "READY" ? "IDLE" : (b.status === "GEN" ? "GENERATING" : (b.status === "PREFILL" ? "PREFILLING" : b.status));
+                const showProgress = statusStr === "PREFILLING" && b.progress !== undefined && b.progress > 0 && b.progress < 1;
+                const progressTag = showProgress ? ` ${(b.progress! * 100).toFixed(1)}%` : "";
+                lines.push(`  {green-fg}${escapeTags(mName)}{/green-fg} [${statusStr}${progressTag}]${ctxBatch}`);
+                renderedModels.add(mName);
+            }
+        }
+
+        if (inference.allModels) {
+            for (const mName of inference.allModels) {
+                if (!renderedModels.has(mName)) {
+                    lines.push(`  {gray-fg}${escapeTags(mName)}{/gray-fg} [OFFLINE]`);
+                    renderedModels.add(mName);
+                }
             }
         }
 
@@ -60,8 +76,9 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
         }).join(" ");
         lines.push(`  {blue-fg}Backends: ${backendInfo}{/blue-fg}`);
     } else {
-        lines.push(`  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${inference.progress !== undefined && inference.progress < 1 ? " " + (inference.progress * 100).toFixed(1) + "%" : ""}]`);
-        lines.push(`    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? "unknown"} | ${escapeTags(inference.architecture ?? "unknown")} | ${escapeTags(inference.quantization ?? "unknown")} | ${escapeTags(inference.format ?? "unknown")}`);
+        const showProgress = inference.status === "PREFILLING" && inference.progress !== undefined && inference.progress < 1;
+        lines.push(`  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${showProgress ? " " + (inference.progress! * 100).toFixed(1) + "%" : ""}]`);
+        lines.push(`    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? "unknown"} batch:${inference.parallel ?? "?"} | ${escapeTags(inference.architecture ?? "unknown")} | ${escapeTags(inference.quantization ?? "unknown")} | ${escapeTags(inference.format ?? "unknown")}`);
     }
 
     if (state.settings.showCpu) {
@@ -88,6 +105,9 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
                 ? [`GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`]
                 : [`GPU: unavailable (${escapeTags(system.gpu.tool)})`];
         lines.push(...gpuLines.map((line) => escapeTags(line)));
+    } else if (system.gpu.available && system.gpu.utilization > 0) {
+        const gpuLine = `GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`;
+        lines.push(`  ${escapeTags(gpuLine)}`);
     }
 
     return lines.map(line => {

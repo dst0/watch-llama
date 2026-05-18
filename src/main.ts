@@ -62,6 +62,53 @@ export async function runWatchLlama(): Promise<void> {
     const serverProvider = new LlamaServerProvider(config.apiBaseUrl);
     const logWatcher = new LogWatcher(config);
 
+    // Fast proxy status refresh: 5Hz (200ms) when in proxy mode
+    let proxyRefreshTimer: ReturnType<typeof setInterval> | null = null;
+    const stopProxyRefresh = () => {
+        if (proxyRefreshTimer) {
+            clearInterval(proxyRefreshTimer);
+            proxyRefreshTimer = null;
+        }
+    };
+    const startProxyRefresh = () => {
+        stopProxyRefresh();
+        proxyRefreshTimer = setInterval(async () => {
+            try {
+                const snapshot = await serverProvider.getSnapshot('proxy');
+                const inferenceMetrics = { ...snapshot.inference };
+                if (snapshot.proxyStatus) {
+                    const backends = snapshot.proxyStatus.backends || [];
+                    const isPrefilling = backends.some(b => b.status === 'PREFILL');
+                    if (isPrefilling && snapshot.proxyStatus.prefill_progress !== undefined) {
+                        inferenceMetrics.progress = snapshot.proxyStatus.prefill_progress;
+                    } else {
+                        inferenceMetrics.progress = undefined;
+                    }
+                    if (isPrefilling) {
+                        inferenceMetrics.status = 'PREFILLING';
+                    } else if (backends.some(b => b.status === 'GEN')) {
+                        inferenceMetrics.status = 'GENERATING';
+                    } else if (backends.some(b => b.status === 'LOADING')) {
+                        inferenceMetrics.status = 'LOADING';
+                    } else {
+                        inferenceMetrics.status = 'IDLE';
+                    }
+                }
+                store.updateInference(inferenceMetrics, snapshot.proxyStatus);
+            } catch {}
+        }, 200);
+    };
+
+    serverProvider.on('proxyStatus', () => {
+        if (store.state.settings.logSource === 'proxy') {
+            startProxyRefresh();
+        }
+    });
+
+    if (config.logSource === 'proxy') {
+        serverProvider.startSse();
+    }
+
     const ui = new Tui(store, {
         onQuit: () => {
             logWatcher.stop();
@@ -93,13 +140,20 @@ export async function runWatchLlama(): Promise<void> {
                 store.setError('log', 'Proxy log path not configured');
                 return;
             }
-            
+
             const updated = await configManager.update({ logSource: nextSource });
             store.updateSettings(toUiSettings(updated));
-            
+
             const newPath = nextSource === 'proxy' ? config.proxyLogPath! : config.rawLogPath;
             await logWatcher.updatePath(newPath);
             store.setError('log', undefined);
+
+            if (nextSource === 'proxy') {
+                serverProvider.startSse();
+                startProxyRefresh();
+            } else {
+                stopProxyRefresh();
+            }
         }
     });
 
@@ -117,6 +171,10 @@ export async function runWatchLlama(): Promise<void> {
     await logWatcher.start();
     await runTelemetryLoop(store, systemProvider, serverProvider);
 
+    if (config.logSource === 'proxy') {
+        startProxyRefresh();
+    }
+
     const telemetryTimer = setInterval(() => {
         void runTelemetryLoop(store, systemProvider, serverProvider);
     }, store.state.settings.pollIntervalMs);
@@ -130,6 +188,7 @@ export async function runWatchLlama(): Promise<void> {
     await Promise.race([ui.waitForExit(), signalPromise]);
 
     clearInterval(telemetryTimer);
+    stopProxyRefresh();
     logWatcher.stop();
     ui.destroy();
 }

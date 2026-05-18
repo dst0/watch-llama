@@ -57,6 +57,7 @@ export interface SystemMetrics {
 
 export interface InferenceMetrics {
     model: string;
+    allModels?: string[];
     modelPath?: string;
     status: InferenceStatus;
     parallel?: number;

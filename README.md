@@ -86,7 +86,7 @@ WATCH_LLAMA_POLL_INTERVAL_MS=2000
 
 - `Q`, `Esc`, `Ctrl-C`: quit
 - `F`: toggle follow mode
-- `G`: toggle GPU line
+- `G`: toggle GPU panel (condensed GPU temp/load/VRAM line always shown when GPU is active)
 - `C`: toggle CPU/RAM line
 - `L`: toggle log panel
 - `H`: toggle hint text

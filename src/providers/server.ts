@@ -2,6 +2,7 @@ import { exec, execFile } from "node:child_process";
 import { promisify } from "node:util";
 import fs from "node:fs";
 import path from "node:path";
+import EventEmitter from "node:events";
 import type { InferenceMetrics, ProxyStatus } from "../types/state.js";
 import { ACTUAL_HOME } from "../utils/home.js";
 
@@ -16,6 +17,7 @@ interface ModelsResponseEntry {
     id?: string;
     model?: string;
     name?: string;
+    slug?: string;
     aliases?: string[];
     details?: {
         format?: string;
@@ -156,13 +158,15 @@ async function fetchModels(apiBaseUrl: string): Promise<ModelsResponseEntry[]> {
     }
 }
 
-export class LlamaServerProvider {
+export class LlamaServerProvider extends EventEmitter {
     private lastProxyStatus: ProxyStatus | undefined;
     private sseStarted = false;
 
-    constructor(private readonly apiBaseUrl: string) {}
+    constructor(private readonly apiBaseUrl: string) {
+        super();
+    }
 
-    private startSse() {
+    public startSse() {
         if (this.sseStarted) return;
         this.sseStarted = true;
 
@@ -186,11 +190,18 @@ export class LlamaServerProvider {
                     buffer = parts.pop() || "";
                     
                     for (const part of parts) {
-                        const line = part.trim();
-                        if (line.startsWith("data: ")) {
-                            try {
-                                this.lastProxyStatus = JSON.parse(line.slice(6));
-                            } catch {}
+                        const lines = part.trim().split("\n");
+                        for (const line of lines) {
+                            if (line.startsWith("data: ")) {
+                                try {
+                                    const status = JSON.parse(line.slice(6)) as ProxyStatus;
+                                    const changed = !this.lastProxyStatus || JSON.stringify(status) !== JSON.stringify(this.lastProxyStatus);
+                                    this.lastProxyStatus = status;
+                                    if (changed) {
+                                        this.emit('proxyStatus', status);
+                                    }
+                                } catch {}
+                            }
                         }
                     }
                 }
@@ -204,8 +215,22 @@ export class LlamaServerProvider {
     }
 
     private async getProxyStatus(): Promise<ProxyStatus | undefined> {
-        // Exclusively use background SSE for proxy status
         this.startSse();
+        
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 1000);
+            const response = await fetch(new URL("/v1/status", this.apiBaseUrl), {
+                signal: controller.signal
+            });
+            if (response.ok) {
+                this.lastProxyStatus = await response.json() as ProxyStatus;
+            }
+            clearTimeout(timer);
+        } catch {
+            // Fallback to SSE
+        }
+        
         return this.lastProxyStatus;
     }
 
@@ -243,14 +268,17 @@ export class LlamaServerProvider {
         try {
             const models = await fetchModels(this.apiBaseUrl);
             const primary = models[0];
+            const allModelNames = models.map(m => m.id ?? m.model ?? m.name ?? m.slug).filter((n): n is string => !!n);
+            
             if (!primary) {
-                return { inference: fallbackInference, status: "READY" };
+                return { inference: { ...fallbackInference, allModels: allModelNames }, status: "READY" };
             }
 
             const modelName = primary.id ?? primary.model ?? primary.name ?? fallbackModel ?? "unknown";
             const snapshot: Partial<InferenceMetrics> = {
                 ...fallbackInference,
-                model: modelName
+                model: modelName,
+                allModels: allModelNames
             };
 
             if (primary.details?.format) {
