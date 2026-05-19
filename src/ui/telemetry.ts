@@ -101,7 +101,7 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
                 finalLine = baseLine;
             }
         }
-        lines.push(`  {white-fg}${finalLine}{/white-fg}`);
+        lines.push(`  ${finalLine}`);
     }
 
     if (inference.tokensPerSecond > 0 || inference.promptEvalPerSecond > 0) {
@@ -115,15 +115,17 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
 
     if (state.settings.showGpu) {
         lines.push("");
-        const gpuLines = system.gpu.displayLines.length > 0
-            ? system.gpu.displayLines
-            : system.gpu.available
-                ? [`GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`]
-                : [`GPU: unavailable (${escapeTags(system.gpu.tool)})`];
-        lines.push(...gpuLines.map((line) => escapeTags(line)));
+        if (system.gpu.displayLines.length > 0) {
+            lines.push(...system.gpu.displayLines.map((line) => escapeTags(line)));
+        } else if (system.gpu.available) {
+            const fallbackLine = `GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`;
+            lines.push(fallbackLine);
+        } else {
+            lines.push(`GPU: unavailable (${escapeTags(system.gpu.tool)})`);
+        }
     } else if (system.gpu.available) {
         const gpuLine = `GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`;
-        lines.push(`  {white-fg}${escapeTags(gpuLine)}{/white-fg}`);
+        lines.push(`  ${gpuLine}`);
     }
 
     return lines.map(line => {
