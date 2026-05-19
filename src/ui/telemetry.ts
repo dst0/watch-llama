@@ -85,10 +85,23 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
     lines.push(`  {gray-fg}─${sepLen > 0 ? '─'.repeat(sepLen) : ''}{/gray-fg}`);
 
     if (state.settings.showCpu) {
+        const baseLine = `CPU: ${system.cpu.utilization.toFixed(0)}% ${frequencyText(system.cpu.frequencyMHz)} ${temperatureMarkup(system.cpu.temperature)} | RAM: ${system.ramUsed.toFixed(1)}/${system.ramTotal.toFixed(1)}GiB`;
         const extraTemps = system.extraTemps.map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(" | ");
-        lines.push(
-            `  CPU: ${system.cpu.utilization.toFixed(0)}% ${frequencyText(system.cpu.frequencyMHz)} ${temperatureMarkup(system.cpu.temperature)} | RAM: ${system.ramUsed.toFixed(1)}/${system.ramTotal.toFixed(1)}GiB${extraTemps ? " | " + extraTemps : ""}`
-        );
+        const fullLine = `${baseLine}${extraTemps ? " | " + extraTemps : ""}`;
+        // Truncate extraTemps if line exceeds width
+        const renderedLen = fullLine.replace(/\{[^}]+\}/g, '').length;
+        let finalLine = fullLine;
+        if (renderedLen > maxLineWidth) {
+            const baseRenderedLen = baseLine.replace(/\{[^}]+\}/g, '').length;
+            const remaining = maxLineWidth - baseRenderedLen - 4; // 4 = " | " + margin
+            if (remaining > 0) {
+                const truncatedTemps = system.extraTemps.slice(0, 3).map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(" | ");
+                finalLine = `${baseLine} | ${truncatedTemps}`;
+            } else {
+                finalLine = baseLine;
+            }
+        }
+        lines.push(`  {white-fg}${finalLine}{/white-fg}`);
     }
 
     if (inference.tokensPerSecond > 0 || inference.promptEvalPerSecond > 0) {
@@ -108,9 +121,9 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
                 ? [`GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`]
                 : [`GPU: unavailable (${escapeTags(system.gpu.tool)})`];
         lines.push(...gpuLines.map((line) => escapeTags(line)));
-    } else if (system.gpu.available && system.gpu.utilization > 0) {
+    } else if (system.gpu.available) {
         const gpuLine = `GPU:${system.gpu.utilization.toFixed(0)}% ${temperatureMarkup(system.gpu.temperature)} | VRAM:${system.gpu.memoryUsed.toFixed(1)}/${system.gpu.memoryTotal.toFixed(1)}GiB | Power:${system.gpu.power.toFixed(0)}W`;
-        lines.push(`  ${escapeTags(gpuLine)}`);
+        lines.push(`  {white-fg}${escapeTags(gpuLine)}{/white-fg}`);
     }
 
     return lines.map(line => {

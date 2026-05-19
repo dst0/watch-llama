@@ -316,7 +316,7 @@ export class GpuReader {
 
     private parseAmdSmiTable(output: string): GpuQueryResult {
         const lines = output.split(/\r?\n/).map((line) => line.trimEnd());
-        const rowIndex = lines.findIndex((line) => /^\|\s*[0-9a-fA-F:.]+\s+.+\|\s+.+\|$/.test(line));
+        const rowIndex = lines.findIndex((line) => /^\|\s*[0-9a-fA-F]{4}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}\.[0-9]\s/.test(line));
         if (rowIndex < 0 || rowIndex + 1 >= lines.length) {
             throw new Error('unable to parse amd-smi table');
         }
