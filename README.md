@@ -37,6 +37,22 @@ npm run build
 ### Log Source Switching
 Press **`P`** in the TUI to toggle between **Raw** (standard server) and **Proxy** log sources. The tool intelligently detects model names and metadata from both sources.
 
+### Proxy Model Tree View
+When using **Proxy** log source (`P`), the telemetry panel renders a hierarchical tree view:
+- **Parent model** is shown at the top level.
+- **Backend children** (other running models) are indented with `├─` / `└─` connectors.
+- **Redirect server** is shown as an indented child with `[ONLINE]` / `[OFFLINE]` status.
+- **Offline models** (configured but not active) are also shown as indented children.
+
+Example output:
+```
+  qwen36-27b-q3km [IDLE] ctx:65536 batch:2
+    ├─ qwen36-27b-q3km [IDLE] ctx:65536 batch:2
+    └─ qwen2.5-0.5b [IDLE] ctx:65536 batch:2
+    └─ qwen3.6-27b-mtp-ud [ONLINE] 192.168.8.47:11434 Active:0
+    └─ gemma-4-e4b-it-mlx@4bit [OFFLINE]
+```
+
 ### UI Stability
 - **Anti-Drift:** Panels are strictly sized and long lines are truncated to prevent terminal wrapping from pushing the UI elements out of alignment.
 - **Visual Separators:** A gray separator line divides model/backend info from system telemetry (CPU/RAM/GPU) for clearer scanning.

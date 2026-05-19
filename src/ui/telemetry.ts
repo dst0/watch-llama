@@ -4,11 +4,11 @@ import { formatSensorLabel } from "../providers/system/thermal.js";
 
 export function buildTelemetryLines(state: AppState, screenWidth = 80): string[] {
     const maxLineWidth = screenWidth - 4;
-    
+
     const { system, inference, proxyStatus } = state;
     const isProxy = state.settings.logSource === "proxy";
     const serverName = isProxy ? "LLAMA-PROXY" : "LLAMA-SERVER";
-    
+
     const header = inference.parallel !== undefined
         ? `{bold}=== ${serverName}  parallel:${inference.parallel}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`
         : `{bold}=== ${serverName}  tool:${escapeTags(system.gpu.tool)} ==={/bold}`;
@@ -18,26 +18,43 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
         const backends = proxyStatus.backends || [];
         const renderedModels = new Set<string>();
         const ctxBatch = ` ctx:${inference.contextSize ?? "?"} batch:${inference.parallel ?? "?"}`;
+        const treePrefix = "  ";
+        const childPrefix = "    ";
 
-        if (backends.length === 0) {
-            const showProgress = inference.status === "PREFILLING" && inference.progress !== undefined && inference.progress < 1;
-            lines.push(`  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${showProgress ? " " + (inference.progress! * 100).toFixed(1) + "%" : ""}]${ctxBatch}`);
-            renderedModels.add(inference.model);
-        } else {
-            for (const b of backends) {
+        // Render parent model
+        const showProgress = inference.status === "PREFILLING" && inference.progress !== undefined && inference.progress < 1;
+        lines.push(`${treePrefix}{green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${showProgress ? " " + (inference.progress! * 100).toFixed(1) + "%" : ""}]${ctxBatch}`);
+        renderedModels.add(inference.model);
+
+        // Render backends as tree children with left offset
+        if (backends.length > 0) {
+            for (let i = 0; i < backends.length; i++) {
+                const b = backends[i];
+                if (!b) continue;
+                const isLast = i === backends.length - 1;
+                const connector = isLast ? "└─" : "├─";
                 const mName = b.model || inference.model || "unknown";
                 const statusStr = b.status === "READY" ? "IDLE" : (b.status === "GEN" ? "GENERATING" : (b.status === "PREFILL" ? "PREFILLING" : b.status));
                 const showProgress = statusStr === "PREFILLING" && b.progress !== undefined && b.progress > 0 && b.progress < 1;
                 const progressTag = showProgress ? ` ${(b.progress! * 100).toFixed(1)}%` : "";
-                lines.push(`  {green-fg}${escapeTags(mName)}{/green-fg} [${statusStr}${progressTag}]${ctxBatch}`);
+                lines.push(`${childPrefix}{blue-fg}${connector}{/blue-fg} {green-fg}${escapeTags(mName)}{/green-fg} [${statusStr}${progressTag}]${ctxBatch}`);
                 renderedModels.add(mName);
             }
         }
 
+        // Render redirect server as tree child with left offset
+        if (proxyStatus.redirect_server) {
+            const rs = proxyStatus.redirect_server;
+            const availTag = rs.available ? "{green-fg}ONLINE{/green-fg}" : "{red-fg}OFFLINE{/red-fg}";
+            lines.push(`${childPrefix}{blue-fg}└─{/blue-fg} {magenta-fg}${escapeTags(rs.model)}{/magenta-fg} [${availTag}] ${rs.host}:${rs.port} Active:${rs.active_requests}`);
+            renderedModels.add(rs.model);
+        }
+
+        // Render offline models as tree children with left offset
         if (inference.allModels) {
             for (const mName of inference.allModels) {
                 if (!renderedModels.has(mName)) {
-                    lines.push(`  {gray-fg}${escapeTags(mName)}{/gray-fg} [OFFLINE]`);
+                    lines.push(`${childPrefix}{blue-fg}└─{/blue-fg} {gray-fg}${escapeTags(mName)}{/gray-fg} [OFFLINE]`);
                     renderedModels.add(mName);
                 }
             }
@@ -46,19 +63,13 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
         const active = proxyStatus.active_requests;
         const queueSize = proxyStatus.queue_size || 0;
         const title = proxyStatus.last_title || "Idle";
-        
+
         const portInfo = Object.entries(proxyStatus.ports || {})
             .map(([port, info]) => `${port}:${info.active}`)
             .join(" ");
-            
+
         lines.push(`  {yellow-fg}Active: ${active} [${portInfo}] | Queue: ${queueSize} | Last: ${escapeTags(title)}{/yellow-fg}`);
-        
-        if (proxyStatus.redirect_server) {
-            const rs = proxyStatus.redirect_server;
-            const availTag = rs.available ? "{green-fg}ONLINE{/green-fg}" : "{red-fg}OFFLINE{/red-fg}";
-            lines.push(`  {magenta-fg}Redirect: ${rs.host}:${rs.port} [${availTag}] Model: ${escapeTags(rs.model)} Active: ${rs.active_requests}{/magenta-fg}`);
-        }
-        
+
         const backendInfo = (proxyStatus.backends || []).map(b => {
             let statusTag = "";
             const healthy = ["READY", "PREFILL", "GEN"].includes(b.status);
@@ -69,7 +80,7 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
             }
 
             const queueInfo = (proxyStatus.queues || {})[b.port.toString()];
-            const queueTag = queueInfo 
+            const queueTag = queueInfo
                 ? ` {magenta-fg}Q:${queueInfo.size}${queueInfo.active ? "*" : ""}{/magenta-fg}`
                 : "";
             return `${b.port}:[${statusTag}]${queueTag}`;

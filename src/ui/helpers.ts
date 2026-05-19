@@ -1,6 +1,7 @@
 import { ThermalManager } from '../utils/thermal.js';
 
-export function escapeTags(text: string): string {
+export function escapeTags(text: string | undefined): string {
+    if (text == null) return "";
     return text.replaceAll('{', '\\{').replaceAll('}', '\\}');
 }
 
