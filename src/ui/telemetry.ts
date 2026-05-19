@@ -81,6 +81,9 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
         lines.push(`    {blue-fg}└{/blue-fg} ctx:${inference.contextSize ?? "unknown"} batch:${inference.parallel ?? "?"} | ${escapeTags(inference.architecture ?? "unknown")} | ${escapeTags(inference.quantization ?? "unknown")} | ${escapeTags(inference.format ?? "unknown")}`);
     }
 
+    const sepLen = Math.max(0, maxLineWidth - 3);
+    lines.push(`  {gray-fg}─${sepLen > 0 ? '─'.repeat(sepLen) : ''}{/gray-fg}`);
+
     if (state.settings.showCpu) {
         const extraTemps = system.extraTemps.map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(" | ");
         lines.push(
