@@ -39,6 +39,7 @@ Press **`P`** in the TUI to toggle between **Raw** (standard server) and **Proxy
 
 ### UI Stability
 - **Anti-Drift:** Panels are strictly sized and long lines are truncated to prevent terminal wrapping from pushing the UI elements out of alignment.
+- **Visual Separators:** A gray separator line divides model/backend info from system telemetry (CPU/RAM/GPU) for clearer scanning.
 - **Intelligent Scrolling:** Mouse wheel and keyboard scrolling automatically pause auto-follow. Scrolling back to the bottom automatically resumes it.
 - **Rich Text:** AI reasoning text is automatically detected and rendered in *italics*.
 
