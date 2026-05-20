@@ -42,12 +42,18 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
             }
         }
 
-        // Render redirect server as tree child with left offset
-        if (proxyStatus.redirect_server) {
-            const rs = proxyStatus.redirect_server;
-            const availTag = rs.available ? "{green-fg}ONLINE{/green-fg}" : "{red-fg}OFFLINE{/red-fg}";
-            lines.push(`${childPrefix}{blue-fg}└─{/blue-fg} {magenta-fg}${escapeTags(rs.model)}{/magenta-fg} [${availTag}] ${rs.host}:${rs.port} Active:${rs.active_requests}`);
-            renderedModels.add(rs.model);
+        // Render redirects (plural) as tree children with left offset
+        const allRedirects = proxyStatus.redirects || (proxyStatus.redirect_server ? [proxyStatus.redirect_server] : []);
+        if (allRedirects.length > 0) {
+            for (let i = 0; i < allRedirects.length; i++) {
+                const rs = allRedirects[i];
+                if (!rs) continue;
+                const isLast = i === allRedirects.length - 1;
+                const connector = isLast ? "└─" : "├─";
+                const availTag = rs.available ? "{green-fg}ONLINE{/green-fg}" : "{red-fg}OFFLINE{/red-fg}";
+                lines.push(`${childPrefix}{blue-fg}${connector}{/blue-fg} {magenta-fg}${escapeTags(rs.model)}{/magenta-fg} [${availTag}] ${rs.host}:${rs.port} Active:${rs.active_requests}`);
+                renderedModels.add(rs.model);
+            }
         }
 
         // Render offline models as tree children with left offset
@@ -68,7 +74,14 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
             .map(([port, info]) => `${port}:${info.active}`)
             .join(" ");
 
-        lines.push(`  {yellow-fg}Active: ${active} [${portInfo}] | Queue: ${queueSize} | Last: ${escapeTags(title)}{/yellow-fg}`);
+        // Virtual queue info
+        let vqTag = "";
+        if (proxyStatus.virtual_queue) {
+            const vq = proxyStatus.virtual_queue;
+            vqTag = ` | VQ:${vq.active_count}/${vq.max_parallel}(Q:${vq.size})`;
+        }
+
+        lines.push(`  {yellow-fg}Active: ${active} [${portInfo}] | Queue: ${queueSize}${vqTag} | Last: ${escapeTags(title)}{/yellow-fg}`);
 
         const backendInfo = (proxyStatus.backends || []).map(b => {
             let statusTag = "";
@@ -83,9 +96,12 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
             const queueTag = queueInfo
                 ? ` {magenta-fg}Q:${queueInfo.size}${queueInfo.active ? "*" : ""}{/magenta-fg}`
                 : "";
-            return `${b.port}:[${statusTag}]${queueTag}`;
+            const activeTag = b.active_count !== undefined
+                ? ` {cyan-fg}A:${b.active_count}{/cyan-fg}`
+                : "";
+            return `${b.port}:[${statusTag}]${queueTag}${activeTag}`;
         }).join(" ");
-        lines.push(`  {blue-fg}Backends: ${backendInfo}{/blue-fg}`);
+        lines.push(`  {blue-fg}Backends:{/blue-fg} ${backendInfo}`);
     } else {
         const showProgress = inference.status === "PREFILLING" && inference.progress !== undefined && inference.progress < 1;
         lines.push(`  {green-fg}${escapeTags(inference.model)}{/green-fg} [${escapeTags(inference.status)}${showProgress ? " " + (inference.progress! * 100).toFixed(1) + "%" : ""}]`);
@@ -100,10 +116,10 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
         const extraTemps = system.extraTemps.map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(" | ");
         const fullLine = `${baseLine}${extraTemps ? " | " + extraTemps : ""}`;
         // Truncate extraTemps if line exceeds width
-        const renderedLen = fullLine.replace(/\{[^}]+\}/g, '').length;
+        const renderedLen = fullLine.replace(/\{\{[^}]+\}\}/g, '').length;
         let finalLine = fullLine;
         if (renderedLen > maxLineWidth) {
-            const baseRenderedLen = baseLine.replace(/\{[^}]+\}/g, '').length;
+            const baseRenderedLen = baseLine.replace(/\{\{[^}]+\}\}/g, '').length;
             const remaining = maxLineWidth - baseRenderedLen - 4; // 4 = " | " + margin
             if (remaining > 0) {
                 const truncatedTemps = system.extraTemps.slice(0, 3).map((reading) => `${escapeTags(formatSensorLabel(reading.label))}: ${temperatureMarkup(reading.tempC)}`).join(" | ");
