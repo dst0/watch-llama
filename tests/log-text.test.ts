@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { formatPromptText, promptEndsWithAssistantMarker, sanitizeDecodedText, sanitizeRenderableText, escapeBlessedTags } from '../src/utils/log-text.js';
 
 test('escapeBlessedTags escapes curly braces for blessed', () => {
-    assert.equal(escapeBlessedTags('hello {world}'), 'hello \\{world\\}');
-    assert.equal(escapeBlessedTags('multiple { { }}'), 'multiple \\{ \\{ \\}\\}');
+    assert.equal(escapeBlessedTags('hello {world}'), 'hello {{world}}');
+    assert.equal(escapeBlessedTags('multiple { { }}'), 'multiple {{ {{ }}}}');
 });
 
 test('sanitizeDecodedText removes chat markers and controls', () => {

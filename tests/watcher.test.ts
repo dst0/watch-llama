@@ -28,7 +28,7 @@ test('LogWatcher emits escaped and italicized reasoning text', async () => {
     const reasoningJson = '{"type":"response.reasoning_text.delta", "delta":"Thinking about {tags}..."}\n';
     await (watcher as any).processChunk(reasoningJson);
 
-    assert.equal(emittedLine, '{italic}Thinking about \\{tags\\}...{/italic}');
+    assert.equal(emittedLine, '{italic}Thinking about {{tags}}...{/italic}');
 
     await fs.rm(tmpDir, { recursive: true, force: true });
 });

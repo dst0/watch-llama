@@ -2,7 +2,7 @@ import { ThermalManager } from '../utils/thermal.js';
 
 export function escapeTags(text: string | undefined): string {
     if (text == null) return "";
-    return text.replaceAll('{', '\\{').replaceAll('}', '\\}');
+    return text.replaceAll('{', '{{').replaceAll('}', '}}');
 }
 
 export function temperatureMarkup(temp: number): string {
