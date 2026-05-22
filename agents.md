@@ -19,3 +19,9 @@ All agents should follow the "Micro-Task Workflow" to maintain high reliability 
 
 ### Important Files
 - `work-status.md`: The single source of truth for the current task state.
+
+### Lessons Learned & Best Practices
+
+- **Verification Strategy**: When testing complex asynchronous or streaming logic, avoid creating "shadow" implementations of the main application architecture within the test. This creates maintenance overhead and TypeScript friction. Instead, use a sequence-based approach to test the core logic units with inputs that simulate the stream's effects.
+- **Complexity Management**: If a test begins to fail due to TypeScript errors or complexity, do not attempt to "patch" the test implementation. Re-evaluate the test design and simplify the verification target.
+- **Status Maintenance**: Always maintain `work-status.md` to prevent loops and ensure context is preserved during handoffs or interruptions.
