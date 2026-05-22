@@ -336,8 +336,12 @@ export class ReadableLogBuilder {
             appendText += `\n[${formatEventTimestamp()}] ${message}\n`;
         }
 
-        if (Object.keys(inference).length > 0) return { appendText, inference };
-        return { appendText };
+        if (Object.keys(inference).length > 0 || appendText) return { appendText, inference };
+        // Pass through non-JSON plain text lines; skip JSON lines that were intentionally filtered
+        if (line && !line.trimStart().startsWith('{')) {
+            return { appendText: `${line}\n` };
+        }
+        return { appendText: '' };
     }
 }
 

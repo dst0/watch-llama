@@ -43,7 +43,9 @@ export function buildTelemetryLines(state: AppState, screenWidth = 80): string[]
         }
 
         // Render redirects (plural) as tree children with left offset
-        const allRedirects = proxyStatus.redirects || (proxyStatus.redirect_server ? [proxyStatus.redirect_server] : []);
+        const allRedirects = (proxyStatus.redirects && proxyStatus.redirects.length > 0)
+            ? proxyStatus.redirects
+            : (proxyStatus.redirect_server ? [proxyStatus.redirect_server] : []);
         if (allRedirects.length > 0) {
             for (let i = 0; i < allRedirects.length; i++) {
                 const rs = allRedirects[i];

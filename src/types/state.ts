@@ -76,18 +76,45 @@ export interface InferenceMetrics {
 export interface ProxyStatus {
     active_requests: number;
     queue_size: number;
+    virtual_queue?: {
+        model: string;
+        size: number;
+        active: boolean;
+        active_count: number;
+        max_parallel: number;
+    };
     redirect_server?: {
         host: string;
         port: number;
         model: string;
+        display?: string;
         available: boolean;
         active_requests: number;
     };
+    redirects?: {
+        host: string;
+        port: number;
+        model: string;
+        display?: string;
+        available: boolean;
+        active_requests: number;
+    }[];
     ports: Record<string, { active: number }>;
-    queues: Record<string, { size: number; active: boolean }>;
+    queues: Record<string, { size: number; active: boolean; active_count?: number; max_parallel?: number }>;
     last_title: string;
     prefill_progress?: number;
-    backends: { port: number; status: string; progress?: number; model?: string }[];
+    backends: {
+        port: number;
+        host?: string;
+        status: string;
+        display?: string;
+        progress?: number;
+        prefill_percent?: number;
+        model?: string;
+        active_count?: number;
+        max_parallel?: number;
+        queue_size?: number;
+    }[];
     timestamp: string;
 }
 
